@@ -1,8 +1,12 @@
-#Kakapo [![Language: Swift](https://img.shields.io/badge/lang-Swift-yellow.svg?style=flat)](https://developer.apple.com/swift/) [![Build Status](https://travis-ci.org/zzarcon/asynz.svg?branch=master)] [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://www.npmjs.org/package/awesome-badges) [![CocoaPods](https://img.shields.io/cocoapods/v/AFNetworking.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/metrics/doc-percent/AFNetworking.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/p/AFNetworking.svg)]() ![partyparrot](http://cultofthepartyparrot.com/parrots/parrot.gif)
+#Kakapo [![Language: Swift](https://img.shields.io/badge/lang-Swift-yellow.svg?style=flat)](https://developer.apple.com/swift/) ![Build Status](https://travis-ci.org/zzarcon/asynz.svg?branch=master) [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://www.npmjs.org/package/awesome-badges) [![CocoaPods](https://img.shields.io/cocoapods/v/AFNetworking.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/metrics/doc-percent/AFNetworking.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/p/AFNetworking.svg)]() ![partyparrot](http://cultofthepartyparrot.com/parrots/parrot.gif)
 
 > Next generation mocking library in Swift
 
+Kakapo aims to cover all needs you, as a mobile developer usualy face while trying to **mock server responses**, it gives you a set of **components** and **conventions** that will solve the most important challenges for HTTP mocking.
 
+It was mainly designed with **JSON-Api** support on mind and medium/big complex Api's, when Kakapo becomes particularly useful to cover advanced and consistent **response payloads** that has a **long life state**, usualy in memory and might be also serialized on demand, especially when working with **not ready Api's** that has a expected and common behaviour.
+
+The DSL allows you to define a **client-side-server** in which you can define your routes exactly as in the real one, having totally control of the request, status code, dynamic paths and query params. Also Kakapo brings you an **in memory database** which essentially gives you the ability of create, read, update and delete records. This records are defined in an expresive way thanks to **KakapoFactories** and are able to handle **model relationships** and **fake data** generation withing other features, this records are serialized using the **KakapoSerializers**, which are build in a idiomatic way. Finally you have the chance of create different **database scenarios** and use it when you want.
 
 ## Contents
 - [Features](#features)
@@ -53,6 +57,35 @@
 
 ## Usage
 
+```swift
+struct User: KakapoFactory {
+ let name = Kakapo.name.firstName
+ let profileImg = Kakapo.image.avatar
+ let friends = Kakapo.random(['paco', 'pepe']) 
+}
+
+struct Comment: KakapoFactory {
+ let text = Kakapo.lorem(50)
+ let user = Kakapo.belongsTo(User)
+}
+
+struct Post: KakapoFactory {
+ let likes = 10
+ let comments = Kakapo.hasMany(Comment)
+}
+
+db.create(User, 5)
+db.create(Comment, 15)
+db.create(Post, 2)
+
+let server = KakapoServer(db)
+
+server.get("/user/:id") { (db, request) in
+ return JSONApiSerializer(
+  db.find(User, request.params.id)
+ )
+}
+```
 
 ### Installation
 
@@ -62,18 +95,24 @@
 
 ## Components
 
+TODO
 
 ### Router
 
+TODO
 
 ### Database
 
+TODO
 
 ### Factories
 
+TODO
 
 ### Scenarios
 
+TODO
 
 ### Fake Data
 
+TODO
