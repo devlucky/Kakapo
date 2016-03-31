@@ -8,34 +8,18 @@
 
 import Foundation
 
-public protocol PropertyPolicy: CustomReflectable {
-    var shouldSerialize: Bool { get }
-}
-
-struct KakapoIgnorableNilProperty<T>: PropertyPolicy {
-    let obj: T?
-    
-    var shouldSerialize: Bool {
-        return obj != nil
-    }
-    
-    func customMirror() -> Mirror {
-        return Mirror(reflecting: obj)
-    }
-}
-
-protocol KakapoSerializable {
+public protocol KakapoSerializable {
     func serializeChildren() -> Any
 }
 
-extension KakapoSerializable {
-    func serializeChildren() -> Any {
+public extension KakapoSerializable {
+    public func serializeChildren() -> Any {
         return serialize(self)
     }
 }
 
 extension Array: KakapoSerializable {
-    func serializeChildren() -> Any {
+    public func serializeChildren() -> Any {
         var array = [Any]()
         for obj in self {
             array.append(serializeObject(obj))
@@ -43,8 +27,9 @@ extension Array: KakapoSerializable {
         return array
     }
 }
+
 extension Dictionary: KakapoSerializable {
-    func serializeChildren() -> Any {
+    public func serializeChildren() -> Any {
         var dictionary = [Key: Any]()
         for (key, value) in self {
             dictionary[key] = serializeObject(value)
@@ -53,7 +38,7 @@ extension Dictionary: KakapoSerializable {
     }
 }
 
-func serializeObject(value: Any) -> Any {
+private func serializeObject(value: Any) -> Any {
     if let value = value as? KakapoSerializable {
         return value.serializeChildren()
     } else {
@@ -62,7 +47,7 @@ func serializeObject(value: Any) -> Any {
     }
 }
 
-func serialize(object: KakapoSerializable) -> [String: Any] {
+public func serialize(object: KakapoSerializable) -> [String: Any] {
     var dictionary = [String: Any]()
     let mirror = Mirror(reflecting: object)
     for child in mirror.children {
