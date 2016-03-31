@@ -10,6 +10,7 @@
 		33210B9DB2ED3249862E6A78 /* Pods_KakapoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3180C29CBC1D50E0769D5D15 /* Pods_KakapoTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		DE53E2401CAD422600CD1AC0 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E23F1CAD422600CD1AC0 /* Serializer.swift */; };
 		DE53E2421CAD711500CD1AC0 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */; };
+		DE53E2441CAD719D00CD1AC0 /* SerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */; };
 		DE9352771CAAF1E800AD534C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9352761CAAF1E800AD534C /* AppDelegate.swift */; };
 		DE9352791CAAF1E800AD534C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9352781CAAF1E800AD534C /* ViewController.swift */; };
 		DE93527C1CAAF1E800AD534C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE93527A1CAAF1E800AD534C /* Main.storyboard */; };
@@ -17,7 +18,6 @@
 		DE9352811CAAF1E800AD534C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE93527F1CAAF1E800AD534C /* LaunchScreen.storyboard */; };
 		DE9352901CAAF21300AD534C /* Kakapo.h in Headers */ = {isa = PBXBuildFile; fileRef = DE93528F1CAAF21300AD534C /* Kakapo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9352971CAAF21300AD534C /* Kakapo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE93528D1CAAF21300AD534C /* Kakapo.framework */; };
-		DE93529E1CAAF21300AD534C /* KakapoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE93529D1CAAF21300AD534C /* KakapoTests.swift */; };
 		DE9352A21CAAF21300AD534C /* Kakapo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE93528D1CAAF21300AD534C /* Kakapo.framework */; };
 		DE9352A31CAAF21300AD534C /* Kakapo.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DE93528D1CAAF21300AD534C /* Kakapo.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -65,6 +65,7 @@
 		B3F83AF0069920CA81FFC28B /* Pods-KakapoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KakapoTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KakapoTests/Pods-KakapoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE53E23F1CAD422600CD1AC0 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
 		DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
+		DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializerTests.swift; sourceTree = "<group>"; };
 		DE9352731CAAF1E800AD534C /* KakapoExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakapoExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE9352761CAAF1E800AD534C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DE9352781CAAF1E800AD534C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -76,7 +77,6 @@
 		DE93528F1CAAF21300AD534C /* Kakapo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kakapo.h; sourceTree = "<group>"; };
 		DE9352911CAAF21300AD534C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE9352961CAAF21300AD534C /* KakapoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakapoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DE93529D1CAAF21300AD534C /* KakapoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakapoTests.swift; sourceTree = "<group>"; };
 		DE93529F1CAAF21300AD534C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE9352AE1CAAF32900AD534C /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		E0631FF5CD9CD06BE1F87C6C /* Pods-KakapoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KakapoTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KakapoTests/Pods-KakapoTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -176,7 +176,7 @@
 		DE93529C1CAAF21300AD534C /* KakapoTests */ = {
 			isa = PBXGroup;
 			children = (
-				DE93529D1CAAF21300AD534C /* KakapoTests.swift */,
+				DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */,
 				DE93529F1CAAF21300AD534C /* Info.plist */,
 			);
 			path = KakapoTests;
@@ -405,7 +405,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE93529E1CAAF21300AD534C /* KakapoTests.swift in Sources */,
+				DE53E2441CAD719D00CD1AC0 /* SerializerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
