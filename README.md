@@ -1,6 +1,8 @@
-#Kakapo [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://www.npmjs.org/package/awesome-badges) ![partyparrot](http://cultofthepartyparrot.com/parrots/parrot.gif)
+#Kakapo [![Language: Swift](https://img.shields.io/badge/lang-Swift-yellow.svg?style=flat)](https://developer.apple.com/swift/) [![Build Status](https://travis-ci.org/zzarcon/asynz.svg?branch=master)] [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://www.npmjs.org/package/awesome-badges) [![CocoaPods](https://img.shields.io/cocoapods/v/AFNetworking.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/metrics/doc-percent/AFNetworking.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/p/AFNetworking.svg)]() ![partyparrot](http://cultofthepartyparrot.com/parrots/parrot.gif)
 
 > Next generation mocking library in Swift
+
+
 
 ## Contents
 - [Features](#features)
