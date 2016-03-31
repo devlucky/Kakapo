@@ -8,11 +8,11 @@
 
 import Foundation
 
-public protocol PropertyPolicy: CustomReflectable {
+public protocol PropertyPolicy: CustomReflectable, KakapoSerializable {
     var shouldSerialize: Bool { get }
 }
 
-public struct KakapoIgnorableNilProperty<T>: PropertyPolicy {
+public struct IgnorableNilProperty<T>: PropertyPolicy {
     let obj: T?
     
     public var shouldSerialize: Bool {
@@ -20,6 +20,9 @@ public struct KakapoIgnorableNilProperty<T>: PropertyPolicy {
     }
     
     public func customMirror() -> Mirror {
-        return Mirror(reflecting: obj)
+        if let obj = obj {
+            return Mirror(reflecting: obj)
+        }
+        return Mirror(obj, children: [])
     }
 }

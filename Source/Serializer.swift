@@ -38,6 +38,17 @@ extension Dictionary: KakapoSerializable {
     }
 }
 
+extension Optional: KakapoSerializable {
+    public func serializeChildren() -> Any {
+        switch self {
+        case let .Some(value):
+            return value
+        default:
+            return NSNull()
+        }
+    }
+}
+
 private func serializeObject(value: Any) -> Any {
     if let value = value as? KakapoSerializable {
         return value.serializeChildren()
