@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		33210B9DB2ED3249862E6A78 /* Pods_KakapoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3180C29CBC1D50E0769D5D15 /* Pods_KakapoTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		DE53E2401CAD422600CD1AC0 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E23F1CAD422600CD1AC0 /* Serializer.swift */; };
+		DE53E2421CAD711500CD1AC0 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */; };
 		DE9352771CAAF1E800AD534C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9352761CAAF1E800AD534C /* AppDelegate.swift */; };
 		DE9352791CAAF1E800AD534C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9352781CAAF1E800AD534C /* ViewController.swift */; };
 		DE93527C1CAAF1E800AD534C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE93527A1CAAF1E800AD534C /* Main.storyboard */; };
@@ -63,6 +64,7 @@
 		3180C29CBC1D50E0769D5D15 /* Pods_KakapoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KakapoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3F83AF0069920CA81FFC28B /* Pods-KakapoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KakapoTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KakapoTests/Pods-KakapoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE53E23F1CAD422600CD1AC0 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
+		DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
 		DE9352731CAAF1E800AD534C /* KakapoExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakapoExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE9352761CAAF1E800AD534C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DE9352781CAAF1E800AD534C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				DE53E23F1CAD422600CD1AC0 /* Serializer.swift */,
+				DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */,
 			);
 			name = Source;
 			path = ../Source;
@@ -393,6 +396,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE53E2421CAD711500CD1AC0 /* PropertyPolicy.swift in Sources */,
 				DE53E2401CAD422600CD1AC0 /* Serializer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
