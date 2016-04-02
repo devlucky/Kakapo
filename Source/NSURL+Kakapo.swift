@@ -8,15 +8,22 @@
 
 import Foundation
 
-/// checkUrl does sdasdasds
-/// - Parameter term: whatever
-/// - Parameter term: whatever
-/// - Returns: term
-func checkUrl(handlerUrl: String, requestUrl: String) -> (params: [String : String], queryParams: [String : String])? {
-    let paths = splitUrl(handlerUrl, withSeparator: ":")
+typealias URLParams = (params: [String : String], queryParams: [String : String])
+
+/// parseUrl: Checks and parses if a given `handleURL` representation matches a `requestURL`
+/// ```swift
+///   Examples:
+///     /users/:id with /users/1 produces ["id" : "1"]
+///     /users/:id/comments with /users/1/comments produces ["id" : "1"]
+/// ```
+/// - Parameter handlerURL: the URL with dynamic paths
+/// - Parameter requestURL: the actual URL
+/// - Returns: URLParams
+func parseUrl(handlerURL: String, requestURL: String) -> URLParams? {
+    let paths = splitUrl(handlerURL, withSeparator: ":")
     var params: [String : String] = [:]
     var queryParams: [String : String] = [:]
-    var changableUrl = splitUrl(requestUrl, withSeparator: "?")
+    var changableUrl = splitUrl(requestURL, withSeparator: "?")
     var paramsUrl = changableUrl[0]
     
     for (index, path) in paths.enumerate() {
@@ -44,11 +51,11 @@ func checkUrl(handlerUrl: String, requestUrl: String) -> (params: [String : Stri
     return (params, queryParams)
 }
 
-func splitUrl(url: String, withSeparator separator: Character) -> [String] {
+private func splitUrl(url: String, withSeparator separator: Character) -> [String] {
     return url.characters.split(separator).map{ String($0) }
 }
 
-func replaceUrl(source: String, find: String, with: String) -> String {
+private func replaceUrl(source: String, find: String, with: String) -> String {
     return source.stringByReplacingOccurrencesOfString(find, withString: with)
 }
 
