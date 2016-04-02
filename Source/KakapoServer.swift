@@ -56,7 +56,7 @@ class KakapoServer: NSURLProtocol {
         guard let requestString = request.URL?.absoluteString else { return }
         
         for (key, object) in KakapoServer.routes {
-            if let params = checkUrl(key, requestUrl: requestString) {
+            if let params = checkUrl(key, requestUrl: requestString)?.params {
                 object.handler(request: KakapoRequest(urlString: requestString, params: params))
             }
         }
