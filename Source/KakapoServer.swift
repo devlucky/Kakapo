@@ -10,10 +10,10 @@ import Foundation
 
 class KakapoServer: NSURLProtocol {
     
-    typealias KakapoLookupObject = (method: KakapoServerMethod,
+    typealias KakapoLookupObject = (method: KakapoHTTPMethod,
                                     handler: (request: KakapoRequest) -> ())
     
-    enum KakapoServerMethod: String {
+    enum KakapoHTTPMethod: String {
         case GET, POST, PUT, DELETE
     }
     

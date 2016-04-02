@@ -13,12 +13,6 @@ protocol KStorable {
     init(id: Int)
 }
 
-extension KStorable {    
-//    static func belongsTo<T: KStorable>(_: T.Type) -> (Int) -> T {
-//        return T.init
-//    }
-}
-
 enum KakapoDBError: ErrorType {
     case InvalidId
 }
