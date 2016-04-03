@@ -50,15 +50,15 @@ class KakapoDBTests: QuickSpec {
     override func spec() {
         
         describe("#KakapoDB") {
-            var db = KakapoDB()
+            var sut = KakapoDB()
             
             beforeEach({
-                db = KakapoDB()
+                sut = KakapoDB()
             })
 
             it("should return the expected object with a given id after inserting 20 objects") {
-                db.create(UserFactory.self, number: 20)
-                let user = db.find(UserFactory.self, id: 1)
+                sut.create(UserFactory.self, number: 20)
+                let user = sut.find(UserFactory.self, id: 1)
                 
                 expect(user).toNot(beNil())
                 expect(user?.firstName).toNot(beNil())
@@ -66,11 +66,11 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("should return the expected object with a given id after inserting different object types") {
-                db.create(UserFactory.self, number: 20)
-                db.create(CommentFactory.self, number: 20)
-                let user = db.find(UserFactory.self, id: 1)
-                let wrongComment = db.find(CommentFactory.self, id: 2)
-                let comment = db.find(CommentFactory.self, id: 22)
+                sut.create(UserFactory.self, number: 20)
+                sut.create(CommentFactory.self, number: 20)
+                let user = sut.find(UserFactory.self, id: 1)
+                let wrongComment = sut.find(CommentFactory.self, id: 2)
+                let comment = sut.find(CommentFactory.self, id: 22)
                 
                 expect(user).toNot(beNil())
                 expect(wrongComment).to(beNil())
@@ -78,9 +78,9 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("shoud return the expected object after inserting it", closure: {
-                let _ = try? db.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
+                let _ = try? sut.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
                 
-                let user = db.find(UserFactory.self, id: 90)
+                let user = sut.find(UserFactory.self, id: 90)
                 expect(user?.firstName).to(match("Hector"))
                 expect(user?.lastName).to(match("Zarco"))
                 expect(user?.id) == 90
@@ -88,8 +88,8 @@ class KakapoDBTests: QuickSpec {
             
             it("should fail when inserting invalid id", closure: {
                 do {
-                    try db.insert(UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: 100))
-                    try db.insert(UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: 100))
+                    try sut.insert(UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: 100))
+                    try sut.insert(UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: 100))
                 } catch KakapoDBError.InvalidId {
                     expect(true).to(beTrue())
                 } catch {
@@ -98,9 +98,9 @@ class KakapoDBTests: QuickSpec {
             })
             
             it("should return the expected filtered element with valid id", closure: {
-                let _ = try? db.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
+                let _ = try? sut.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
                 
-                let userArray = db.filter(UserFactory.self, includeElement: { (item) -> Bool in
+                let userArray = sut.filter(UserFactory.self, includeElement: { (item) -> Bool in
                     return item.id == 90
                 })
                 
@@ -111,10 +111,10 @@ class KakapoDBTests: QuickSpec {
             })
             
             it("should return no objects for some inexisting filtering", closure: {
-                db.create(UserFactory.self, number: 20)
-                let _ = try? db.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
+                sut.create(UserFactory.self, number: 20)
+                let _ = try? sut.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
                 
-                let userArray = db.filter(UserFactory.self, includeElement: { (item) -> Bool in
+                let userArray = sut.filter(UserFactory.self, includeElement: { (item) -> Bool in
                     return item.lastName == "Manzella"
                 })
                 
