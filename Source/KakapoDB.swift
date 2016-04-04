@@ -19,7 +19,7 @@ enum KakapoDBError: ErrorType {
 
 class KakapoDB {
     
-    private var _uuid = 0
+    private var _uuid: Int32 = 0
     var store: [String: [KStorable]] = [:]
     
     func create<T: KStorable>(_: T.Type, number: Int) {
@@ -31,7 +31,7 @@ class KakapoDB {
     }
     
     func insert<T: KStorable>(object: T) throws {
-        guard object.id > _uuid else {
+        guard object.id > Int(_uuid) else {
             throw KakapoDBError.InvalidId
         }
         
@@ -53,8 +53,8 @@ class KakapoDB {
     }
     
     private func uuid() -> Int {
-        _uuid += 1
-        return _uuid
+        OSAtomicIncrement32(&_uuid)
+        return Int(_uuid)
     }
     
     private func lookup<T: KStorable>(_: T.Type) -> [KStorable] {
