@@ -1,6 +1,6 @@
 //
 //  KakapoServer.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Joan Romano on 31/03/16.
 //  Copyright © 2016 devlucky. All rights reserved.
@@ -10,19 +10,18 @@ import Foundation
 
 class KakapoServer: NSURLProtocol {
     
-    typealias KakapoLookupObject = (method: KakapoHTTPMethod,
-                                    handler: (request: KakapoRequest) -> ())
+    typealias Route = (method: HTTPMethod, handler: (request: Request) -> ())
     
-    enum KakapoHTTPMethod: String {
+    enum HTTPMethod: String {
         case GET, POST, PUT, DELETE
     }
     
-    struct KakapoRequest {
+    struct Request {
         let urlString: String
         let info: URLInfo
     }
     
-    private static var routes: [String : KakapoLookupObject] = [:]
+    private static var routes: [String : Route] = [:]
     
     class func enable() {
         NSURLProtocol.registerClass(self)
@@ -58,7 +57,7 @@ class KakapoServer: NSURLProtocol {
         
         for (key, object) in KakapoServer.routes {
             if let info = parseUrl(key, requestURL: requestString) {
-                object.handler(request: KakapoRequest(urlString: requestString, info: info))
+                object.handler(request: Request(urlString: requestString, info: info))
             }
         }
         
@@ -74,19 +73,19 @@ class KakapoServer: NSURLProtocol {
         
     }
     
-    static func get(urlString: String, handler: (request: KakapoRequest) -> ()) {
+    static func get(urlString: String, handler: (request: Request) -> ()) {
         KakapoServer.routes[urlString] = (.GET, handler)
     }
     
-    static func post(urlString: String, handler: (request: KakapoRequest) -> ()) {
+    static func post(urlString: String, handler: (request: Request) -> ()) {
         KakapoServer.routes[urlString] = (.POST, handler)
     }
     
-    static func del(urlString: String, handler: (request: KakapoRequest) -> ()) {
+    static func del(urlString: String, handler: (request: Request) -> ()) {
         KakapoServer.routes[urlString] = (.DELETE, handler)
     }
     
-    static func put(urlString: String, handler: (request: KakapoRequest) -> ()) {
+    static func put(urlString: String, handler: (request: Request) -> ()) {
         KakapoServer.routes[urlString] = (.PUT, handler)
     }
     
