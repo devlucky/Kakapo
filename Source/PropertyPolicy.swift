@@ -14,7 +14,7 @@ public protocol _PropertyPolicy: Serializable {
 }
 
 public protocol PropertyPolicy: _PropertyPolicy {
-    typealias T
+    associatedtype T
     var object: T? { get }
     var shouldSerialize: Bool { get }
 }
