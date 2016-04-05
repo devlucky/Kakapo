@@ -3,7 +3,7 @@ language: objective-c
 xcode_workspace: KakapoExample/KakapoExample.xcworkspace
 xcode_scheme: 
 - Kakapo
-- KakapoTest
+- KakapoTests
 - KakapoExample
 
 podfile: KakapoExample/Podfile
