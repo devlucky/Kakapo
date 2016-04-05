@@ -15,25 +15,33 @@ class IgnorableNilPropertySpec: QuickSpec {
     override func spec() {
         describe("Nil ignorable property") {
             it("is nil") {
-                let ignorableProperty = IgnorableNilProperty<Int>(obj: nil)
+                let ignorableProperty = IgnorableNilProperty<Int>(nil)
                 expect(ignorableProperty.shouldSerialize).to(beFalse())
             }
             
             it("is not nil") {
-                let ignorableProperty = IgnorableNilProperty<Int>(obj: 1)
+                let ignorableProperty = IgnorableNilProperty(1)
                 expect(ignorableProperty.shouldSerialize).to(beTrue())
             }
         }
     }
 }
 
+struct MaybeEmpty<T>: Serializable {
+    let value: T
+    
+    init(_ obj: T) {
+        value = obj
+    }
+}
+
 class SerializeSpec: QuickSpec {
     
-    struct User: KakapoSerializable {
+    struct User: Serializable {
         let name: String
     }
     
-    struct Friend: KakapoSerializable {
+    struct Friend: Serializable {
         let friends: [User]
         let dictionary: [String: [User]]
         
@@ -41,14 +49,6 @@ class SerializeSpec: QuickSpec {
             self.friends = friends
             self.dictionary = ["test": friends]
         }
-    }
-    
-    struct MaybeEmpty: KakapoSerializable {
-        let maybeIgnored: IgnorableNilProperty<Int>
-    }
-    
-    struct Opt: KakapoSerializable {
-        let optional: Int?
     }
     
     override func spec() {
@@ -97,29 +97,57 @@ class SerializeSpec: QuickSpec {
         
         describe("Property policy serialization") { 
             it("is not serialized if nil") {
-                let empty = MaybeEmpty(maybeIgnored: IgnorableNilProperty<Int>(obj: nil))
+                let empty = MaybeEmpty(IgnorableNilProperty<Int>(nil))
                 let serialized = serialize(empty)
                 expect(serialized.count).to(be(0))
             }
             
             it("is serialized if not nil") {
-                let notEmpty = MaybeEmpty(maybeIgnored: IgnorableNilProperty<Int>(obj: 1))
-                let serialized = serialize(notEmpty) as? [String: Int]
-                expect(serialized?["maybeIgnored"]).to(be(1))
+                let notEmpty = MaybeEmpty(IgnorableNilProperty(1))
+                let serialized = serialize(notEmpty)
+                let value = serialized["value"] as? Int
+                expect(value).to(be(1))
+            }
+            
+            it("recursively serialize the object if needed") {
+                let notEmpty = MaybeEmpty(IgnorableNilProperty(user))
+                let serialized = serialize(notEmpty)
+                let value = serialized["value"] as? [String: Any]
+                expect(value?["name"] as? String).to(equal("Alex"))
+            }
+
+            it("recursively serialize IgnorableNilProperties") {
+                let notEmpty = MaybeEmpty(IgnorableNilProperty(IgnorableNilProperty(1)))
+                let serialized = serialize(notEmpty)
+                let value = serialized["value"] as? Int
+                expect(value).to(be(1))
             }
         }
         
         describe("Optional property serialization") { 
             it("serialize nil") {
-                let optional = Opt(optional: nil)
-                let serialized = serialize(optional) as? [String: NSNull]
-                expect(serialized?["optional"]).to(be(NSNull()))
+                let nilInt: Int? = nil
+                let optional = MaybeEmpty(nilInt)
+                let serialized = serialize(optional)
+                expect(serialized["value"] as? NSNull).to(be(NSNull()))
             }
             
             it("serialize an optional") {
-                let empty = MaybeEmpty(maybeIgnored: IgnorableNilProperty<Int>(obj: 1))
-                let serialized = serialize(empty) as? [String: Int]
-                expect(serialized?["maybeIgnored"]).to(be(1))
+                let optional = MaybeEmpty(Optional.Some(1))
+                let serialized = serialize(optional) as? [String: Int]
+                expect(serialized?["value"]).to(be(1))
+            }
+            
+            it("recursively serialize the value") {
+                let optional = MaybeEmpty(Optional.Some(user))
+                let serialized = serialize(optional) as? [String: Int]
+                expect(serialized?["value"]).to(be(1))
+            }
+            
+            it("recursively serialize Optionals") {
+                let optional = MaybeEmpty(Optional.Some(Optional.Some(1)))
+                let serialized = serialize(optional) as? [String: Int]
+                expect(serialized?["value"]).to(be(1))
             }
         }
     }

@@ -8,21 +8,33 @@
 
 import Foundation
 
-public protocol PropertyPolicy: CustomReflectable, KakapoSerializable {
+public protocol _PropertyPolicy: Serializable {
+    var _object: Any { get }
     var shouldSerialize: Bool { get }
 }
 
+public protocol PropertyPolicy: _PropertyPolicy {
+    typealias T
+    var object: T? { get }
+    var shouldSerialize: Bool { get }
+}
+
+extension PropertyPolicy {
+    public var _object: Any {
+        get {
+            return object
+        }
+    }
+}
+
 public struct IgnorableNilProperty<T>: PropertyPolicy {
-    let obj: T?
+    public let object: T?
     
-    public var shouldSerialize: Bool {
-        return obj != nil
+    init(_ object: T?) {
+        self.object = object
     }
     
-    public func customMirror() -> Mirror {
-        if let obj = obj {
-            return Mirror(reflecting: obj)
-        }
-        return Mirror(obj, children: [])
+    public var shouldSerialize: Bool {
+        return object != nil
     }
 }
