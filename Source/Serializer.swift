@@ -50,15 +50,8 @@ extension Optional: Serializable {
 }
 
 extension _PropertyPolicy {
-    private func flatten(obj: Any) -> Any {
-        if obj is _PropertyPolicy {
-            return flatten(obj)// recursive in case it contains a property policy
-        }
-        return obj
-    }
-    
     public func serialize() -> Any {
-        return serializeObject(flatten(_object))
+        return serializeObject(_object)
     }
 }
 
