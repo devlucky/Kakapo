@@ -140,8 +140,9 @@ class SerializeSpec: QuickSpec {
             
             it("recursively serialize the value") {
                 let optional = MaybeEmpty(Optional.Some(user))
-                let serialized = serialize(optional) as? [String: Int]
-                expect(serialized?["value"]).to(be(1))
+                let serialized = serialize(optional)
+                let value = serialized["value"] as? [String: Any]
+                expect(value?["name"] as? String).to(equal("Alex"))
             }
             
             it("recursively serialize Optionals") {

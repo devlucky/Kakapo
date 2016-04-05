@@ -42,10 +42,23 @@ extension Optional: Serializable {
     public func serialize() -> Any {
         switch self {
         case let .Some(value):
-            return value
+            return serializeObject(value)
         default:
             return NSNull()
         }
+    }
+}
+
+extension _PropertyPolicy {
+    private func flatten(obj: Any) -> Any {
+        if obj is _PropertyPolicy {
+            return flatten(obj)// recursive in case it contains a property policy
+        }
+        return obj
+    }
+    
+    public func serialize() -> Any {
+        return serializeObject(flatten(_object))
     }
 }
 
