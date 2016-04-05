@@ -1,6 +1,6 @@
 //
 //  String+Kakapo.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Joan Romano on 31/03/16.
 //  Copyright © 2016 devlucky. All rights reserved.

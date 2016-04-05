@@ -184,8 +184,8 @@
 		DE93529C1CAAF21300AD534C /* KakapoTests */ = {
 			isa = PBXGroup;
 			children = (
-				E3280B431CB02E2B00102333 /* checkUrlTest.swift */,
 				DE93529F1CAAF21300AD534C /* Info.plist */,
+				E3280B431CB02E2B00102333 /* checkUrlTest.swift */,
 				8B0B70BD1CAE69090039CC03 /* KakapoDBTests.swift */,
 				8BF0A17B1CB073E6008C5C16 /* KakapoServerTests.swift */,
 			);
