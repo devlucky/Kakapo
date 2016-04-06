@@ -59,12 +59,12 @@ private func serializeObject(value: Any) -> Any {
     if let value = value as? Serializable {
         return value.serialize()
     } else {
-        assert(value is AnyObject) // TODO: throw
+        assert(value is AnyObject)
         return value
     }
 }
 
-public func serialize(object: Serializable) -> [String: Any] {
+func serialize(object: Serializable) -> [String: Any] {
     var dictionary = [String: Any]()
     let mirror = Mirror(reflecting: object)
     for child in mirror.children {

@@ -43,11 +43,9 @@ class SerializeSpec: QuickSpec {
     
     struct Friend: Serializable {
         let friends: [User]
-        let dictionary: [String: [User]]
         
         init(friends: [User]) {
             self.friends = friends
-            self.dictionary = ["test": friends]
         }
     }
     
@@ -71,27 +69,56 @@ class SerializeSpec: QuickSpec {
             }
         }
         
-        describe("recursive serialization") {
-            func checkObject(objects: [Any]?) {
-                let first = objects?.first as? [String: Any]
-                expect(first?.keys.first).to(equal("name"))
-                expect(first?.values.first as? String).to(equal("Alex"))
-                expect(objects?.count).to(be(1))
+        describe("Array serialization") {
+            func checkObject(object: Any?) {
+                let obj = object as? [String: Any]
+                expect(obj?.keys.first).to(equal("name"))
+                expect(obj?.values.first as? String).to(equal("Alex"))
             }
             
             it("serialize arrays and entities inside it") {
-                let friend = Friend(friends: [user])
+                let friend = Friend(friends: [user, user, user])
                 let serialized = serialize(friend)
-                let friends = serialized["friends"] as? [Any]
-                checkObject(friends)
+                let friends = serialized["friends"] as! [Any]
+                expect(friends.count).to(be(3))
+                for friend in friends {
+                    checkObject(friend)
+                }
+            }
+
+            it("recursively serialize arrays") {
+                let container = MaybeEmpty([[user]])
+                let serialized = serialize(container)
+                let array = serialized["value"] as? [Any]
+                let innerArray = array?.first as? [Any]
+                checkObject(innerArray?.first)
+            }
+        }
+        
+        describe("Dictionary serialization") {
+            func checkObject(object: Any?) {
+                let obj = object as? [String: Any]
+                expect(obj?.keys.first).to(equal("name"))
+                expect(obj?.values.first as? String).to(equal("Alex"))
             }
             
             it("serialize dictionary and entities inside it") {
-                let friend = Friend(friends: [user])
-                let serialized = serialize(friend)
-                let dictionary = serialized["dictionary"] as? [String: Any]
-                let friends = dictionary?["test"] as? [Any]
-                checkObject(friends)
+                let dictionary = MaybeEmpty(["1":user, "2":user, "3":user])
+                let serialized = serialize(dictionary)["value"] as! [String: Any]
+                for (key, value) in serialized {
+                    expect(key).notTo(beNil())
+                    checkObject(value)
+                }
+            }
+            
+            it("recursively serialize dictionaries") {
+                let dictionary = MaybeEmpty(["1":["1":user]])
+                let serialized = serialize(dictionary)["value"] as! [String: Any]
+                let innerDict = serialized["1"] as! [String: Any]
+                for (key, value) in innerDict {
+                    expect(key).notTo(beNil())
+                    checkObject(value)
+                }
             }
         }
         
