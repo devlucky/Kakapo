@@ -19,42 +19,68 @@ enum KakapoDBError: ErrorType {
 
 class KakapoDB {
     
-    private var _uuid: Int32 = 0
-    var store: [String: [KStorable]] = [:]
+    private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
+    private var _uuid = -1
+    private var store: [String: [KStorable]] = [:]
     
     func create<T: KStorable>(_: T.Type, number: Int) {
-        var array = lookup(T)
-        for _ in 0..<number {
-            array.append(T(id: uuid()))
+        dispatch_barrier_async(queue) { [weak self] in
+            guard let weakSelf = self else { return }
+            
+            var array = weakSelf.lookup(T)
+            for _ in 0..<number {
+                array.append(T(id: weakSelf.uuid()))
+            }
+            weakSelf.store[String(T)] = array
         }
-        store[String(T)] = array
     }
     
     func insert<T: KStorable>(object: T) throws {
-        guard object.id > Int(_uuid) else {
+        guard object.id > _uuid else {
             throw KakapoDBError.InvalidId
         }
         
-        var array = lookup(T)
-        array.append(object)
-        store[String(T)] = array
-        _uuid = object.id + 1
+        dispatch_barrier_async(queue) { [weak self] in
+            guard let weakSelf = self else { return }
+            
+            var array = weakSelf.lookup(T)
+            array.append(object)
+            weakSelf.store[String(T)] = array
+            weakSelf._uuid = object.id + 1
+        }
     }
     
     func find<T: KStorable>(_: T.Type, id: Int) -> T? {
-        let array = lookup(T)
+        var result: T?
         
-        return array.filter{ $0.id == id }.flatMap{ $0 as? T }.first
+        dispatch_sync(queue) { [weak self] in
+            guard let weakSelf = self else { return }
+            
+            let array = weakSelf.lookup(T)
+            
+            result = array.filter{ $0.id == id }.flatMap{ $0 as? T }.first
+        }
+        
+        return result
     }
     
-    func filter<T: KStorable>(_: T.Type, @noescape includeElement: (T) -> Bool) -> [T] {
-        let array = lookup(T).map{$0 as! T}
-        return array.filter(includeElement)
+    func filter<T: KStorable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
+        var result: [T] = []
+        
+        dispatch_sync(queue) { [weak self] in
+            guard let weakSelf = self else { return }
+            
+            let array = weakSelf.lookup(T).map{$0 as! T}
+            
+            result = array.filter(includeElement)
+        }
+        
+        return result
     }
     
     private func uuid() -> Int {
-        OSAtomicIncrement32(&_uuid)
-        return Int(_uuid)
+        _uuid += 1
+        return _uuid
     }
     
     private func lookup<T: KStorable>(_: T.Type) -> [KStorable] {
