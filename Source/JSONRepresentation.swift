@@ -8,24 +8,6 @@
 
 import Foundation
 
-/**
- *  The entry point for serialization. The object will be Mirrored and its children serialized (Use CustomReflectable conformance for complex structures). You can create a concrete type that holds Serializable Objects.
- 
-   Example:
-    ```
-        JSONAPIRepresentation(User(name: ".."))
-    ```
- */
-protocol JSONRepresentation: Serializable {
-    func toJSON() -> String
-}
-
-extension JSONRepresentation {
-    func toJSON() -> String {
-        return "\(self)" // TODO: real serialization
-    }
-}
-
 public protocol JSONAPIEntity: Serializable {
     var id: Int { get }
     var type: String { get }
@@ -39,13 +21,13 @@ extension JSONAPIEntity {
     }
 }
 
-public struct JSONAPIRepresentation<T: JSONAPIEntity>: JSONRepresentation, CustomReflectable, CustomStringConvertible {
+public struct JSONAPIRepresentation<T: JSONAPIEntity>: Serializable, CustomReflectable, CustomStringConvertible {
 
     private let object: T
     
     public var description: String {
         get {
-            return Kakapo.serialize(self).description
+            return (Kakapo.serialize(self) as! [String: Any]).description
         }
     }
     

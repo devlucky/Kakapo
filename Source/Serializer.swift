@@ -12,23 +12,30 @@ import Foundation
  *  A protocol to serialize types into JSON representations
  */
 public protocol Serializable {
+    // empty protocol, Object will be Mirrored
+}
+
+public protocol CustomSerializable: Serializable {
     /**
      Serialize by returning a valid object
      
      - returns: You should return either another `Serializable` object (also `Array` or `Dictionary`) containing other Serializable objects or property list types that can be serialized into json (primitive types).
      */
-    func serialize() -> Any
+    func customSerialize() -> Any
 }
 
 extension Serializable {
-    public func serialize() -> Any {
+    func serialize() -> Any {
+        if let object = self as? CustomSerializable {
+            return object.customSerialize()
+        }
         return Kakapo.serialize(self)
     }
 }
 
-extension Array: Serializable {
+extension Array: CustomSerializable {
     // Array is serialized by creating an Array of its objects serialized
-    public func serialize() -> Any {
+    public func customSerialize() -> Any {
         var array = [Any]()
         for obj in self {
             array.append(serializeObject(obj))
@@ -37,9 +44,9 @@ extension Array: Serializable {
     }
 }
 
-extension Dictionary: Serializable {
+extension Dictionary: CustomSerializable {
     // Dictionary is serialized by creating a Dictionary with the same keys and values serialized
-    public func serialize() -> Any {
+    public func customSerialize() -> Any {
         var dictionary = [Key: Any]()
         for (key, value) in self {
             dictionary[key] = serializeObject(value)
@@ -48,9 +55,9 @@ extension Dictionary: Serializable {
     }
 }
 
-extension Optional: Serializable {
+extension Optional: CustomSerializable {
     // Optional serializes its inner object or NSNull if nil
-    public func serialize() -> Any {
+    public func customSerialize() -> Any {
         switch self {
         case let .Some(value):
             return serializeObject(value)
@@ -62,7 +69,7 @@ extension Optional: Serializable {
 
 extension _PropertyPolicy {
     // _PropertyPolicy serializes its inner object
-    public func serialize() -> Any {
+    public func customSerialize() -> Any {
         return serializeObject(_object)
     }
 }
@@ -78,15 +85,18 @@ private func serializeObject(value: Any) -> Any {
 }
 
 /**
- Serialize the object by mirroring it and using its properties as keys and serialize the values.
+ Serialize the object by mirroring it and using its properties as keys and serialize the values (unless `shouldMirrorToSerialize` return `false` then the custom implementation of `serialize()` is used).
  It recursively serialize the objects until it reaches primitive types, or fails if not possible. The final objects must be primitive types (property list compatible) or the serialization will fail because it can't be represented by JSON. This means that a `Serializable` objects must make sure that their properties are all `Serializable` or primitive types.
  
  - parameter object: A Serializable object
  
- - returns: An Dictionary that can be converted to JSON
+ - returns: A serialized object that may be convered to JSON, usually Array or Dictionary
  */
-func serialize(object: Serializable) -> [String: Any] {
-    // FIXME: Entry point can't be Array or Dictionary because their Mirror is not what we want. Use CustomReflectable entry points. [#14](https://github.com/devlucky/Kakapo/issues/14)
+func serialize(object: Serializable) -> Any {
+    if object is CustomSerializable {
+        return object.serialize()
+    }
+
     var dictionary = [String: Any]()
     let mirror = Mirror(reflecting: object)
     for child in mirror.children {
