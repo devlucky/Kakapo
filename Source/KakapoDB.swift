@@ -23,30 +23,36 @@ class KakapoDB {
     private var _uuid = -1
     private var store: [String: [KStorable]] = [:]
     
-    func create<T: KStorable>(_: T.Type, number: Int) {
-        dispatch_barrier_async(queue) { [weak self] in
+    func create<T: KStorable>(_: T.Type, number: Int) -> [KStorable] {
+        var result: [KStorable] = []
+        
+        dispatch_barrier_sync(queue) { [weak self] in
             guard let weakSelf = self else { return }
             
             var array = weakSelf.lookup(T)
-            for _ in 0..<number {
-                array.append(T(id: weakSelf.uuid()))
-            }
+            result = (0..<number).map { _ in T(id: weakSelf.uuid()) }
+            array.appendContentsOf(result)
             weakSelf.store[String(T)] = array
-        }
-    }
-    
-    func insert<T: KStorable>(object: T) throws {
-        guard object.id > _uuid else {
-            throw KakapoDBError.InvalidId
         }
         
+        return result
+    }
+    
+    func insert<T: KStorable>(handler: (Int) -> T) {
         dispatch_barrier_async(queue) { [weak self] in
             guard let weakSelf = self else { return }
             
-            var array = weakSelf.lookup(T)
-            array.append(object)
-            weakSelf.store[String(T)] = array
-            weakSelf._uuid = object.id + 1
+            let potentialId = weakSelf._uuid + 1
+            let object = handler(potentialId)
+            
+            if object.id < potentialId {
+                fatalError("Tried to insert an invalid id")
+            } else {
+                var array = weakSelf.lookup(T)
+                array.append(object)
+                weakSelf.store[String(T)] = array
+                weakSelf.uuid()
+            }
         }
     }
     

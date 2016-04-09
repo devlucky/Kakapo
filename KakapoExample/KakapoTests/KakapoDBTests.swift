@@ -66,14 +66,10 @@ class KakapoDBTests: QuickSpec {
                     sut.create(CommentFactory.self, number: 1)
                 })
                 
-                let userObjects = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    return true
-                })
+                let userObjects = sut.filter(UserFactory.self) { _ in return true }
                 let user = sut.find(UserFactory.self, id: 1)
                 
-                let commentObjects = sut.filter(CommentFactory.self, includeElement: { (_) -> Bool in
-                    return true
-                })
+                let commentObjects = sut.filter(CommentFactory.self) { _ in return true }
                 let comment = sut.find(CommentFactory.self, id: 1002)
                 
                 expect(user).toNot(beNil())
@@ -87,21 +83,36 @@ class KakapoDBTests: QuickSpec {
                 expect(commentObjects.count) == 5000
             }
             
-            it("should properly insert a large number of elements") {
-                dispatch_apply(1000, dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT), { i in
-                    let _ = try? sut.insert(UserFactory(firstName: "Name " + String(i), lastName: "Last Name " + String(i), age: i, id: i))
+            it("should properly create a large number of elements respecting the previous ones") {
+                let queue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT)
+                dispatch_apply(1000, queue, { i in
+                    sut.create(UserFactory.self, number: 1)
                 })
                 
-                let userObjects = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    return true
+                dispatch_apply(20000, queue, { i in
+                    sut.create(UserFactory.self, number: 1)
                 })
+                
+                let userObjects = sut.filter(UserFactory.self) { _ in return true }
+                
+                expect(userObjects.count) == 21000
+            }
+            
+            it("should properly insert a large number of elements") {
+                dispatch_apply(1000, dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT), { _ in
+                    sut.insert({ (id) -> UserFactory in
+                        return UserFactory(firstName: "Name " + String(id), lastName: "Last Name " + String(id), age: id, id: id)
+                    })
+                })
+                
+                let userObjects = sut.filter(UserFactory.self) { _ in return true }
                 let user = sut.find(UserFactory.self, id: 1)
                 
                 expect(user).toNot(beNil())
-                expect(user?.firstName).to(match("Name 1"))
-                expect(user?.lastName).to(match("Last Name 1"))
-                expect(user?.id) == 1
-                expect(user?.age) == 1
+                expect(user?.firstName).to(contain("Name 1"))
+                expect(user?.lastName).to(contain("Last Name 1"))
+                expect(user?.id).toNot(beNil())
+                expect(user?.age).toNot(beNil())
                 expect(userObjects.count) == 1000
             }
 
@@ -127,36 +138,47 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("shoud return the expected object after inserting it", closure: {
-                let _ = try? sut.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
+                sut.insert({ (id) -> UserFactory in
+                    return UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                })
                 
-                let user = sut.find(UserFactory.self, id: 90)
+                let user = sut.find(UserFactory.self, id: 0)
                 expect(user?.firstName).to(match("Hector"))
                 expect(user?.lastName).to(match("Zarco"))
-                expect(user?.id) == 90
+                expect(user?.id) == 0
             })
             
             it("should fail when inserting invalid id", closure: {
-                let _ = try? sut.insert(UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: 100))
+                sut.insert({ (id) -> UserFactory in
+                    return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id)
+                })
 
-                expect{ try sut.insert(UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: 99)) }.to(throwError())
+//                TODO: TEST THIS SOMEHOW
+//                expect{ sut.insert({ (id) -> UserFactory in
+//                    return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id-1)
+//                })}.to(throwError())
             })
-            
+
             it("should return the expected filtered element with valid id", closure: {
-                let _ = try? sut.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
+                sut.insert({ (id) -> UserFactory in
+                    UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                })
                 
                 let userArray = sut.filter(UserFactory.self, includeElement: { (item) -> Bool in
-                    return item.id == 90
+                    return item.id == 0
                 })
                 
                 expect(userArray.count) == 1
                 expect(userArray.first?.firstName).to(match("Hector"))
                 expect(userArray.first?.lastName).to(match("Zarco"))
-                expect(userArray.first?.id) == 90
+                expect(userArray.first?.id) == 0
             })
-            
+
             it("should return no objects for some inexisting filtering", closure: {
                 sut.create(UserFactory.self, number: 20)
-                let _ = try? sut.insert(UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: 90))
+                sut.insert({ (id) -> UserFactory in
+                    return UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                })
                 
                 let userArray = sut.filter(UserFactory.self, includeElement: { (item) -> Bool in
                     return item.lastName == "Manzella"
