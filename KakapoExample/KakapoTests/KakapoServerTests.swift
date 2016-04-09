@@ -27,22 +27,22 @@ class KakapoServerTests: QuickSpec {
                 KakapoServer.disable()
             })
             
-            it("should call the handler when requesting a registered url") {
-                var info: URLInfo? = nil
-                var responseURL: NSURL? = nil
-                
-                KakapoServer.get("/users/:id") { request in
-                    info = request.info
-                }
-                
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/1")!) { (_, response, _) in
-                    responseURL = response?.URL
-                }.resume()
-                
-                expect(info?.params).toEventually(equal(["id" : "1"]))
-                expect(info?.queryParams).toEventually(equal([ : ]))
-                expect(responseURL?.absoluteString).toEventually(equal("/users/1"))
-            }
+//            it("should call the handler when requesting a registered url") {
+//                var info: URLInfo? = nil
+//                var responseURL: NSURL? = nil
+//                
+//                KakapoServer.get("/users/:id") { request in
+//                    info = request.info
+//                }
+//                
+//                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/1")!) { (_, response, _) in
+//                    responseURL = response?.URL
+//                }.resume()
+//                
+//                expect(info?.params).toEventually(equal(["id" : "1"]))
+//                expect(info?.queryParams).toEventually(equal([ : ]))
+//                expect(responseURL?.absoluteString).toEventually(equal("/users/1"))
+//            }
             
 //            it("should call the handler when requesting multiple registered urls") {
 //                var usersInfo: URLInfo? = nil
@@ -122,17 +122,17 @@ class KakapoServerTests: QuickSpec {
                 request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
-//                NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
-//                    print("Response: \(response)")
-//                    let strData = NSString(data: data!, encoding: NSUTF8StringEncoding)
-//                    print("Body: \(strData)")
-//                    let json = try? NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
-//                    
-//                    print(json ?? "")
-//                    
-//                }).resume()
+                NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
+                    print("Response: \(response)")
+                    let strData = NSString(data: data!, encoding: NSUTF8StringEncoding)
+                    print("Body: \(strData)")
+                    let json = try? NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+                    
+                    print(json ?? "")
+                    
+                }).resume()
                 
-                NSURLConnection(request: request, delegate: nil)
+//                NSURLConnection(request: request, delegate: nil)
 //                [NSURLConnection connectionWithRequest:request delegate:nil];
                 
                 expect(info?.params).toEventually(equal(["id" : "1"]))
