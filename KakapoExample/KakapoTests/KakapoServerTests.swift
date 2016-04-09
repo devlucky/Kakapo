@@ -107,6 +107,84 @@ class KakapoServerTests: QuickSpec {
                 expect(responseURL?.absoluteString).toEventually(beNil())
                 expect(responseError).toNotEventually(beNil())
             }
+            
+            it("should not call the handler when requesting a registered url but using a different HTTPMethod") {
+                var info: URLInfo? = nil
+                var responseURL: NSURL? = NSURL(string: "")
+                var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
+                
+                KakapoServer.del("/users/:id") { request in
+                    // Shouldn't reach here
+                    info = request.info
+                }
+                
+                let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
+                request.HTTPMethod = "PUT"
+                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, response, error) in
+                    // Response will be nil since error
+                    responseURL = response?.URL
+                    responseError = error
+                    }.resume()
+                
+                expect(info).toEventually(beNil())
+                expect(responseURL).toEventually(beNil())
+                expect(responseError).toNotEventually(beNil())
+            }
+            
+            it("should give back the body in the handler when a NSURLSession request has it") {
+                var info: URLInfo? = nil
+                var bodyData: NSData? = nil
+                var bodyDictionary: NSDictionary? = nil
+                
+                let request = NSMutableURLRequest(URL: NSURL(string: "/user_equipment/1")!)
+                request.HTTPMethod = "POST"
+                let params = ["username":"test", "password":"pass"] as Dictionary<String, String>
+                request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                request.addValue("application/json", forHTTPHeaderField: "Accept")
+                
+                KakapoServer.post("/user_equipment/:id") { request in
+                    info = request.info
+                    bodyData = request.HTTPBody
+                    bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
+                }
+                
+                
+                NSURLSession.sharedSession().dataTaskWithRequest(request){ (_, _, _) in }.resume()
+                
+                expect(info?.params).toEventually(equal(["id" : "1"]))
+                expect(info?.queryParams).toEventually(equal([ : ]))
+                expect(bodyData).toNotEventually(beNil())
+                expect(bodyDictionary!["username"] as? String).toEventually(equal("test"))
+                expect(bodyDictionary!["password"] as? String).toEventually(equal("pass"))
+            }
+            
+            it("should give back the body in the handler when a NSURLConnection request has is") {
+                var info: URLInfo? = nil
+                var bodyData: NSData? = nil
+                var bodyDictionary: NSDictionary? = nil
+                
+                let request = NSMutableURLRequest(URL: NSURL(string: "/user_equipment/1")!)
+                request.HTTPMethod = "PUT"
+                let params = ["username":"manzo", "token":"power"] as Dictionary<String, String>
+                request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                request.addValue("application/json", forHTTPHeaderField: "Accept")
+                
+                KakapoServer.put("/user_equipment/:id") { request in
+                    info = request.info
+                    bodyData = request.HTTPBody
+                    bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
+                }
+                
+                let _ = NSURLConnection(request: request, delegate: nil)
+                
+                expect(info?.params).toEventually(equal(["id" : "1"]))
+                expect(info?.queryParams).toEventually(equal([ : ]))
+                expect(bodyData).toNotEventually(beNil())
+                expect(bodyDictionary!["username"] as? String).toEventually(equal("manzo"))
+                expect(bodyDictionary!["token"] as? String).toEventually(equal("power"))
+            }
         }
     }
 

@@ -8,6 +8,51 @@
 
 import Foundation
 
+private let RequestHTTPBodyKey = "kkp_requestHTTPBody"
+
+/**
+ We swizzle NSURLRequest to be able to use the HTTPBody when handling NSURLSession. If a custom NSURLProtocol is provided to NSURLSession, 
+ even if the NSURLRequest has an HTTPBody non-nil when the request is passed to the NRURLProtocol (such as canInitWithRequest: or 
+ canonicalRequestForRequest:) has an empty body.
+ 
+ **[See radar](http://openradar.appspot.com/15993891)**
+ **[See issue #9](https://github.com/devlucky/Kakapo/issues/9)**
+ **[See relevant issue](https://github.com/AliSoftware/OHHTTPStubs/issues/52)**
+ */
+extension NSURLRequest {
+    public override class func initialize() {
+        struct Static {
+            static var token: dispatch_once_t = 0
+        }
+        
+        dispatch_once(&Static.token) {
+            let originalSelector = Selector("copy") //#selector(copy as () -> AnyObject)
+            let swizzledSelector = Selector("kkp_copy") //#selector(kkp_copy)
+            
+            let originalMethod = class_getInstanceMethod(self, originalSelector)
+            let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+            
+            let didAddMethod = class_addMethod(self, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
+            
+            if didAddMethod {
+                class_replaceMethod(self, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
+            } else {
+                method_exchangeImplementations(originalMethod, swizzledMethod)
+            }
+        }
+    }
+    
+    // MARK: - Method Swizzling
+    func kkp_copy() -> AnyObject {
+        if let request = self as? NSMutableURLRequest,
+               body = HTTPBody {
+            NSURLProtocol.setProperty(body, forKey: RequestHTTPBodyKey, inRequest: request)
+        }
+        
+        return self.kkp_copy()
+    }
+}
+
 class KakapoServer: NSURLProtocol {
     
     typealias Route = (method: HTTPMethod, handler: (request: Request) -> ())
@@ -17,8 +62,8 @@ class KakapoServer: NSURLProtocol {
     }
     
     struct Request {
-        let urlString: String
         let info: URLInfo
+        let HTTPBody: NSData?
     }
     
     private static var routes: [String : Route] = [:]
@@ -48,16 +93,21 @@ class KakapoServer: NSURLProtocol {
         return request
     }
     
-    override class func requestIsCacheEquivalent(a: NSURLRequest, toRequest b: NSURLRequest) -> Bool {
-        return false
-    }
-    
     override func startLoading() {
         guard let requestString = request.URL?.absoluteString else { return }
+        var dataBody: NSData?
         
         for (key, object) in KakapoServer.routes {
             if let info = parseUrl(key, requestURL: requestString) {
-                object.handler(request: Request(urlString: requestString, info: info))
+                
+                if let dataFromNSURLRequest = request.HTTPBody {
+                    dataBody = dataFromNSURLRequest
+                } else if let dataFromProtocol = NSURLProtocol.propertyForKey(RequestHTTPBodyKey, inRequest: request) as? NSData {
+                    // Using NSURLProtocol property after swizzling NSURLRequest here
+                    dataBody = dataFromProtocol
+                }
+                
+                object.handler(request: Request(info: info, HTTPBody: dataBody))
             }
         }
         
