@@ -21,7 +21,7 @@ public protocol Serializable {
 }
 
 extension Serializable {
-    func serialize() -> Any {
+    public func serialize() -> Any {
         return Kakapo.serialize(self)
     }
 }
