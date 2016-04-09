@@ -17,6 +17,12 @@ enum KakapoDBError: ErrorType {
     case InvalidId
 }
 
+/**
+ We use an array box because the array is stored in a Dictionary and we want to mutate it.
+ Without a box the Array has to be assigned to a var to be mutated therefore is not uniquely referenced and we loose the copy-on-write optimization; performance would be quite poor for multiple insertion (about 97%).
+ 
+ **[See issue #17](https://github.com/devlucky/Kakapo/issues/17)**
+*/
 private final class ArrayBox<T> {
     private init(_ value: [T]) {
         self.value = value
@@ -31,7 +37,7 @@ class KakapoDB {
     private var _uuid = -1
     private var store: [String: ArrayBox<KStorable>] = [:]
     
-    func create<T: KStorable>(_: T.Type, number: Int) -> [KStorable] {
+    func create<T: KStorable>(_: T.Type, number: Int = 1) -> [KStorable] {
         var result: [KStorable] = []
         
         dispatch_barrier_sync(queue) { [weak self] in
