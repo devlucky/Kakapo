@@ -70,16 +70,22 @@ class KakapoDBTests: QuickSpec {
                 let user = sut.find(UserFactory.self, id: 1)
                 
                 let commentObjects = sut.findAll(CommentFactory.self)
-                let comment = sut.find(CommentFactory.self, id: 1002)
+                let aComment = sut.find(CommentFactory.self, id: 1000)
+                let anotherComment = sut.find(CommentFactory.self, id: 1002)
                 
                 expect(user).toNot(beNil())
                 expect(user?.firstName).toNot(beNil())
                 expect(user?.id) == 1
                 expect(userObjects.count) == 1000
                 
-                expect(comment).toNot(beNil())
-                expect(comment?.text).toNot(beNil())
-                expect(comment?.id) == 1002
+                expect(aComment).toNot(beNil())
+                expect(aComment?.text).toNot(beNil())
+                expect(aComment?.id) == 1000
+                
+                expect(anotherComment).toNot(beNil())
+                expect(anotherComment?.text).toNot(beNil())
+                expect(anotherComment?.id) == 1002
+                
                 expect(commentObjects.count) == 5000
             }
             
