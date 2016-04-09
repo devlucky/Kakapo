@@ -108,6 +108,30 @@ class KakapoServerTests: QuickSpec {
                 expect(responseError).toNotEventually(beNil())
             }
             
+            it("should not call the handler when requesting a registered url but passing different HTTPMethod") {
+                var info: URLInfo? = nil
+                var responseURL: NSURL? = NSURL(string: "")
+                var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
+                
+                KakapoServer.del("/users/:id") { request in
+                    // Shouldn't reach here
+                    info = request.info
+                }
+                
+                let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
+                request.HTTPMethod = "PUT"
+                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, response, error) in
+                    // Response will be nil since error
+                    responseURL = response?.URL
+                    responseError = error
+                    }.resume()
+                
+                expect(info?.params).toEventually(beNil())
+                expect(info?.queryParams).toEventually(beNil())
+                expect(responseURL?.absoluteString).toEventually(beNil())
+                expect(responseError).toNotEventually(beNil())
+            }
+            
             it("should give back the body in the handler when the request is setting it - NSURLSession") {
                 var info: URLInfo? = nil
                 var bodyData: NSData? = nil
