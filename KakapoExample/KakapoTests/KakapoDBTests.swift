@@ -56,7 +56,7 @@ class KakapoDBTests: QuickSpec {
                 sut = KakapoDB()
             })
             
-            it("should properly create a large number of elements") {
+            it("should create a large number of elements") {
                 let queue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT)
                 dispatch_apply(1000, queue, { i in
                     sut.create(UserFactory.self, number: 1)
@@ -66,10 +66,10 @@ class KakapoDBTests: QuickSpec {
                     sut.create(CommentFactory.self, number: 1)
                 })
                 
-                let userObjects = sut.filter(UserFactory.self) { _ in return true }
+                let userObjects = sut.findAll(UserFactory.self)
                 let user = sut.find(UserFactory.self, id: 1)
                 
-                let commentObjects = sut.filter(CommentFactory.self) { _ in return true }
+                let commentObjects = sut.findAll(CommentFactory.self)
                 let comment = sut.find(CommentFactory.self, id: 1002)
                 
                 expect(user).toNot(beNil())
@@ -83,29 +83,27 @@ class KakapoDBTests: QuickSpec {
                 expect(commentObjects.count) == 5000
             }
             
-            it("should properly create a large number of elements respecting the previous ones") {
+            it("should create a large number of elements respecting the previous ones") {
                 let queue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT)
                 dispatch_apply(1000, queue, { i in
                     sut.create(UserFactory.self, number: 1)
                 })
                 
-                dispatch_apply(20000, queue, { i in
-                    sut.create(UserFactory.self, number: 1)
-                })
+                let createdObjects = sut.create(UserFactory.self, number: 20000)
+                let totalObjects = sut.findAll(UserFactory.self)
                 
-                let userObjects = sut.filter(UserFactory.self) { _ in return true }
-                
-                expect(userObjects.count) == 21000
+                expect(createdObjects.count) == 20000
+                expect(totalObjects.count) == 21000
             }
             
-            it("should properly insert a large number of elements") {
+            it("should insert a large number of elements") {
                 dispatch_apply(1000, dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT), { _ in
                     sut.insert({ (id) -> UserFactory in
                         return UserFactory(firstName: "Name " + String(id), lastName: "Last Name " + String(id), age: id, id: id)
                     })
                 })
                 
-                let userObjects = sut.filter(UserFactory.self) { _ in return true }
+                let userObjects = sut.findAll(UserFactory.self)
                 let user = sut.find(UserFactory.self, id: 1)
                 
                 expect(user).toNot(beNil())
@@ -153,7 +151,7 @@ class KakapoDBTests: QuickSpec {
                     return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id)
                 })
 
-//                TODO: TEST THIS SOMEHOW
+//                TODO: TEST THIS FATAL ERROR
 //                expect{ sut.insert({ (id) -> UserFactory in
 //                    return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id-1)
 //                })}.to(throwError())
