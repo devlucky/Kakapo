@@ -8,7 +8,7 @@
 
 import Foundation
 
-private let kkp_RequestHTTPBodyKey = "kkp_requestHTTPBody"
+private let RequestHTTPBodyKey = "kkp_requestHTTPBody"
 
 /**
  We swizzle NSURLRequest to be able to use the HTTPBody when handling NSURLSession. If a custom NSURLProtocol is provided to NSURLSession, 
@@ -41,13 +41,12 @@ extension NSURLRequest {
             }
         }
     }
-
     
     // MARK: - Method Swizzling
     func kkp_copy() -> AnyObject {
         if let request = self as? NSMutableURLRequest,
                body = HTTPBody {
-            NSURLProtocol.setProperty(body, forKey: kkp_RequestHTTPBodyKey, inRequest: request)
+            NSURLProtocol.setProperty(body, forKey: RequestHTTPBodyKey, inRequest: request)
         }
         
         return self.kkp_copy()
@@ -101,10 +100,11 @@ class KakapoServer: NSURLProtocol {
         for (key, object) in KakapoServer.routes {
             if let info = parseUrl(key, requestURL: requestString) {
                 
-                if let dataFromProtocol = NSURLProtocol.propertyForKey(kkp_RequestHTTPBodyKey, inRequest: request) as? NSData {
-                    dataBody = dataFromProtocol
-                } else if let dataFromNSURLRequest = request.HTTPBody {
+                if let dataFromNSURLRequest = request.HTTPBody {
                     dataBody = dataFromNSURLRequest
+                } else if let dataFromProtocol = NSURLProtocol.propertyForKey(RequestHTTPBodyKey, inRequest: request) as? NSData {
+                    // Using NSURLProtocol property after swizzling NSURLRequest here
+                    dataBody = dataFromProtocol
                 }
                 
                 object.handler(request: Request(info: info, HTTPBody: dataBody))

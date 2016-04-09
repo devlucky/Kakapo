@@ -108,7 +108,7 @@ class KakapoServerTests: QuickSpec {
                 expect(responseError).toNotEventually(beNil())
             }
             
-            it("should not call the handler when requesting a registered url but passing different HTTPMethod") {
+            it("should not call the handler when requesting a registered url but using a different HTTPMethod") {
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = NSURL(string: "")
                 var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
@@ -126,13 +126,12 @@ class KakapoServerTests: QuickSpec {
                     responseError = error
                     }.resume()
                 
-                expect(info?.params).toEventually(beNil())
-                expect(info?.queryParams).toEventually(beNil())
-                expect(responseURL?.absoluteString).toEventually(beNil())
+                expect(info).toEventually(beNil())
+                expect(responseURL).toEventually(beNil())
                 expect(responseError).toNotEventually(beNil())
             }
             
-            it("should give back the body in the handler when the request is setting it - NSURLSession") {
+            it("should give back the body in the handler when a NSURLSession request has it") {
                 var info: URLInfo? = nil
                 var bodyData: NSData? = nil
                 var bodyDictionary: NSDictionary? = nil
@@ -156,10 +155,11 @@ class KakapoServerTests: QuickSpec {
                 expect(info?.params).toEventually(equal(["id" : "1"]))
                 expect(info?.queryParams).toEventually(equal([ : ]))
                 expect(bodyData).toNotEventually(beNil())
-                expect(bodyDictionary).toNotEventually(beNil())
+                expect(bodyDictionary!["username"] as? String).toEventually(equal("test"))
+                expect(bodyDictionary!["password"] as? String).toEventually(equal("pass"))
             }
             
-            it("should give back the body in the handler when the request is setting it - NSURLConnection") {
+            it("should give back the body in the handler when a NSURLConnection request has is") {
                 var info: URLInfo? = nil
                 var bodyData: NSData? = nil
                 var bodyDictionary: NSDictionary? = nil
@@ -177,12 +177,13 @@ class KakapoServerTests: QuickSpec {
                     bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
                 }
                 
-                NSURLConnection(request: request, delegate: nil)
+                let _ = NSURLConnection(request: request, delegate: nil)
                 
                 expect(info?.params).toEventually(equal(["id" : "1"]))
                 expect(info?.queryParams).toEventually(equal([ : ]))
                 expect(bodyData).toNotEventually(beNil())
-                expect(bodyDictionary).toNotEventually(beNil())
+                expect(bodyDictionary!["username"] as? String).toEventually(equal("manzo"))
+                expect(bodyDictionary!["token"] as? String).toEventually(equal("power"))
             }
         }
     }
