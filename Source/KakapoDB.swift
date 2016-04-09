@@ -37,10 +37,8 @@ class KakapoDB {
         dispatch_barrier_sync(queue) { [weak self] in
             guard let weakSelf = self else { return }
             
-            let arrayBox = weakSelf.lookup(T)
             result = (0..<number).map { _ in T(id: weakSelf.uuid()) }
-            arrayBox.value.appendContentsOf(result)
-            weakSelf.store[String(T)] = arrayBox
+            weakSelf.lookup(T).value.appendContentsOf(result)
         }
         
         return result
@@ -56,9 +54,7 @@ class KakapoDB {
             if object.id < potentialId {
                 fatalError("Tried to insert an invalid id")
             } else {
-                let arrayBox = weakSelf.lookup(T)
-                arrayBox.value.append(object)
-                weakSelf.store[String(T)] = arrayBox
+                weakSelf.lookup(T).value.append(object)
                 weakSelf.uuid()
             }
         }
@@ -106,6 +102,15 @@ class KakapoDB {
     }
     
     private func lookup<T: KStorable>(_: T.Type) -> ArrayBox<KStorable> {
-        return store[String(T)] ?? ArrayBox<KStorable>([])
+        var boxedArray: ArrayBox<KStorable>
+        
+        if let storedBoxedArray = store[String(T)] {
+            boxedArray = storedBoxedArray
+        } else {
+            boxedArray = ArrayBox<KStorable>([])
+            store[String(T)] = boxedArray
+        }
+        
+        return boxedArray
     }
 }
