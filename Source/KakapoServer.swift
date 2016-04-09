@@ -1,6 +1,6 @@
 //
 //  KakapoServer.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Joan Romano on 31/03/16.
 //  Copyright © 2016 devlucky. All rights reserved.
@@ -47,8 +47,7 @@ extension NSURLRequest {
 
 class KakapoServer: NSURLProtocol {
     
-    typealias LookupObject = (method: HTTPMethod,
-                              handler: (request: Request) -> ())
+    typealias Route = (method: HTTPMethod, handler: (request: Request) -> ())
     
     enum HTTPMethod: String {
         case GET, POST, PUT, DELETE
@@ -59,7 +58,7 @@ class KakapoServer: NSURLProtocol {
         let HTTPBody: NSData?
     }
     
-    private static var routes: [String : LookupObject] = [:]
+    private static var routes: [String : Route] = [:]
     
     class func enable() {
         NSURLProtocol.registerClass(self)
@@ -86,17 +85,18 @@ class KakapoServer: NSURLProtocol {
         return request
     }
     
-    override class func requestIsCacheEquivalent(a: NSURLRequest, toRequest b: NSURLRequest) -> Bool {
-        return false
-    }
-    
     override func startLoading() {
         guard let requestString = request.URL?.absoluteString else { return }
+        var dataBody: NSData?
         
         for (key, object) in KakapoServer.routes {
             if let info = parseUrl(key, requestURL: requestString) {
                 
-                let dataBody = NSURLProtocol.propertyForKey(kkp_RequestHTTPBodyKey, inRequest: request) as? NSData
+                if let dataFromProtocol = NSURLProtocol.propertyForKey(kkp_RequestHTTPBodyKey, inRequest: request) as? NSData {
+                    dataBody = dataFromProtocol
+                } else if let dataFromNSURLRequest = request.HTTPBody {
+                    dataBody = dataFromNSURLRequest
+                }
                 
                 object.handler(request: Request(info: info, HTTPBody: dataBody))
             }
