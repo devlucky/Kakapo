@@ -10,6 +10,15 @@ import Foundation
 
 private let kkp_RequestHTTPBodyKey = "kkp_requestHTTPBody"
 
+/**
+ We swizzle NSURLRequest to be able to use the HTTPBody when handling NSURLSession. If a custom NSURLProtocol is provided to NSURLSession, 
+ even if the NSURLRequest has an HTTPBody non-nil when the request is passed to the NRURLProtocol (such as canInitWithRequest: or 
+ canonicalRequestForRequest:) has an empty body.
+ 
+ **[See radar](http://openradar.appspot.com/15993891)**
+ **[See issue #9](https://github.com/devlucky/Kakapo/issues/9)**
+ **[See relevant issue](https://github.com/AliSoftware/OHHTTPStubs/issues/52)**
+ */
 extension NSURLRequest {
     public override class func initialize() {
         struct Static {
