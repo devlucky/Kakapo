@@ -59,11 +59,11 @@ class KakapoDBTests: QuickSpec {
             it("should create a large number of elements") {
                 let queue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT)
                 dispatch_apply(1000, queue, { i in
-                    sut.create(UserFactory.self, number: 1)
+                    sut.create(UserFactory.self)
                 })
                 
                 dispatch_apply(5000, queue, { i in
-                    sut.create(CommentFactory.self, number: 1)
+                    sut.create(CommentFactory.self)
                 })
                 
                 let userObjects = sut.findAll(UserFactory.self)
@@ -92,7 +92,7 @@ class KakapoDBTests: QuickSpec {
             it("should create a large number of elements respecting the previous ones") {
                 let queue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT)
                 dispatch_apply(1000, queue, { i in
-                    sut.create(UserFactory.self, number: 1)
+                    sut.create(UserFactory.self)
                 })
                 
                 let createdObjects = sut.create(UserFactory.self, number: 20000)
@@ -141,7 +141,7 @@ class KakapoDBTests: QuickSpec {
                 expect(comment).toNot(beNil())
             }
             
-            it("shoud return the expected object after inserting it", closure: {
+            it("shoud return the expected object after inserting it") {
                 sut.insert({ (id) -> UserFactory in
                     return UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
                 })
@@ -150,9 +150,9 @@ class KakapoDBTests: QuickSpec {
                 expect(user?.firstName).to(match("Hector"))
                 expect(user?.lastName).to(match("Zarco"))
                 expect(user?.id) == 0
-            })
+            }
             
-            it("should fail when inserting invalid id", closure: {
+            it("should fail when inserting invalid id") {
                 sut.insert({ (id) -> UserFactory in
                     return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id)
                 })
@@ -161,9 +161,9 @@ class KakapoDBTests: QuickSpec {
 //                expect{ sut.insert({ (id) -> UserFactory in
 //                    return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id-1)
 //                })}.to(throwError())
-            })
+            }
 
-            it("should return the expected filtered element with valid id", closure: {
+            it("should return the expected filtered element with valid id") {
                 sut.insert({ (id) -> UserFactory in
                     UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
                 })
@@ -176,9 +176,9 @@ class KakapoDBTests: QuickSpec {
                 expect(userArray.first?.firstName).to(match("Hector"))
                 expect(userArray.first?.lastName).to(match("Zarco"))
                 expect(userArray.first?.id) == 0
-            })
+            }
 
-            it("should return no objects for some inexisting filtering", closure: {
+            it("should return no objects for some inexisting filtering") {
                 sut.create(UserFactory.self, number: 20)
                 sut.insert({ (id) -> UserFactory in
                     return UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
@@ -189,8 +189,18 @@ class KakapoDBTests: QuickSpec {
                 })
                 
                 expect(userArray.count) == 0
-            })
+            }
+        }
+    }
+}
 
+class KakapoDBPerformaceTests: XCTestCase {
+    func testMultipleSingleCreationPerformance() {
+        let sut = KakapoDB()
+        measureBlock {
+            dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { _ in
+                sut.create(UserFactory.self)
+            })
         }
     }
 }
