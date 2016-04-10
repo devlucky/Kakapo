@@ -54,13 +54,13 @@ class SerializeSpec: QuickSpec {
         
         describe("Serialization of Serializable entities") {
             it("produce a dictionary where properties are keys and values are values") {
-                let serialized = serialize(user) as! [String: Any]
+                let serialized = user.serialize() as! [String: Any]
                 expect(serialized["name"] as? String).to(equal("Alex"))
             }
             
             it("serialize arrays") {
                 let friend = Friend(friends: [user])
-                let serialized = serialize(friend) as! [String: Any]
+                let serialized = friend.serialize() as! [String: Any]
                 let friends = serialized["friends"] as? [Any]
                 let first = friends?.first as? [String: Any]
                 expect(first?.keys.first).to(equal("name"))
@@ -78,7 +78,7 @@ class SerializeSpec: QuickSpec {
             
             it("serialize arrays and entities inside it") {
                 let friend = Friend(friends: [user, user, user])
-                let serialized = serialize(friend) as! [String: Any]
+                let serialized = friend.serialize() as! [String: Any]
                 let friends = serialized["friends"] as! [Any]
                 expect(friends.count).to(be(3))
                 for friend in friends {
@@ -88,7 +88,7 @@ class SerializeSpec: QuickSpec {
 
             it("recursively serialize arrays") {
                 let container = MaybeEmpty([[user]])
-                let serialized = serialize(container) as! [String: Any]
+                let serialized = container.serialize() as! [String: Any]
                 let array = serialized["value"] as? [Any]
                 let innerArray = array?.first as? [Any]
                 checkObject(innerArray?.first)
@@ -104,7 +104,7 @@ class SerializeSpec: QuickSpec {
             
             it("serialize dictionary and entities inside it") {
                 let dictionary = MaybeEmpty(["1":user, "2":user, "3":user])
-                let serialized = serialize(dictionary) as! [String: Any]
+                let serialized = dictionary.serialize() as! [String: Any]
                 for (key, value) in serialized["value"] as! [String: Any] {
                     expect(key).notTo(beNil())
                     checkObject(value)
@@ -113,7 +113,7 @@ class SerializeSpec: QuickSpec {
             
             it("recursively serialize dictionaries") {
                 let dictionary = MaybeEmpty(["1":["1":user]])
-                let serialized = serialize(dictionary) as! [String: Any]
+                let serialized = dictionary.serialize() as! [String: Any]
                 let value = serialized["value"] as! [String: Any]
                 let innerDict = value["1"] as! [String: Any]
                 for (key, value) in innerDict {
@@ -126,27 +126,27 @@ class SerializeSpec: QuickSpec {
         describe("Property policy serialization") { 
             it("is not serialized if nil") {
                 let empty = MaybeEmpty(IgnorableNilProperty<Int>(nil))
-                let serialized = serialize(empty) as! [String: Any]
+                let serialized = empty.serialize() as! [String: Any]
                 expect(serialized.count).to(be(0))
             }
             
             it("is serialized if not nil") {
                 let notEmpty = MaybeEmpty(IgnorableNilProperty(1))
-                let serialized = serialize(notEmpty) as! [String: Any]
+                let serialized = notEmpty.serialize() as! [String: Any]
                 let value = serialized["value"] as? Int
                 expect(value).to(be(1))
             }
             
             it("recursively serialize the object if needed") {
                 let notEmpty = MaybeEmpty(IgnorableNilProperty(user))
-                let serialized = serialize(notEmpty) as! [String: Any]
+                let serialized = notEmpty.serialize() as! [String: Any]
                 let value = serialized["value"] as? [String: Any]
                 expect(value?["name"] as? String).to(equal("Alex"))
             }
 
             it("recursively serialize IgnorableNilProperties") {
                 let notEmpty = MaybeEmpty(IgnorableNilProperty(IgnorableNilProperty(1)))
-                let serialized = serialize(notEmpty) as! [String: Any]
+                let serialized = notEmpty.serialize() as! [String: Any]
                 let value = serialized["value"] as? Int
                 expect(value).to(be(1))
             }
@@ -156,26 +156,26 @@ class SerializeSpec: QuickSpec {
             it("serialize nil") {
                 let nilInt: Int? = nil
                 let optional = MaybeEmpty(nilInt)
-                let serialized = serialize(optional) as! [String: Any]
+                let serialized = optional.serialize() as! [String: Any]
                 expect(serialized["value"] as? NSNull).to(be(NSNull()))
             }
             
             it("serialize an optional") {
                 let optional = MaybeEmpty(Optional.Some(1))
-                let serialized = serialize(optional) as! [String: Any] as? [String: Int]
+                let serialized = optional.serialize() as! [String: Any] as? [String: Int]
                 expect(serialized?["value"]).to(be(1))
             }
             
             it("recursively serialize the value") {
                 let optional = MaybeEmpty(Optional.Some(user))
-                let serialized = serialize(optional) as! [String: Any]
+                let serialized = optional.serialize() as! [String: Any]
                 let value = serialized["value"] as? [String: Any]
                 expect(value?["name"] as? String).to(equal("Alex"))
             }
             
             it("recursively serialize Optionals") {
                 let optional = MaybeEmpty(Optional.Some(Optional.Some(1)))
-                let serialized = serialize(optional) as! [String: Any] as? [String: Int]
+                let serialized = optional.serialize() as! [String: Any] as? [String: Int]
                 expect(serialized?["value"]).to(be(1))
             }
         }

@@ -92,10 +92,8 @@ private func serializeObject(value: Any) -> Any {
  
  - returns: A serialized object that may be convered to JSON, usually Array or Dictionary
  */
-func serialize(object: Serializable) -> Any {
-    if object is CustomSerializable {
-        return object.serialize()
-    }
+private func serialize(object: Serializable) -> Any {
+    assert(!(object is CustomSerializable))
 
     var dictionary = [String: Any]()
     let mirror = Mirror(reflecting: object)

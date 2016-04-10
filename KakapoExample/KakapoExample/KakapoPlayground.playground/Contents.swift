@@ -9,8 +9,8 @@ struct User: JSONAPIEntity {
 }
 
 let json = JSONAPIRepresentation(User(id: 1, name: "Alex"))
+json.serialize()
 
-serialize(json)
 
 struct PlainRepresentation<T>: Serializable, CustomReflectable {
     let object: T
@@ -36,15 +36,15 @@ struct CustomRepresentation<T>: Serializable, CustomReflectable {
     }
 }
 
-serialize(User(id: 2, name: "3"))
+User(id: 2, name: "3").serialize()
 
-serialize(PlainRepresentation([User(id: 1, name: "Alex")], key: "users"))
+PlainRepresentation([User(id: 1, name: "Alex")], key: "users").serialize()
 
 //func serialize(serializable: Serializable, key: String) -> [String: Any] {
 //    return serialize(PlainRepresentation(serializable, key: key))
 //}
 
-serialize(CustomRepresentation(top: [User(id: 1, name: "Alex")], bottom: [User(id: 1, name: "Alex")], error: "404"))
+CustomRepresentation(top: [User(id: 1, name: "Alex")], bottom: [User(id: 1, name: "Alex")], error: "404").serialize()
 
 
 KakapoServer.get("") { (request) in
@@ -52,7 +52,7 @@ KakapoServer.get("") { (request) in
 }
 
 
-serialize([User(id: 1, name: "Alex")])
-serialize(["test": [User(id: 1, name: "Alex")]])
-serialize(Optional([User(id: 1, name: "Alex")]))
-serialize(IgnorableNilProperty([User(id: 1, name: "Alex")]))
+[User(id: 1, name: "Alex")].serialize()
+["test": [User(id: 1, name: "Alex")]].serialize()
+Optional([User(id: 1, name: "Alex")]).serialize()
+IgnorableNilProperty([User(id: 1, name: "Alex")]).serialize()

@@ -27,7 +27,7 @@ public struct JSONAPIRepresentation<T: JSONAPIEntity>: Serializable, CustomRefle
     
     public var description: String {
         get {
-            return (Kakapo.serialize(self) as! [String: Any]).description
+            return (self.serialize() as! [String: Any]).description
         }
     }
     
