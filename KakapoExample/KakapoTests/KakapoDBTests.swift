@@ -11,7 +11,7 @@ import Nimble
 
 @testable import Kakapo
 
-struct UserFactory: KStorable {
+struct UserFactory: Storable, Serializable {
     let firstName: String
     let lastName: String
     let age: Int
@@ -29,7 +29,7 @@ struct UserFactory: KStorable {
     }
 }
 
-struct CommentFactory: KStorable {
+struct CommentFactory: Storable {
     let text: String
     let likes: Int
     let id: Int

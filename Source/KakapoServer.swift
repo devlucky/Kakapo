@@ -53,31 +53,42 @@ extension NSURLRequest {
     }
 }
 
-class KakapoServer: NSURLProtocol {
-    
-    typealias Route = (method: HTTPMethod, handler: (request: Request) -> ())
-    
-    enum HTTPMethod: String {
-        case GET, POST, PUT, DELETE
+private extension Dictionary {
+    init(_ pairs: [Element]) {
+        self.init()
+        for (k, v) in pairs {
+            self[k] = v
+        }
     }
+}
+
+public class KakapoServer: NSURLProtocol {
     
-    struct Request {
+    public typealias RouteHandler = (Request) -> (Serializable)
+    
+    public struct Request {
         let info: URLInfo
         let HTTPBody: NSData?
+    }
+
+    private typealias Route = (method: HTTPMethod, handler: RouteHandler)
+    
+    private enum HTTPMethod: String {
+        case GET, POST, PUT, DELETE
     }
     
     private static var routes: [String : Route] = [:]
     
-    class func enable() {
+    public class func enable() {
         NSURLProtocol.registerClass(self)
     }
     
-    class func disable() {
+    public class func disable() {
         routes = [:]
         NSURLProtocol.unregisterClass(self)
     }
     
-    override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+    override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
         guard let requestString = request.URL?.absoluteString else { return false }
         
         for (key, object) in routes {
@@ -89,15 +100,18 @@ class KakapoServer: NSURLProtocol {
         return false
     }
     
-    override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+    override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
         return request
     }
     
-    override func startLoading() {
-        guard let requestString = request.URL?.absoluteString else { return }
-        var dataBody: NSData?
+    override public func startLoading() {
+        guard let requestString = request.URL?.absoluteString,
+                  client = client else { return }
         
-        for (key, object) in KakapoServer.routes {
+        var dataBody: NSData?
+        var serializableObjects: Serializable?
+        
+        for (key, route) in KakapoServer.routes {
             if let info = parseUrl(key, requestURL: requestString) {
                 
                 if let dataFromNSURLRequest = request.HTTPBody {
@@ -107,37 +121,42 @@ class KakapoServer: NSURLProtocol {
                     dataBody = dataFromProtocol
                 }
                 
-                object.handler(request: Request(info: info, HTTPBody: dataBody))
+                serializableObjects = route.handler(Request(info: info, HTTPBody: dataBody))
+                break
             }
         }
         
-        // TODO: serialize and send data back here
+        // TODO: handle status codes and header fields
         let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "", headerFields: nil)
-        client?.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
-        client?.URLProtocol(self, didLoadData: "some data".dataUsingEncoding(NSUTF8StringEncoding)!)
-        client?.URLProtocolDidFinishLoading(self)
-    }
-    
-    
-    override func stopLoading() {
+        client.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
         
+        // TODO: handle more serialize() responses (plain array...)
+        if let serializedObjects = serializableObjects?.serialize() as? [String: Any] {
+            let anyObjectDictionary = Dictionary(serializedObjects.map{ ($0, $1 as! AnyObject) })
+            let data = try! NSJSONSerialization.dataWithJSONObject(anyObjectDictionary, options: .PrettyPrinted)
+            
+            client.URLProtocol(self, didLoadData: data)
+        }
+        
+        client.URLProtocolDidFinishLoading(self)
     }
     
-    static func get(urlString: String, handler: (request: Request) -> ()) {
+    override public func stopLoading() {}
+    
+    public static func get(urlString: String, handler: RouteHandler) {
         KakapoServer.routes[urlString] = (.GET, handler)
     }
     
-    static func post(urlString: String, handler: (request: Request) -> ()) {
+    public static func post(urlString: String, handler: RouteHandler) {
         KakapoServer.routes[urlString] = (.POST, handler)
     }
     
-    static func del(urlString: String, handler: (request: Request) -> ()) {
+    public static func del(urlString: String, handler: RouteHandler) {
         KakapoServer.routes[urlString] = (.DELETE, handler)
     }
     
-    static func put(urlString: String, handler: (request: Request) -> ()) {
+    public static func put(urlString: String, handler: RouteHandler) {
         KakapoServer.routes[urlString] = (.PUT, handler)
     }
     
 }
-

@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias URLInfo = (params: [String : String], queryParams: [String : String])
+public typealias URLInfo = (params: [String : String], queryParams: [String : String])
 
 /// parseUrl: Checks and parses if a given `handleURL` representation matches a `requestURL`. Examples:
 ///
