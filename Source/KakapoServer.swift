@@ -129,10 +129,16 @@ public class KakapoServer: NSURLProtocol {
         // TODO: handle status codes and header fields
         let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "", headerFields: nil)
         client.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
+        let serializedObjects = serializableObjects?.serialize()
         
-        // TODO: handle more serialize() responses (plain array...)
-        if let serializedObjects = serializableObjects?.serialize() as? [String: Any] {
+        if let serializedObjects = serializedObjects as? [String: Any] {
             let anyObjectDictionary = Dictionary(serializedObjects.map{ ($0, $1 as! AnyObject) })
+            let data = try! NSJSONSerialization.dataWithJSONObject(anyObjectDictionary, options: .PrettyPrinted)
+            
+            client.URLProtocol(self, didLoadData: data)
+        } else if let serializedObjects = serializedObjects as? [Any] {
+            let anyArrayDictionary = serializedObjects.map{ $0 as! [String: Any] }
+            let anyObjectDictionary = anyArrayDictionary.map{Dictionary($0.map{ ($0, $1 as! AnyObject) })}
             let data = try! NSJSONSerialization.dataWithJSONObject(anyObjectDictionary, options: .PrettyPrinted)
             
             client.URLProtocol(self, didLoadData: data)
