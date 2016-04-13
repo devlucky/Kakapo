@@ -62,6 +62,26 @@ private extension Dictionary {
     }
 }
 
+private extension SequenceType where Generator.Element == Any {
+    func toData() -> NSData? {
+        let anyArrayDictionary = flatMap{ $0 as? [String: Any] }
+        let anyObjectDictionary = anyArrayDictionary.map{Dictionary($0.map{ ($0, $1 as! AnyObject) })}
+        let data = try? NSJSONSerialization.dataWithJSONObject(anyObjectDictionary, options: .PrettyPrinted)
+        
+        return data
+    }
+}
+
+private extension CollectionType where Self: DictionaryLiteralConvertible, Generator.Element == (String, Any)  {
+    func toData() -> NSData? {
+        print(self)
+        let dict = Dictionary(map { ($0, $1 as! AnyObject) })
+        let data = try? NSJSONSerialization.dataWithJSONObject(dict, options: .PrettyPrinted)
+        
+        return data
+    }
+}
+
 public class KakapoServer: NSURLProtocol {
     
     public typealias RouteHandler = (Request) -> (Serializable)
@@ -129,18 +149,8 @@ public class KakapoServer: NSURLProtocol {
         // TODO: handle status codes and header fields
         let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "", headerFields: nil)
         client.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
-        let serializedObjects = serializableObjects?.serialize()
         
-        if let serializedObjects = serializedObjects as? [String: Any] {
-            let anyObjectDictionary = Dictionary(serializedObjects.map{ ($0, $1 as! AnyObject) })
-            let data = try! NSJSONSerialization.dataWithJSONObject(anyObjectDictionary, options: .PrettyPrinted)
-            
-            client.URLProtocol(self, didLoadData: data)
-        } else if let serializedObjects = serializedObjects as? [Any] {
-            let anyArrayDictionary = serializedObjects.map{ $0 as! [String: Any] }
-            let anyObjectDictionary = anyArrayDictionary.map{Dictionary($0.map{ ($0, $1 as! AnyObject) })}
-            let data = try! NSJSONSerialization.dataWithJSONObject(anyObjectDictionary, options: .PrettyPrinted)
-            
+        if let data = toData(serializableObjects?.serialize()) {
             client.URLProtocol(self, didLoadData: data)
         }
         
@@ -163,6 +173,17 @@ public class KakapoServer: NSURLProtocol {
     
     public static func put(urlString: String, handler: RouteHandler) {
         KakapoServer.routes[urlString] = (.PUT, handler)
+    }
+    
+    private func toData(object: Any) -> NSData? {
+        switch object {
+        case let object as [String: Any]:
+            return object.toData()
+        case let object as [Any]:
+            return object.toData()
+        default:
+            return nil
+        }
     }
     
 }
