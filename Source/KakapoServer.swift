@@ -74,7 +74,6 @@ private extension SequenceType where Generator.Element == Any {
 
 private extension CollectionType where Self: DictionaryLiteralConvertible, Generator.Element == (String, Any)  {
     func toData() -> NSData? {
-        print(self)
         let dict = Dictionary(map { ($0, $1 as! AnyObject) })
         let data = try? NSJSONSerialization.dataWithJSONObject(dict, options: .PrettyPrinted)
         
