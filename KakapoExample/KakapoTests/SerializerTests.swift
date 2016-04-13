@@ -70,6 +70,13 @@ class SerializeSpec: QuickSpec {
         }
         
         describe("Array serialization") {
+            
+            it("should return an array as an entry point") {
+                let serialized = [user].serialize() as! [Any]
+                let first = serialized.first as! [String: Any]
+                expect(first["name"] as? String).to(equal("Alex"))
+            }
+            
             func checkObject(object: Any?) {
                 let obj = object as? [String: Any]
                 expect(obj?.keys.first).to(equal("name"))
@@ -96,6 +103,13 @@ class SerializeSpec: QuickSpec {
         }
         
         describe("Dictionary serialization") {
+            
+            it("should serialize a dictionary as an entry point") {
+                let serialized = ["test": user].serialize() as! [String: Any]
+                let user = serialized["test"] as! [String: Any]
+                expect(user["name"] as? String).to(equal("Alex"))
+            }
+            
             func checkObject(object: Any?) {
                 let obj = object as? [String: Any]
                 expect(obj?.keys.first).to(equal("name"))
@@ -152,7 +166,13 @@ class SerializeSpec: QuickSpec {
             }
         }
         
-        describe("Optional property serialization") { 
+        describe("Optional property serialization") {
+
+            it("should serialize the object if it is an entry point") {
+                let serialized = Optional(user).serialize() as! [String: Any]
+                expect(serialized["name"] as? String).to(equal("Alex"))
+            }
+            
             it("serialize nil") {
                 let nilInt: Int? = nil
                 let optional = MaybeEmpty(nilInt)
