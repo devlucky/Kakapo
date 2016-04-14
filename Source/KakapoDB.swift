@@ -10,7 +10,7 @@ import Foundation
 
 public protocol Storable {
     var id: Int { get }
-    init(id: Int)
+    init(id: Int, db: KakapoDB)
 }
 
 enum KakapoDBError: ErrorType {
@@ -40,30 +40,29 @@ public class KakapoDB {
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
         var result = [T]()
         
-        dispatch_barrier_sync(queue) { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            result = (0..<number).map { _ in T(id: weakSelf.uuid()) }
-            weakSelf.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
+        dispatch_barrier_sync(queue) {
+            result = (0..<number).map { _ in T(id: self.uuid(), db: self) }
+            self.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
         }
         
         return result
     }
     
-    public func insert<T: Storable>(handler: (Int) -> T) {
-        dispatch_barrier_async(queue) { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            let potentialId = weakSelf._uuid + 1
+    public func insert<T: Storable>(handler: (Int) -> T) -> T {
+        var obj: T? = nil
+        dispatch_barrier_sync(queue) {
+            let potentialId = self._uuid + 1
             let object = handler(potentialId)
+            obj = object
             
             if object.id < potentialId {
                 fatalError("Tried to insert an invalid id")
             } else {
-                weakSelf.lookup(T).value.append(object)
-                weakSelf.uuid()
+                self.lookup(T).value.append(object)
+                self.uuid()
             }
         }
+        return obj!
     }
     
     public func find<T: Storable>(_: T.Type, id: Int) -> T? {

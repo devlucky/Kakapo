@@ -17,7 +17,7 @@ struct UserFactory: Storable, Serializable {
     let age: Int
     let id: Int
     
-    init(id: Int) {
+    init(id: Int, db: KakapoDB) {
         self.init(firstName: randomString(), lastName: randomString(), age: random(), id: id)
     }
     
@@ -34,7 +34,7 @@ struct CommentFactory: Storable {
     let likes: Int
     let id: Int
     
-    init(id: Int) {
+    init(id: Int, db: KakapoDB) {
         self.init(text: randomString(), likes: random(), id: id)
     }
     
@@ -209,7 +209,9 @@ class KakapoDBPerformaceTests: XCTestCase {
     func testMultpleInsertions() {
         measureBlock {
             dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { _ in
-                self.sut.insert { UserFactory(id: $0) }
+                self.sut.insert { (id) -> UserFactory in
+                    return UserFactory(id: id, db: self.sut)
+                }
             })
         }
     }
