@@ -54,15 +54,15 @@ class SerializeSpec: QuickSpec {
         
         describe("Serialization of Serializable entities") {
             it("produce a dictionary where properties are keys and values are values") {
-                let serialized = serialize(user)
+                let serialized = user.serialize() as! [String: AnyObject]
                 expect(serialized["name"] as? String).to(equal("Alex"))
             }
             
             it("serialize arrays") {
                 let friend = Friend(friends: [user])
-                let serialized = serialize(friend)
-                let friends = serialized["friends"] as? [Any]
-                let first = friends?.first as? [String: Any]
+                let serialized = friend.serialize() as! [String: AnyObject]
+                let friends = serialized["friends"] as? [AnyObject]
+                let first = friends?.first as? [String: AnyObject]
                 expect(first?.keys.first).to(equal("name"))
                 expect(first?.values.first as? String).to(equal("Alex"))
                 expect(friends?.count).to(be(1))
@@ -70,16 +70,23 @@ class SerializeSpec: QuickSpec {
         }
         
         describe("Array serialization") {
-            func checkObject(object: Any?) {
-                let obj = object as? [String: Any]
+            
+            it("should return an array as an entry point") {
+                let serialized = [user].serialize() as! [AnyObject]
+                let first = serialized.first as! [String: AnyObject]
+                expect(first["name"] as? String).to(equal("Alex"))
+            }
+            
+            func checkObject(object: AnyObject?) {
+                let obj = object as? [String: AnyObject]
                 expect(obj?.keys.first).to(equal("name"))
                 expect(obj?.values.first as? String).to(equal("Alex"))
             }
             
             it("serialize arrays and entities inside it") {
                 let friend = Friend(friends: [user, user, user])
-                let serialized = serialize(friend)
-                let friends = serialized["friends"] as! [Any]
+                let serialized = friend.serialize() as! [String: AnyObject]
+                let friends = serialized["friends"] as! [AnyObject]
                 expect(friends.count).to(be(3))
                 for friend in friends {
                     checkObject(friend)
@@ -88,24 +95,31 @@ class SerializeSpec: QuickSpec {
 
             it("recursively serialize arrays") {
                 let container = MaybeEmpty([[user]])
-                let serialized = serialize(container)
-                let array = serialized["value"] as? [Any]
-                let innerArray = array?.first as? [Any]
+                let serialized = container.serialize() as! [String: AnyObject]
+                let array = serialized["value"] as? [AnyObject]
+                let innerArray = array?.first as? [AnyObject]
                 checkObject(innerArray?.first)
             }
         }
         
         describe("Dictionary serialization") {
-            func checkObject(object: Any?) {
-                let obj = object as? [String: Any]
+            
+            it("should serialize a dictionary as an entry point") {
+                let serialized = ["test": user].serialize() as! [String: AnyObject]
+                let user = serialized["test"] as! [String: AnyObject]
+                expect(user["name"] as? String).to(equal("Alex"))
+            }
+            
+            func checkObject(object: AnyObject?) {
+                let obj = object as? [String: AnyObject]
                 expect(obj?.keys.first).to(equal("name"))
                 expect(obj?.values.first as? String).to(equal("Alex"))
             }
             
             it("serialize dictionary and entities inside it") {
                 let dictionary = MaybeEmpty(["1":user, "2":user, "3":user])
-                let serialized = serialize(dictionary)["value"] as! [String: Any]
-                for (key, value) in serialized {
+                let serialized = dictionary.serialize() as! [String: AnyObject]
+                for (key, value) in serialized["value"] as! [String: AnyObject] {
                     expect(key).notTo(beNil())
                     checkObject(value)
                 }
@@ -113,8 +127,9 @@ class SerializeSpec: QuickSpec {
             
             it("recursively serialize dictionaries") {
                 let dictionary = MaybeEmpty(["1":["1":user]])
-                let serialized = serialize(dictionary)["value"] as! [String: Any]
-                let innerDict = serialized["1"] as! [String: Any]
+                let serialized = dictionary.serialize() as! [String: AnyObject]
+                let value = serialized["value"] as! [String: AnyObject]
+                let innerDict = value["1"] as! [String: AnyObject]
                 for (key, value) in innerDict {
                     expect(key).notTo(beNil())
                     checkObject(value)
@@ -125,56 +140,62 @@ class SerializeSpec: QuickSpec {
         describe("Property policy serialization") { 
             it("is not serialized if nil") {
                 let empty = MaybeEmpty(IgnorableNilProperty<Int>(nil))
-                let serialized = serialize(empty)
+                let serialized = empty.serialize() as! [String: AnyObject]
                 expect(serialized.count).to(be(0))
             }
             
             it("is serialized if not nil") {
                 let notEmpty = MaybeEmpty(IgnorableNilProperty(1))
-                let serialized = serialize(notEmpty)
+                let serialized = notEmpty.serialize() as! [String: AnyObject]
                 let value = serialized["value"] as? Int
                 expect(value).to(be(1))
             }
             
             it("recursively serialize the object if needed") {
                 let notEmpty = MaybeEmpty(IgnorableNilProperty(user))
-                let serialized = serialize(notEmpty)
-                let value = serialized["value"] as? [String: Any]
+                let serialized = notEmpty.serialize() as! [String: AnyObject]
+                let value = serialized["value"] as? [String: AnyObject]
                 expect(value?["name"] as? String).to(equal("Alex"))
             }
 
             it("recursively serialize IgnorableNilProperties") {
                 let notEmpty = MaybeEmpty(IgnorableNilProperty(IgnorableNilProperty(1)))
-                let serialized = serialize(notEmpty)
+                let serialized = notEmpty.serialize() as! [String: AnyObject]
                 let value = serialized["value"] as? Int
                 expect(value).to(be(1))
             }
         }
         
-        describe("Optional property serialization") { 
+        describe("Optional property serialization") {
+
+            it("should serialize the object if it is an entry point") {
+                let serialized = Optional(user).serialize() as! [String: AnyObject]
+                expect(serialized["name"] as? String).to(equal("Alex"))
+            }
+            
             it("serialize nil") {
                 let nilInt: Int? = nil
                 let optional = MaybeEmpty(nilInt)
-                let serialized = serialize(optional)
+                let serialized = optional.serialize() as! [String: AnyObject]
                 expect(serialized["value"] as? NSNull).to(be(NSNull()))
             }
             
             it("serialize an optional") {
                 let optional = MaybeEmpty(Optional.Some(1))
-                let serialized = serialize(optional) as? [String: Int]
+                let serialized = optional.serialize() as! [String: AnyObject] as? [String: Int]
                 expect(serialized?["value"]).to(be(1))
             }
             
             it("recursively serialize the value") {
                 let optional = MaybeEmpty(Optional.Some(user))
-                let serialized = serialize(optional)
-                let value = serialized["value"] as? [String: Any]
+                let serialized = optional.serialize() as! [String: AnyObject]
+                let value = serialized["value"] as? [String: AnyObject]
                 expect(value?["name"] as? String).to(equal("Alex"))
             }
             
             it("recursively serialize Optionals") {
                 let optional = MaybeEmpty(Optional.Some(Optional.Some(1)))
-                let serialized = serialize(optional) as? [String: Int]
+                let serialized = optional.serialize() as! [String: AnyObject] as? [String: Int]
                 expect(serialized?["value"]).to(be(1))
             }
         }

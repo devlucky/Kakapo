@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol KStorable {
+public protocol Storable {
     var id: Int { get }
     init(id: Int)
 }
@@ -31,26 +31,26 @@ private final class ArrayBox<T> {
     private var value: [T]
 }
 
-class KakapoDB {
+public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
     private var _uuid = -1
-    private var store: [String: ArrayBox<KStorable>] = [:]
+    private var store: [String: ArrayBox<Storable>] = [:]
     
-    func create<T: KStorable>(_: T.Type, number: Int = 1) -> [KStorable] {
-        var result: [KStorable] = []
+    public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
+        var result = [T]()
         
         dispatch_barrier_sync(queue) { [weak self] in
             guard let weakSelf = self else { return }
             
             result = (0..<number).map { _ in T(id: weakSelf.uuid()) }
-            weakSelf.lookup(T).value.appendContentsOf(result)
+            weakSelf.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
         }
         
         return result
     }
     
-    func insert<T: KStorable>(handler: (Int) -> T) {
+    public func insert<T: Storable>(handler: (Int) -> T) {
         dispatch_barrier_async(queue) { [weak self] in
             guard let weakSelf = self else { return }
             
@@ -66,7 +66,7 @@ class KakapoDB {
         }
     }
     
-    func find<T: KStorable>(_: T.Type, id: Int) -> T? {
+    public func find<T: Storable>(_: T.Type, id: Int) -> T? {
         var result: T?
         
         dispatch_sync(queue) { [weak self] in
@@ -78,25 +78,25 @@ class KakapoDB {
         return result
     }
     
-    func findAll<T: KStorable>(_: T.Type) -> [T] {
+    public func findAll<T: Storable>(_: T.Type) -> [T] {
         var result = [T]()
         
         dispatch_sync(queue) { [weak self] in
             guard let weakSelf = self else { return }
             
-            result = weakSelf.lookup(T).value.map{$0 as! T}
+            result = weakSelf.lookup(T).value.flatMap{$0 as? T}
         }
         
         return result
     }
     
-    func filter<T: KStorable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
+    public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
         var result: [T] = []
         
         dispatch_sync(queue) { [weak self] in
             guard let weakSelf = self else { return }
             
-            result = weakSelf.lookup(T).value.map{$0 as! T}.filter(includeElement)
+            result = weakSelf.lookup(T).value.flatMap{$0 as? T}.filter(includeElement)
         }
         
         return result
@@ -107,13 +107,13 @@ class KakapoDB {
         return _uuid
     }
     
-    private func lookup<T: KStorable>(_: T.Type) -> ArrayBox<KStorable> {
-        var boxedArray: ArrayBox<KStorable>
+    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<Storable> {
+        var boxedArray: ArrayBox<Storable>
         
         if let storedBoxedArray = store[String(T)] {
             boxedArray = storedBoxedArray
         } else {
-            boxedArray = ArrayBox<KStorable>([])
+            boxedArray = ArrayBox<Storable>([])
             store[String(T)] = boxedArray
         }
         

@@ -11,7 +11,7 @@ import Foundation
 /**
  *  A *"type-erased"* protocol that should only be used internally as constraint for `PropertyPolicy` (concrete protocol with associatedtype). **See `PropertyPolicy`**
  */
-public protocol _PropertyPolicy: Serializable {
+public protocol _PropertyPolicy: CustomSerializable {
     var _object: Any { get }
     var shouldSerialize: Bool { get }
 }

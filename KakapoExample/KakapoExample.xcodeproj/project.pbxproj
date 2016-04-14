@@ -79,7 +79,7 @@
 		DE33B89B1CB4717B007F6161 /* KakapoServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoServerTests.swift; sourceTree = "<group>"; };
 		DE53E23F1CAD422600CD1AC0 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
 		DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
-		DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializerTests.swift; sourceTree = "<group>"; };
+		DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SerializerTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		DE9352731CAAF1E800AD534C /* KakapoExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakapoExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE9352761CAAF1E800AD534C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DE9352781CAAF1E800AD534C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -93,6 +93,7 @@
 		DE9352961CAAF21300AD534C /* KakapoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakapoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE93529F1CAAF21300AD534C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE9352AE1CAAF32900AD534C /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DEC555CA1CB933860087FB1F /* KakapoPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = KakapoPlayground.playground; sourceTree = "<group>"; };
 		E0631FF5CD9CD06BE1F87C6C /* Pods-KakapoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KakapoTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KakapoTests/Pods-KakapoTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -174,6 +175,7 @@
 				DE93527F1CAAF1E800AD534C /* LaunchScreen.storyboard */,
 				DE9352821CAAF1E800AD534C /* Info.plist */,
 				DE9352AE1CAAF32900AD534C /* Podfile */,
+				DEC555CA1CB933860087FB1F /* KakapoPlayground.playground */,
 			);
 			path = KakapoExample;
 			sourceTree = "<group>";
