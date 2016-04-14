@@ -244,8 +244,20 @@ class KakapoServerTests: QuickSpec {
                 expect(responseArray?[14]["id"]).toEventually(equal(14))
                 expect(responseArray?.lastObject?["id"]).toEventually(equal(19))
             }
+            
+            it("should return nil for objects not serializable to JSON") {
+                KakapoServer.get("/nothing/:id"){ request in
+                    return Optional.Some("none")
+                }
+                
+                var called = false
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/nothing/1")!) { (data, response, _) in
+                    called = true
+                    expect(data?.length).to(equal(0))
+                }.resume()
+                
+                expect(called).toEventually(beTrue())
+            }
         }
     }
-
-
 }
