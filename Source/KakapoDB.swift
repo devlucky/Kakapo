@@ -65,10 +65,6 @@ public class KakapoDB {
         }
     }
     
-    public init() {
-        // needed otherwise it can't be initialized outside this module...
-    }
-    
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
         var result = [T]()
         

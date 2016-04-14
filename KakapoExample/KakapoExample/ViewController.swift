@@ -55,6 +55,23 @@ struct Post: Serializable, Storable {
         self.comments = db.create(Comment.self, number: random() % 5)
         self.likes = db.create(Like.self, number: random() % 30)
     }
+    
+    init(id: Int, content: String, comments: [Comment], likes: [Like]) {
+        self.id = id
+        self.content = content
+        self.comments = comments
+        self.likes = likes
+    }
+}
+
+class ArticleCell: UITableViewCell {
+    required override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: .Subtitle, reuseIdentifier: reuseIdentifier)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -71,22 +88,33 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         super.viewDidLoad()
         setup()
         
-        posts = db.findAll(Post)
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
         view.addSubview(tableView)
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: String(UITableViewCell))
+        tableView.registerClass(ArticleCell.self, forCellReuseIdentifier: String(ArticleCell))
         tableView.snp_makeConstraints { (make) in
             make.edges.equalTo(view)
         }
+        
+        NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/posts")!) { (data, response, _) in
+            let posts = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as! [AnyObject]
+            dispatch_async(dispatch_get_main_queue(), { 
+                self.posts = posts.map({ (dict) -> Post in
+                    return Post(id: dict["id"] as! Int, content: dict["content"] as! String, comments: [], likes: [])
+                })
+            })
+        }.resume()
     }
 
     func setup() {
         KakapoServer.enable()
         
         db.create(Post.self, number: 10)
+        
+        KakapoServer.get("/posts") { (request) -> Serializable? in
+            self.db.findAll(Post)
+        }
     }
     
     // MARK: UITableViewDataSource
@@ -96,7 +124,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(String(UITableViewCell))!
+        let cell = tableView.dequeueReusableCellWithIdentifier(String(ArticleCell))!
         let post = posts[indexPath.row]
         cell.textLabel?.text = post.content
         cell.detailTextLabel?.text = "\(post.likes.count) ❤️ \(post.comments.count) 💬"
