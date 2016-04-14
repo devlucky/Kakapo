@@ -195,11 +195,21 @@ class KakapoDBTests: QuickSpec {
 }
 
 class KakapoDBPerformaceTests: XCTestCase {
+    
+    let sut = KakapoDB()
+
     func testMultipleSingleCreationPerformance() {
-        let sut = KakapoDB()
         measureBlock {
             dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { _ in
-                sut.create(UserFactory.self)
+                self.sut.create(UserFactory.self)
+            })
+        }
+    }
+    
+    func testMultpleInsertions() {
+        measureBlock {
+            dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { _ in
+                self.sut.insert { UserFactory(id: $0) }
             })
         }
     }
