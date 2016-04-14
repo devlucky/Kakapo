@@ -53,14 +53,30 @@ extension NSURLRequest {
     }
 }
 
-public class KakapoServer: NSURLProtocol {
+public typealias RouteHandler = Request -> Serializable?
+
+public struct Request {
+    let info: URLInfo
+    let HTTPBody: NSData?
+}
+
+public struct Response: CustomSerializable {
+    let code: Int
+    let header: [String : String]?
+    let body: Serializable
     
-    public typealias RouteHandler = Request -> Serializable?
-    
-    public struct Request {
-        let info: URLInfo
-        let HTTPBody: NSData?
+    init(code: Int, header: [String : String]? = nil, body: Serializable) {
+        self.code = code
+        self.header = header
+        self.body = body
     }
+    
+    public func customSerialize() -> AnyObject {
+        return body.serialize()
+    }
+}
+
+public class KakapoServer: NSURLProtocol {
 
     private typealias Route = (method: HTTPMethod, handler: RouteHandler)
     
@@ -99,8 +115,10 @@ public class KakapoServer: NSURLProtocol {
         guard let requestString = request.URL?.absoluteString,
                   client = client else { return }
         
+        var statusCode = 200
+        var headerFields = [String : String]?()
         var dataBody: NSData?
-        var serializableObjects: Serializable?
+        var serializableObject: Serializable?
         
         for (key, route) in KakapoServer.routes {
             if let info = parseUrl(key, requestURL: requestString) {
@@ -112,16 +130,20 @@ public class KakapoServer: NSURLProtocol {
                     dataBody = dataFromProtocol
                 }
                 
-                serializableObjects = route.handler(Request(info: info, HTTPBody: dataBody))
+                serializableObject = route.handler(Request(info: info, HTTPBody: dataBody))
                 break
             }
         }
         
-        // TODO: handle status codes and header fields
-        let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "", headerFields: nil)
+        if let serializableObject = serializableObject as? Response {
+            statusCode = serializableObject.code
+            headerFields = serializableObject.header
+        }
+        
+        let response = NSHTTPURLResponse(URL: request.URL!, statusCode: statusCode, HTTPVersion: "HTTP/1.1", headerFields: headerFields)
         client.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
         
-        if let serialized = serializableObjects?.serialize(), let data = toData(serialized) {
+        if let serialized = serializableObject?.serialize(), let data = toData(serialized) {
             client.URLProtocol(self, didLoadData: data)
         }
         

@@ -225,6 +225,45 @@ class KakapoServerTests: QuickSpec {
                 expect(responseDictionary?["id"]).toEventually(be(2))
             }
             
+            it("should return the specified object and code inside a response object with code when requesting a registered url") {
+                db.create(UserFactory.self, number: 20)
+                
+                var statusCode: Int? = nil
+                var responseDictionary: NSDictionary? = nil
+                
+                KakapoServer.get("/users/:id"){ request in
+                    return Response(code: 200, body: db.find(UserFactory.self, id: Int(request.info.params["id"]!)!))
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    statusCode = response.statusCode
+                    responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+                    }.resume()
+                
+                expect(responseDictionary?["firstName"]).toNotEventually(beNil())
+                expect(responseDictionary?["id"]).toEventually(be(2))
+                expect(statusCode).toEventually(equal(200))
+            }
+            
+            it("should return the specified error object and code inside a response object with code when requesting a registered url") {
+                var statusCode: Int? = nil
+                var dataLength = 10000
+                
+                KakapoServer.get("/users/:id"){ request in
+                    return Response(code: 400, body: Optional.Some("none"))
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    statusCode = response.statusCode
+                    dataLength = data!.length
+                    }.resume()
+                
+                expect(dataLength).toEventually(equal(0))
+                expect(statusCode).toEventually(equal(400))
+            }
+            
             it("should return the specified array of objects when requesting a registered url") {
                 db.create(UserFactory.self, number: 20)
                 
