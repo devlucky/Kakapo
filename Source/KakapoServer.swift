@@ -83,7 +83,7 @@ private extension CollectionType where Self: DictionaryLiteralConvertible, Gener
 
 public class KakapoServer: NSURLProtocol {
     
-    public typealias RouteHandler = (Request) -> (Serializable)
+    public typealias RouteHandler = Request -> Serializable?
     
     public struct Request {
         let info: URLInfo

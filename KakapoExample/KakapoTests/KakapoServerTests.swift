@@ -18,14 +18,14 @@ class KakapoServerTests: QuickSpec {
     override func spec() {
         var db = KakapoDB()
         
-        beforeEach({
+        beforeEach{
             db = KakapoDB()
             KakapoServer.enable()
-        })
+        }
         
-        afterEach({
+        afterEach{
             KakapoServer.disable()
-        })
+        }
         
         describe("Registering urls") {
             
@@ -35,7 +35,7 @@ class KakapoServerTests: QuickSpec {
                 
                 KakapoServer.get("/users/:id"){ request in
                     info = request.info
-                    return db.find(UserFactory.self, id: 2)
+                    return nil
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/1")!) { (data, response, _) in
@@ -54,28 +54,31 @@ class KakapoServerTests: QuickSpec {
                 var usersCommentsResponseURL: NSURL? = nil
                 
                 KakapoServer.get("/comments/:id") { request in
+                    XCTFail("Shouldn't reach here")
                     usersInfo = request.info
-                    return db.find(CommentFactory.self, id: 2)
+                    return nil
                 }
                 
                 KakapoServer.get("/users/:id") { request in
                     usersInfo = request.info
-                    return db.find(UserFactory.self, id: 2)
+                    return nil
                 }
                 
                 KakapoServer.get("/commentaries/:id") { request in
+                    XCTFail("Shouldn't reach here")
                     usersInfo = request.info
-                    return db.find(CommentFactory.self, id: 1)
+                    return nil
                 }
                 
                 KakapoServer.get("/users/:id/comments/:comment_id") { request in
                     usersCommentsInfo = request.info
-                    return db.find(CommentFactory.self, id: 5)
+                    return nil
                 }
                 
                 KakapoServer.get("/users/:id/comments/:comment_id/whatever") { request in
+                    XCTFail("Shouldn't reach here")
                     usersCommentsInfo = request.info
-                    return db.find(CommentFactory.self, id: 4)
+                    return nil
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/1")!) { (_, response, _) in
@@ -102,9 +105,9 @@ class KakapoServerTests: QuickSpec {
                 var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
                 
                 KakapoServer.get("/users/:id") { request in
-                    // Shouldn't reach here
+                    XCTFail("Shouldn't reach here")
                     info = request.info
-                    return db.find(CommentFactory.self, id: 1)
+                    return nil
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/userssssss/1")!) { (_, response, error) in
@@ -125,9 +128,9 @@ class KakapoServerTests: QuickSpec {
                 var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
                 
                 KakapoServer.del("/users/:id") { request in
-                    // Shouldn't reach here
+                    XCTFail("Shouldn't reach here")
                     info = request.info
-                    return db.find(CommentFactory.self, id: 1)
+                    return nil
                 }
                 
                 let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
@@ -162,9 +165,8 @@ class KakapoServerTests: QuickSpec {
                     bodyData = request.HTTPBody
                     bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
                     
-                    return db.find(UserFactory.self, id: 10)
+                    return nil
                 }
-                
                 
                 NSURLSession.sharedSession().dataTaskWithRequest(request){ (_, _, _) in }.resume()
                 
@@ -192,7 +194,7 @@ class KakapoServerTests: QuickSpec {
                     bodyData = request.HTTPBody
                     bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
                     
-                    return db.find(UserFactory.self, id: 10)
+                    return nil
                 }
                 
                 let _ = NSURLConnection(request: request, delegate: nil)
@@ -212,10 +214,10 @@ class KakapoServerTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 
                 KakapoServer.get("/users/:id"){ request in
-                    return db.find(UserFactory.self, id: 2)
+                    return db.find(UserFactory.self, id: Int(request.info.params["id"]!)!)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/1")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
                     responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
                     }.resume()
                 
@@ -236,11 +238,11 @@ class KakapoServerTests: QuickSpec {
                     responseArray = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSArray
                     }.resume()
                 
-                expect(responseArray?.count).toEventually(be(20))
+                expect(responseArray?.count).toEventually(equal(20))
                 expect(responseArray?.firstObject?["firstName"]).toNotEventually(beNil())
-                expect(responseArray?.firstObject?["id"]).toEventually(be(0))
-                expect(responseArray?[14]["id"]).toEventually(be(14))
-                expect(responseArray?.lastObject?["id"]).toEventually(be(19))
+                expect(responseArray?.firstObject?["id"]).toEventually(equal(0))
+                expect(responseArray?[14]["id"]).toEventually(equal(14))
+                expect(responseArray?.lastObject?["id"]).toEventually(equal(19))
             }
         }
     }
