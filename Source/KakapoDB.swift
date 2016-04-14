@@ -34,13 +34,41 @@ private final class ArrayBox<T> {
 public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
+    private let queueKey = NSString(string: "dbQueue").UTF8String
+    private let _queueContext = NSObject()
+    private var queueContext: UnsafeMutablePointer<Void> {
+        get {
+            return UnsafeMutablePointer<Void>(Unmanaged.passRetained(_queueContext).toOpaque())
+        }
+    }
+    
     private var _uuid = -1
     private var store: [String: ArrayBox<Storable>] = [:]
+
+    public init() {
+        dispatch_queue_set_specific(queue, queueKey, queueContext, nil)
+    }
+    
+    private func synchronizeDBWrite(closure: () -> ()) {
+        if dispatch_get_specific(queueKey) == queueContext {
+            closure()
+        } else {
+            dispatch_barrier_sync(queue, closure)
+        }
+    }
+
+    private func synchronizeDBRead(closure: () -> ()) {
+        if dispatch_get_specific(queueKey) == queueContext {
+            closure()
+        } else {
+            dispatch_sync(queue, closure)
+        }
+    }
     
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
         var result = [T]()
         
-        dispatch_barrier_sync(queue) {
+        synchronizeDBWrite {
             result = (0..<number).map { _ in T(id: self.uuid(), db: self) }
             self.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
         }
@@ -50,7 +78,7 @@ public class KakapoDB {
     
     public func insert<T: Storable>(handler: (Int) -> T) -> T {
         var obj: T? = nil
-        dispatch_barrier_sync(queue) {
+        synchronizeDBWrite {
             let potentialId = self._uuid + 1
             let object = handler(potentialId)
             obj = object
@@ -68,7 +96,7 @@ public class KakapoDB {
     public func find<T: Storable>(_: T.Type, id: Int) -> T? {
         var result: T?
         
-        dispatch_sync(queue) { [weak self] in
+        synchronizeDBRead { [weak self] in
             guard let weakSelf = self else { return }
             
             result = weakSelf.lookup(T).value.filter{ $0.id == id }.flatMap{ $0 as? T }.first
@@ -80,7 +108,7 @@ public class KakapoDB {
     public func findAll<T: Storable>(_: T.Type) -> [T] {
         var result = [T]()
         
-        dispatch_sync(queue) { [weak self] in
+        synchronizeDBRead { [weak self] in
             guard let weakSelf = self else { return }
             
             result = weakSelf.lookup(T).value.flatMap{$0 as? T}
@@ -92,7 +120,7 @@ public class KakapoDB {
     public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
         var result: [T] = []
         
-        dispatch_sync(queue) { [weak self] in
+        synchronizeDBRead { [weak self] in
             guard let weakSelf = self else { return }
             
             result = weakSelf.lookup(T).value.flatMap{$0 as? T}.filter(includeElement)
