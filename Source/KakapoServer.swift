@@ -53,34 +53,6 @@ extension NSURLRequest {
     }
 }
 
-private extension Dictionary {
-    init(_ pairs: [Element]) {
-        self.init()
-        for (k, v) in pairs {
-            self[k] = v
-        }
-    }
-}
-
-private extension SequenceType where Generator.Element == Any {
-    func toData() -> NSData? {
-        let anyArrayDictionary = flatMap{ $0 as? [String: Any] }
-        let anyObjectDictionary = anyArrayDictionary.map{Dictionary($0.map{ ($0, $1 as! AnyObject) })}
-        let data = try? NSJSONSerialization.dataWithJSONObject(anyObjectDictionary, options: .PrettyPrinted)
-        
-        return data
-    }
-}
-
-private extension CollectionType where Self: DictionaryLiteralConvertible, Generator.Element == (String, Any)  {
-    func toData() -> NSData? {
-        let dict = Dictionary(map { ($0, $1 as! AnyObject) })
-        let data = try? NSJSONSerialization.dataWithJSONObject(dict, options: .PrettyPrinted)
-        
-        return data
-    }
-}
-
 public class KakapoServer: NSURLProtocol {
     
     public typealias RouteHandler = Request -> Serializable?
@@ -149,7 +121,7 @@ public class KakapoServer: NSURLProtocol {
         let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "", headerFields: nil)
         client.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
         
-        if let data = toData(serializableObjects?.serialize()) {
+        if let serialized = serializableObjects?.serialize(), let data = toData(serialized) {
             client.URLProtocol(self, didLoadData: data)
         }
         
@@ -174,15 +146,11 @@ public class KakapoServer: NSURLProtocol {
         KakapoServer.routes[urlString] = (.PUT, handler)
     }
     
-    private func toData(object: Any) -> NSData? {
-        switch object {
-        case let object as [String: Any]:
-            return object.toData()
-        case let object as [Any]:
-            return object.toData()
-        default:
+    private func toData(object: AnyObject) -> NSData? {
+        if !NSJSONSerialization.isValidJSONObject(object) {
             return nil
         }
+        return try? NSJSONSerialization.dataWithJSONObject(object, options: .PrettyPrinted)
     }
     
 }
