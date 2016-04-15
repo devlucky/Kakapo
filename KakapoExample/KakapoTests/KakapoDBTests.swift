@@ -104,9 +104,9 @@ class KakapoDBTests: QuickSpec {
             
             it("should insert a large number of elements") {
                 dispatch_apply(1000, dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT), { _ in
-                    sut.insert({ (id) -> UserFactory in
+                    sut.insert { (id) -> UserFactory in
                         return UserFactory(firstName: "Name " + String(id), lastName: "Last Name " + String(id), age: id, id: id)
-                    })
+                    }
                 })
                 
                 let userObjects = sut.findAll(UserFactory.self)
@@ -142,9 +142,9 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("shoud return the expected object after inserting it") {
-                sut.insert({ (id) -> UserFactory in
+                sut.insert { (id) -> UserFactory in
                     return UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
-                })
+                }
                 
                 let user = sut.find(UserFactory.self, id: 0)
                 expect(user?.firstName).to(match("Hector"))
@@ -153,9 +153,9 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("should fail when inserting invalid id") {
-                sut.insert({ (id) -> UserFactory in
+                sut.insert { (id) -> UserFactory in
                     return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id)
-                })
+                }
 
 //                TODO: TEST THIS FATAL ERROR
 //                expect{ sut.insert({ (id) -> UserFactory in
@@ -164,9 +164,9 @@ class KakapoDBTests: QuickSpec {
             }
 
             it("should return the expected filtered element with valid id") {
-                sut.insert({ (id) -> UserFactory in
+                sut.insert { (id) -> UserFactory in
                     UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
-                })
+                }
                 
                 let userArray = sut.filter(UserFactory.self, includeElement: { (item) -> Bool in
                     return item.id == 0
@@ -180,15 +180,103 @@ class KakapoDBTests: QuickSpec {
 
             it("should return no objects for some inexisting filtering") {
                 sut.create(UserFactory.self, number: 20)
-                sut.insert({ (id) -> UserFactory in
+                sut.insert { (id) -> UserFactory in
                     return UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
-                })
+                }
                 
                 let userArray = sut.filter(UserFactory.self, includeElement: { (item) -> Bool in
                     return item.lastName == "Manzella"
                 })
                 
                 expect(userArray.count) == 0
+            }
+        }
+        
+        // 💀💀💀💀💀💀💀💀
+        describe("Database Operations Deadlock") {
+            let sut = KakapoDB()
+            let queue = dispatch_queue_create("com.kakapodb.testDeadlock", DISPATCH_QUEUE_SERIAL)
+            
+            it("should not deadlock when writing into database during a writing operation") {
+                let user = sut.insert { (id) -> UserFactory in
+                    sut.insert { (id) -> UserFactory in
+                        return UserFactory(id: id, db: sut)
+                    }
+                    
+                    return UserFactory(id: id, db: sut)
+                }
+                
+                expect(user).toEventuallyNot(beNil())
+            }
+            
+            it("should not deadlock when synchronously writing from another queue into database during a writing operation") {
+                let user = sut.insert { (id) -> UserFactory in
+                    dispatch_sync(queue) {
+                        sut.insert { (id) -> UserFactory in
+                            return UserFactory(id: id, db: sut)
+                        }
+                    }
+                    return UserFactory(id: id, db: sut)
+                }
+                expect(user).toEventuallyNot(beNil())
+            }
+            
+            it("should not deadlock when writing into database during a reading operation") {
+                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
+                    sut.create(UserFactory)
+                    return true
+                })
+                
+                expect(result).toEventuallyNot(beNil())
+            }
+            
+            it("should not deadlock when synchronously writing from another queue into database during a reading operation") {
+                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
+                    dispatch_sync(queue) {
+                        sut.create(UserFactory)
+                    }
+                    return true
+                })
+                
+                expect(result).toEventuallyNot(beNil())
+            }
+            
+            it("should not deadlock when reading the database during a read operation") {
+                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
+                    sut.findAll(UserFactory.self)
+                    return true
+                })
+                
+                expect(result).toEventuallyNot(beNil())
+            }
+            
+            it("should not deadlock when synchronously reading the database from another queue during a reading operation") {
+                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
+                    dispatch_sync(queue) {
+                        sut.findAll(UserFactory.self)
+                    }
+                    return true
+                })
+                
+                expect(result).toEventuallyNot(beNil())
+            }
+            
+            it("should not deadlock when reading the database during a write operation") {
+                let user = sut.insert { (id) -> UserFactory in
+                    sut.findAll(UserFactory.self)
+                    return UserFactory(id: id, db: sut)
+                }
+                expect(user).toEventuallyNot(beNil())
+            }
+            
+            it("should not deadlock when synchronously reading the database from another queue during a write operation") {
+                let user = sut.insert { (id) -> UserFactory in
+                    dispatch_sync(queue) {
+                        sut.findAll(UserFactory.self)
+                    }
+                    return UserFactory(id: id, db: sut)
+                }
+                expect(user).toEventuallyNot(beNil())
             }
         }
     }
@@ -200,19 +288,19 @@ class KakapoDBPerformaceTests: XCTestCase {
 
     func testMultipleSingleCreationPerformance() {
         measureBlock {
-            dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { _ in
+            dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { _ in
                 self.sut.create(UserFactory.self)
-            })
+            }
         }
     }
     
     func testMultpleInsertions() {
         measureBlock {
-            dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { _ in
+            dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { _ in
                 self.sut.insert { (id) -> UserFactory in
                     return UserFactory(id: id, db: self.sut)
                 }
-            })
+            }
         }
     }
 }
