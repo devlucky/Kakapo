@@ -66,10 +66,13 @@ public class KakapoDB {
     }
     
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
-        var result = [T]()
-        
+        var ids = [Int]()
         synchronizeDBWrite {
-            result = (0..<number).map { _ in T(id: self.uuid(), db: self) }
+            ids = (0..<number).map { _ in self.uuid()}
+        }
+        
+        let result = ids.map { id in T(id: id, db: self) }
+        synchronizeDBWrite {
             self.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
         }
         
@@ -77,20 +80,19 @@ public class KakapoDB {
     }
     
     public func insert<T: Storable>(handler: (Int) -> T) -> T {
-        var obj: T? = nil
+        var id: Int = 0
         synchronizeDBWrite {
-            let potentialId = self._uuid + 1
-            let object = handler(potentialId)
-            obj = object
-            
-            if object.id < potentialId {
-                fatalError("Tried to insert an invalid id")
-            } else {
-                self.lookup(T).value.append(object)
-                self.uuid()
-            }
+            id = self.uuid()
         }
-        return obj!
+        
+        let object = handler(id)
+            
+        precondition(object.id == id, "Tried to insert an invalid id")
+        synchronizeDBWrite {
+            self.lookup(T).value.append(object)
+        }
+
+        return object
     }
     
     public func find<T: Storable>(_: T.Type, id: Int) -> T? {
@@ -118,15 +120,7 @@ public class KakapoDB {
     }
     
     public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
-        var result: [T] = []
-        
-        synchronizeDBRead { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            result = weakSelf.lookup(T).value.flatMap{$0 as? T}.filter(includeElement)
-        }
-        
-        return result
+        return findAll(T).filter(includeElement)
     }
     
     private func uuid() -> Int {
