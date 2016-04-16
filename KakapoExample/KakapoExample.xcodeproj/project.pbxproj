@@ -17,6 +17,9 @@
 		DE33B89D1CB4717B007F6161 /* KakapoDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B89A1CB4717B007F6161 /* KakapoDBTests.swift */; };
 		DE33B89E1CB4717B007F6161 /* KakapoServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B89B1CB4717B007F6161 /* KakapoServerTests.swift */; };
 		DE3651D71CC05E0F00F27C3B /* PostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3651D61CC05E0F00F27C3B /* PostViewController.swift */; };
+		DE3651D91CC1533000F27C3B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3651D81CC1533000F27C3B /* Models.swift */; };
+		DE3651DB1CC1536D00F27C3B /* ArticleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3651DA1CC1536D00F27C3B /* ArticleCell.swift */; };
+		DE3651DD1CC153A900F27C3B /* Routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3651DC1CC153A900F27C3B /* Routes.swift */; };
 		DE53E2401CAD422600CD1AC0 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E23F1CAD422600CD1AC0 /* Serializer.swift */; };
 		DE53E2421CAD711500CD1AC0 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */; };
 		DE53E2441CAD719D00CD1AC0 /* SerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */; };
@@ -83,6 +86,9 @@
 		DE33B89A1CB4717B007F6161 /* KakapoDBTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoDBTests.swift; sourceTree = "<group>"; };
 		DE33B89B1CB4717B007F6161 /* KakapoServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoServerTests.swift; sourceTree = "<group>"; };
 		DE3651D61CC05E0F00F27C3B /* PostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostViewController.swift; sourceTree = "<group>"; };
+		DE3651D81CC1533000F27C3B /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		DE3651DA1CC1536D00F27C3B /* ArticleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArticleCell.swift; sourceTree = "<group>"; };
+		DE3651DC1CC153A900F27C3B /* Routes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Routes.swift; sourceTree = "<group>"; };
 		DE53E23F1CAD422600CD1AC0 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
 		DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
 		DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SerializerTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -178,8 +184,11 @@
 		DE9352751CAAF1E800AD534C /* KakapoExample */ = {
 			isa = PBXGroup;
 			children = (
+				DE3651DC1CC153A900F27C3B /* Routes.swift */,
+				DE3651D81CC1533000F27C3B /* Models.swift */,
 				DE9352761CAAF1E800AD534C /* AppDelegate.swift */,
 				DE9352781CAAF1E800AD534C /* ViewController.swift */,
+				DE3651DA1CC1536D00F27C3B /* ArticleCell.swift */,
 				DE3651D61CC05E0F00F27C3B /* PostViewController.swift */,
 				DE93527A1CAAF1E800AD534C /* Main.storyboard */,
 				DE93527D1CAAF1E800AD534C /* Assets.xcassets */,
@@ -469,8 +478,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE3651D71CC05E0F00F27C3B /* PostViewController.swift in Sources */,
+				DE3651DD1CC153A900F27C3B /* Routes.swift in Sources */,
 				DE9352791CAAF1E800AD534C /* ViewController.swift in Sources */,
 				DE9352771CAAF1E800AD534C /* AppDelegate.swift in Sources */,
+				DE3651DB1CC1536D00F27C3B /* ArticleCell.swift in Sources */,
+				DE3651D91CC1533000F27C3B /* Models.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

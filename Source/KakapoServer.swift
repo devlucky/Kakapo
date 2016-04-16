@@ -58,8 +58,8 @@ public class KakapoServer: NSURLProtocol {
     public typealias RouteHandler = Request -> Serializable?
     
     public struct Request {
-        let info: URLInfo
-        let HTTPBody: NSData?
+        public let info: URLInfo
+        public let HTTPBody: NSData?
     }
 
     private typealias Route = (method: HTTPMethod, handler: RouteHandler)

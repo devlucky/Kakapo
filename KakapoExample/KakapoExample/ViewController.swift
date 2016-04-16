@@ -8,76 +8,14 @@
 
 import UIKit
 import Kakapo
-import Fakery
 import SnapKit
-
-let sharedFaker = Faker()
-
-struct Person: Serializable, Storable {
-    let id: Int
-    let name: String
-    
-    init(id: Int, db: KakapoDB) {
-        self.id = id
-        self.name = sharedFaker.name.name()
-    }
-}
-
-struct Comment: Serializable, Storable {
-    let id: Int
-    let text: String
-
-    init(id: Int, db: KakapoDB) {
-        self.id = id
-        self.text = sharedFaker.lorem.sentence()
-    }
-}
-
-struct Like: Serializable, Storable {
-    let id: Int
-    let author: Person
-    
-    init(id: Int, db: KakapoDB) {
-        self.id = id
-        self.author = db.insert { Person(id: $0, db: db) }
-    }
-}
-
-struct Post: Serializable, Storable {
-    let id: Int
-    let content: String
-    let comments: [Comment]
-    let likes: [Like]
-    
-    init(id: Int, db: KakapoDB) {
-        self.id = id
-        self.content = sharedFaker.lorem.paragraph(sentencesAmount: random() % 30 + 1)
-        self.comments = db.create(Comment.self, number: random() % 5)
-        self.likes = db.create(Like.self, number: random() % 30)
-    }
-    
-    init(id: Int, content: String, comments: [Comment], likes: [Like]) {
-        self.id = id
-        self.content = content
-        self.comments = comments
-        self.likes = likes
-    }
-}
-
-class ArticleCell: UITableViewCell {
-    required override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: .Subtitle, reuseIdentifier: reuseIdentifier)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
+import SwiftyJSON
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    let db = KakapoDB()
     let tableView = UITableView()
+    var db: KakapoDB! = nil
+    
     var posts = [Post]() {
         didSet {
             tableView.reloadData()
@@ -86,7 +24,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setup()
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -97,24 +34,26 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             make.edges.equalTo(view)
         }
         
-        NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/posts")!) { (data, response, _) in
-            let posts = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as! [AnyObject]
+        NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: Route.Posts)!) { (data, response, _) in
+            guard let data = data else { return }
+            
+            let json = JSON(data: data)
             dispatch_async(dispatch_get_main_queue(), { 
-                self.posts = posts.map({ (dict) -> Post in
-                    return Post(id: dict["id"] as! Int, content: dict["content"] as! String, comments: [], likes: [])
+                self.posts = json.arrayValue.map({ (post) -> Post in
+                    
+                    let comments = post["comments"].arrayValue.map { (comment) -> Comment in
+                        return Comment(id: comment["id"].intValue, text: comment["text"].stringValue)
+                    }
+                    
+                    let likes = post["likes"].arrayValue.map { (like) -> Like in
+                        let person = like["author"].dictionaryValue
+                        return Like(id: like["id"].intValue, author: Person(id: person["id"]!.intValue, name: person["name"]!.stringValue))
+                    }
+                    
+                    return Post(id: post["id"].intValue, content: post["content"].stringValue, comments: comments, likes: likes)
                 })
             })
         }.resume()
-    }
-
-    func setup() {
-        KakapoServer.enable()
-        
-        db.create(Post.self, number: 10)
-        
-        KakapoServer.get("/posts") { (request) -> Serializable? in
-            self.db.findAll(Post)
-        }
     }
     
     // MARK: UITableViewDataSource
@@ -131,4 +70,3 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return cell
     }
 }
-

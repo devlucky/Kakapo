@@ -11,6 +11,7 @@ DEPENDENCIES:
   - Nimble (~> 3.2.0)
   - Quick (~> 0.9.0)
   - SnapKit
+  - SwiftyJSON
 
 SPEC CHECKSUMS:
   Fakery: a4121424cf731cacc04a5ff1735fcc6e3efc656d
