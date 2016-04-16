@@ -225,6 +225,21 @@ class KakapoServerTests: QuickSpec {
                 expect(responseDictionary?["id"]).toEventually(be(2))
             }
             
+            it("should return 200 status code when no code specified") {
+                var statusCode: Int? = nil
+                
+                KakapoServer.get("/users"){ request in
+                    return db.findAll(UserFactory)
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    statusCode = response.statusCode
+                    }.resume()
+                
+                expect(statusCode).toEventually(equal(200))
+            }
+            
             it("should return the specified object and code inside a response object with code when requesting a registered url") {
                 db.create(UserFactory.self, number: 20)
                 
@@ -269,7 +284,7 @@ class KakapoServerTests: QuickSpec {
                 var allHeaders: [String : String]? = nil
                 
                 KakapoServer.get("/users/:id"){ request in
-                    return Response(code: 400, headerFields: ["access_token" : "094850348502", "user_id" : "124"], body: ["id" : "foo", "type" : "User"])
+                    return Response(code: 400, body: ["id" : "foo", "type" : "User"], headerFields: ["access_token" : "094850348502", "user_id" : "124"])
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in

@@ -62,13 +62,13 @@ public struct Request {
 
 public struct Response: CustomSerializable {
     let code: Int
-    let headerFields: [String : String]?
     let body: Serializable
+    let headerFields: [String : String]?
     
-    init(code: Int, headerFields: [String : String]? = nil, body: Serializable) {
+    init(code: Int, body: Serializable, headerFields: [String : String]? = nil) {
         self.code = code
-        self.headerFields = headerFields
         self.body = body
+        self.headerFields = headerFields
     }
     
     public func customSerialize() -> AnyObject {
