@@ -112,7 +112,7 @@ public class KakapoServer: NSURLProtocol {
     }
     
     override public func startLoading() {
-        guard let requestString = request.URL?.absoluteString,
+        guard let URL = request.URL,
                   client = client else { return }
         
         var statusCode = 200
@@ -121,7 +121,7 @@ public class KakapoServer: NSURLProtocol {
         var serializableObject: Serializable?
         
         for (key, route) in KakapoServer.routes {
-            if let info = parseUrl(key, requestURL: requestString) {
+            if let info = parseUrl(key, requestURL: URL.absoluteString) {
                 
                 if let dataFromNSURLRequest = request.HTTPBody {
                     dataBody = dataFromNSURLRequest
@@ -140,10 +140,12 @@ public class KakapoServer: NSURLProtocol {
             headerFields = serializableObject.header
         }
         
-        let response = NSHTTPURLResponse(URL: request.URL!, statusCode: statusCode, HTTPVersion: "HTTP/1.1", headerFields: headerFields)
-        client.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
+        if let response = NSHTTPURLResponse(URL: URL, statusCode: statusCode, HTTPVersion: "HTTP/1.1", headerFields: headerFields) {
+            client.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
+        }
         
-        if let serialized = serializableObject?.serialize(), let data = toData(serialized) {
+        if let serialized = serializableObject?.serialize(),
+               data = toData(serialized) {
             client.URLProtocol(self, didLoadData: data)
         }
         

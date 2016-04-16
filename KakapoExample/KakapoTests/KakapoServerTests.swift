@@ -251,6 +251,7 @@ class KakapoServerTests: QuickSpec {
                 var dataLength = 10000
                 
                 KakapoServer.get("/users/:id"){ request in
+                    // Optional.Some("none") -> not valid JSON object
                     return Response(code: 400, body: Optional.Some("none"))
                 }
                 
@@ -262,6 +263,23 @@ class KakapoServerTests: QuickSpec {
                 
                 expect(dataLength).toEventually(equal(0))
                 expect(statusCode).toEventually(equal(400))
+            }
+            
+            it("should return the specified response headers inside a response object with code when requesting a registered url") {
+                var allHeaders: [String : String]? = nil
+                
+                KakapoServer.get("/users/:id"){ request in
+                    return Response(code: 400, header: ["access_token" : "094850348502", "user_id" : "124"], body: ["id" : "foo", "type" : "User"])
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    allHeaders = response.allHeaderFields as? [String : String]
+                    }.resume()
+
+                expect(allHeaders?["access_token"]).toEventually(equal("094850348502"))
+                expect(allHeaders?["user_id"]).toEventually(equal("124"))
+                expect(allHeaders?["bar"]).toEventually(beNil())
             }
             
             it("should return the specified array of objects when requesting a registered url") {
