@@ -269,7 +269,7 @@ class KakapoServerTests: QuickSpec {
                 var allHeaders: [String : String]? = nil
                 
                 KakapoServer.get("/users/:id"){ request in
-                    return Response(code: 400, header: ["access_token" : "094850348502", "user_id" : "124"], body: ["id" : "foo", "type" : "User"])
+                    return Response(code: 400, headerFields: ["access_token" : "094850348502", "user_id" : "124"], body: ["id" : "foo", "type" : "User"])
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in

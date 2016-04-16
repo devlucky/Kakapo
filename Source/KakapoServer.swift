@@ -62,12 +62,12 @@ public struct Request {
 
 public struct Response: CustomSerializable {
     let code: Int
-    let header: [String : String]?
+    let headerFields: [String : String]?
     let body: Serializable
     
-    init(code: Int, header: [String : String]? = nil, body: Serializable) {
+    init(code: Int, headerFields: [String : String]? = nil, body: Serializable) {
         self.code = code
-        self.header = header
+        self.headerFields = headerFields
         self.body = body
     }
     
@@ -137,7 +137,7 @@ public class KakapoServer: NSURLProtocol {
         
         if let serializableObject = serializableObject as? Response {
             statusCode = serializableObject.code
-            headerFields = serializableObject.header
+            headerFields = serializableObject.headerFields
         }
         
         if let response = NSHTTPURLResponse(URL: URL, statusCode: statusCode, HTTPVersion: "HTTP/1.1", headerFields: headerFields) {
