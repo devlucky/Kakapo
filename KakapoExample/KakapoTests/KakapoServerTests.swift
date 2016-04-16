@@ -225,6 +225,78 @@ class KakapoServerTests: QuickSpec {
                 expect(responseDictionary?["id"]).toEventually(be(2))
             }
             
+            it("should return 200 status code when no code specified") {
+                var statusCode: Int? = nil
+                
+                KakapoServer.get("/users"){ request in
+                    return db.findAll(UserFactory)
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    statusCode = response.statusCode
+                    }.resume()
+                
+                expect(statusCode).toEventually(equal(200))
+            }
+            
+            it("should return the specified object and code inside a response object with code when requesting a registered url") {
+                db.create(UserFactory.self, number: 20)
+                
+                var statusCode: Int? = nil
+                var responseDictionary: NSDictionary? = nil
+                
+                KakapoServer.get("/users/:id"){ request in
+                    return Response(code: 200, body: db.find(UserFactory.self, id: Int(request.info.params["id"]!)!))
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    statusCode = response.statusCode
+                    responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+                    }.resume()
+                
+                expect(responseDictionary?["firstName"]).toNotEventually(beNil())
+                expect(responseDictionary?["id"]).toEventually(be(2))
+                expect(statusCode).toEventually(equal(200))
+            }
+            
+            it("should return the specified error object and code inside a response object with code when requesting a registered url") {
+                var statusCode: Int? = nil
+                var dataLength = 10000
+                
+                KakapoServer.get("/users/:id"){ request in
+                    // Optional.Some("none") -> not valid JSON object
+                    return Response(code: 400, body: Optional.Some("none"))
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    statusCode = response.statusCode
+                    dataLength = data!.length
+                    }.resume()
+                
+                expect(dataLength).toEventually(equal(0))
+                expect(statusCode).toEventually(equal(400))
+            }
+            
+            it("should return the specified response headers inside a response object with code when requesting a registered url") {
+                var allHeaders: [String : String]? = nil
+                
+                KakapoServer.get("/users/:id"){ request in
+                    return Response(code: 400, body: ["id" : "foo", "type" : "User"], headerFields: ["access_token" : "094850348502", "user_id" : "124"])
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    allHeaders = response.allHeaderFields as? [String : String]
+                    }.resume()
+
+                expect(allHeaders?["access_token"]).toEventually(equal("094850348502"))
+                expect(allHeaders?["user_id"]).toEventually(equal("124"))
+                expect(allHeaders?["bar"]).toEventually(beNil())
+            }
+            
             it("should return the specified array of objects when requesting a registered url") {
                 db.create(UserFactory.self, number: 20)
                 
