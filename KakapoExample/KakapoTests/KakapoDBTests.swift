@@ -192,8 +192,7 @@ class KakapoDBTests: QuickSpec {
             }
         }
         
-        // 💀💀💀💀💀💀💀💀
-        describe("Database Operations Deadlock") {
+        describe("Database Operations Deadlock 💀💀💀💀💀💀💀💀") {
             let sut = KakapoDB()
             let queue = dispatch_queue_create("com.kakapodb.testDeadlock", DISPATCH_QUEUE_SERIAL)
             

@@ -49,15 +49,27 @@ public class KakapoDB {
         dispatch_queue_set_specific(queue, queueKey, queueContext, nil)
     }
     
-    private func synchronizeDBWrite(closure: () -> ()) {
+    private func barrierSync<T>(closure: () -> T) -> T {
         if dispatch_get_specific(queueKey) == queueContext {
-            closure()
+            return closure()
         } else {
-            dispatch_barrier_sync(queue, closure)
+            var object: T?
+            dispatch_barrier_sync(queue) {
+                object = closure()
+            }
+            return object!
         }
     }
 
-    private func synchronizeDBRead(closure: () -> ()) {
+    private func barrierAsync(closure: () -> ()) {
+        if dispatch_get_specific(queueKey) == queueContext {
+            closure()
+        } else {
+            dispatch_barrier_async(queue, closure)
+        }
+    }
+
+    private func sync(closure: () -> ()) {
         if dispatch_get_specific(queueKey) == queueContext {
             closure()
         } else {
@@ -66,13 +78,12 @@ public class KakapoDB {
     }
     
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
-        var ids = [Int]()
-        synchronizeDBWrite {
-            ids = (0..<number).map { _ in self.uuid()}
+        let ids = barrierSync {
+            return (0..<number).map { _ in self.uuid()}
         }
         
         let result = ids.map { id in T(id: id, db: self) }
-        synchronizeDBWrite {
+        barrierAsync {
             self.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
         }
         
@@ -80,15 +91,14 @@ public class KakapoDB {
     }
     
     public func insert<T: Storable>(handler: (Int) -> T) -> T {
-        var id: Int = 0
-        synchronizeDBWrite {
-            id = self.uuid()
+        let id = barrierSync {
+            return self.uuid()
         }
         
         let object = handler(id)
             
         precondition(object.id == id, "Tried to insert an invalid id")
-        synchronizeDBWrite {
+        barrierAsync {
             self.lookup(T).value.append(object)
         }
 
@@ -96,21 +106,13 @@ public class KakapoDB {
     }
     
     public func find<T: Storable>(_: T.Type, id: Int) -> T? {
-        var result: T?
-        
-        synchronizeDBRead { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            result = weakSelf.lookup(T).value.filter{ $0.id == id }.flatMap{ $0 as? T }.first
-        }
-        
-        return result
+        return filter(T.self) { $0.id == id }.first
     }
     
     public func findAll<T: Storable>(_: T.Type) -> [T] {
         var result = [T]()
         
-        synchronizeDBRead { [weak self] in
+        sync { [weak self] in
             guard let weakSelf = self else { return }
             
             result = weakSelf.lookup(T).value.flatMap{$0 as? T}
