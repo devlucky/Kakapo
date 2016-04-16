@@ -10,7 +10,7 @@ import Foundation
 
 public protocol Storable {
     var id: Int { get }
-    init(id: Int)
+    init(id: Int, db: KakapoDB)
 }
 
 enum KakapoDBError: ErrorType {
@@ -34,54 +34,85 @@ private final class ArrayBox<T> {
 public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
+    private let queueKey = NSString(string: "dbQueue").UTF8String
+    private let _queueContext = NSObject()
+    private var queueContext: UnsafeMutablePointer<Void> {
+        get {
+            return UnsafeMutablePointer<Void>(Unmanaged.passRetained(_queueContext).toOpaque())
+        }
+    }
+    
     private var _uuid = -1
     private var store: [String: ArrayBox<Storable>] = [:]
+
+    public init() {
+        dispatch_queue_set_specific(queue, queueKey, queueContext, nil)
+    }
+    
+    private func barrierSync<T>(closure: () -> T) -> T {
+        if dispatch_get_specific(queueKey) == queueContext {
+            return closure()
+        } else {
+            var object: T?
+            dispatch_barrier_sync(queue) {
+                object = closure()
+            }
+            return object!
+        }
+    }
+
+    private func barrierAsync(closure: () -> ()) {
+        if dispatch_get_specific(queueKey) == queueContext {
+            closure()
+        } else {
+            dispatch_barrier_async(queue, closure)
+        }
+    }
+
+    private func sync(closure: () -> ()) {
+        if dispatch_get_specific(queueKey) == queueContext {
+            closure()
+        } else {
+            dispatch_sync(queue, closure)
+        }
+    }
     
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
-        var result = [T]()
+        let ids = barrierSync {
+            return (0..<number).map { _ in self.uuid()}
+        }
         
-        dispatch_barrier_sync(queue) { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            result = (0..<number).map { _ in T(id: weakSelf.uuid()) }
-            weakSelf.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
+        let result = ids.map { id in T(id: id, db: self) }
+        barrierAsync {
+            self.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
         }
         
         return result
     }
     
-    public func insert<T: Storable>(handler: (Int) -> T) {
-        dispatch_barrier_async(queue) { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            let potentialId = weakSelf._uuid + 1
-            let object = handler(potentialId)
-            
-            if object.id < potentialId {
-                fatalError("Tried to insert an invalid id")
-            } else {
-                weakSelf.lookup(T).value.append(object)
-                weakSelf.uuid()
-            }
+    public func insert<T: Storable>(handler: (Int) -> T) -> T {
+        let id = barrierSync {
+            return self.uuid()
         }
+        
+        let object = handler(id)
+            
+        precondition(object.id == id, "Tried to insert an invalid id")
+        barrierAsync {
+            self.lookup(T).value.append(object)
+        }
+
+        return object
     }
     
     public func find<T: Storable>(_: T.Type, id: Int) -> T? {
-        var result: T?
-        
-        dispatch_sync(queue) { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            result = weakSelf.lookup(T).value.filter{ $0.id == id }.flatMap{ $0 as? T }.first
-        }
-        
-        return result
+        return filter(T.self) { $0.id == id }.first
     }
     
     public func findAll<T: Storable>(_: T.Type) -> [T] {
         var result = [T]()
         
-        dispatch_sync(queue) { [weak self] in
+        sync { [weak self] in
             guard let weakSelf = self else { return }
             
             result = weakSelf.lookup(T).value.flatMap{$0 as? T}
@@ -91,15 +122,7 @@ public class KakapoDB {
     }
     
     public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
-        var result: [T] = []
-        
-        dispatch_sync(queue) { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            result = weakSelf.lookup(T).value.flatMap{$0 as? T}.filter(includeElement)
-        }
-        
-        return result
+        return findAll(T).filter(includeElement)
     }
     
     private func uuid() -> Int {
