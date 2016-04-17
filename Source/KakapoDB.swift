@@ -34,47 +34,27 @@ private final class ArrayBox<T> {
 public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
-    private let queueKey = NSString(string: "dbQueue").UTF8String
-    private let _queueContext = NSObject()
-    private var queueContext: UnsafeMutablePointer<Void> {
-        get {
-            return UnsafeMutablePointer<Void>(Unmanaged.passRetained(_queueContext).toOpaque())
-        }
-    }
-    
     private var _uuid = -1
     private var store: [String: ArrayBox<Storable>] = [:]
 
     public init() {
-        dispatch_queue_set_specific(queue, queueKey, queueContext, nil)
+        // empty but needed to be initialized from other modules.
     }
     
     private func barrierSync<T>(closure: () -> T) -> T {
-        if dispatch_get_specific(queueKey) == queueContext {
-            return closure()
-        } else {
-            var object: T?
-            dispatch_barrier_sync(queue) {
-                object = closure()
-            }
-            return object!
+        var object: T?
+        dispatch_barrier_sync(queue) {
+            object = closure()
         }
+        return object!
     }
 
     private func barrierAsync(closure: () -> ()) {
-        if dispatch_get_specific(queueKey) == queueContext {
-            closure()
-        } else {
-            dispatch_barrier_async(queue, closure)
-        }
+        dispatch_barrier_async(queue, closure)
     }
 
     private func sync(closure: () -> ()) {
-        if dispatch_get_specific(queueKey) == queueContext {
-            closure()
-        } else {
-            dispatch_sync(queue, closure)
-        }
+        dispatch_sync(queue, closure)
     }
     
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
