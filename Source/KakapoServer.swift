@@ -8,14 +8,30 @@
 
 import Foundation
 
-public class KakapoServer: NSURLProtocol {
+public typealias RouteHandler = Request -> Serializable?
+
+public struct Request {
+    let info: URLInfo
+    let HTTPBody: NSData?
+}
+
+public struct Response: CustomSerializable {
+    let code: Int
+    let body: Serializable
+    let headerFields: [String : String]?
     
-    public typealias RouteHandler = Request -> Serializable?
-    
-    public struct Request {
-        let info: URLInfo
-        let HTTPBody: NSData?
+    init(code: Int, body: Serializable, headerFields: [String : String]? = nil) {
+        self.code = code
+        self.body = body
+        self.headerFields = headerFields
     }
+    
+    public func customSerialize() -> AnyObject {
+        return body.serialize()
+    }
+}
+
+public class KakapoServer: NSURLProtocol {
 
     private typealias Route = (method: HTTPMethod, handler: RouteHandler)
     
@@ -51,32 +67,40 @@ public class KakapoServer: NSURLProtocol {
     }
     
     override public func startLoading() {
-        guard let requestString = request.URL?.absoluteString,
+        guard let URL = request.URL,
                   client = client else { return }
         
+        var statusCode = 200
+        var headerFields = [String : String]?()
         var dataBody: NSData?
-        var serializableObjects: Serializable?
+        var serializableObject: Serializable?
         
         for (key, route) in KakapoServer.routes {
-            if let info = parseUrl(key, requestURL: requestString) {
+            if let info = parseUrl(key, requestURL: URL.absoluteString) {
                 
                 if let dataFromNSURLRequest = request.HTTPBody {
                     dataBody = dataFromNSURLRequest
                 } else if let dataFromProtocol = NSURLProtocol.propertyForKey(RequestHTTPBodyKey, inRequest: request) as? NSData {
-                    // Using NSURLProtocol property after swizzling NSURLRequest, see NSURLRequest+FixCopy.swift
+                    // Using NSURLProtocol property after swizzling NSURLRequest here
                     dataBody = dataFromProtocol
                 }
                 
-                serializableObjects = route.handler(Request(info: info, HTTPBody: dataBody))
+                serializableObject = route.handler(Request(info: info, HTTPBody: dataBody))
                 break
             }
         }
         
-        // TODO: handle status codes and header fields
-        let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "", headerFields: nil)
-        client.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
+        if let serializableObject = serializableObject as? Response {
+            statusCode = serializableObject.code
+            headerFields = serializableObject.headerFields
+        }
         
-        if let serialized = serializableObjects?.serialize(), let data = toData(serialized) {
+        if let response = NSHTTPURLResponse(URL: URL, statusCode: statusCode, HTTPVersion: "HTTP/1.1", headerFields: headerFields) {
+            client.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
+        }
+        
+        if let serialized = serializableObject?.serialize(),
+               data = toData(serialized) {
             client.URLProtocol(self, didLoadData: data)
         }
         
