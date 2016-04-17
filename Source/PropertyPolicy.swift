@@ -20,7 +20,7 @@ public protocol _PropertyPolicy: CustomSerializable {
  *  `PropertyPolicy` is a Simple serializable object that can be used to wrap your `Serializable` Objects' properties to add specific behaviors to the property. Concrete implementation can manipulate the object hold by the property policy to achieve specific results. **See `IgnorableNilProperty`**
  */
 public protocol PropertyPolicy: _PropertyPolicy {
-    typealias T
+    associatedtype T
     
     /// The object that will be serialized when shouldSerialize return true. Use specific type or Any for multiple types. Make sure it's an elegible `Serializable` or Property list object. **See `Serializable`**
     var object: T? { get }

@@ -26,8 +26,8 @@ extension NSURLRequest {
         }
         
         dispatch_once(&Static.token) {
-            let originalSelector = Selector("copy") //#selector(copy as () -> AnyObject)
-            let swizzledSelector = Selector("kkp_copy") //#selector(kkp_copy)
+            let originalSelector = #selector(copy as () -> AnyObject)
+            let swizzledSelector = #selector(kkp_copy)
             
             let originalMethod = class_getInstanceMethod(self, originalSelector)
             let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
