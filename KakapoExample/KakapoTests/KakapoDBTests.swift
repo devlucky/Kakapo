@@ -194,6 +194,57 @@ class KakapoDBTests: QuickSpec {
             }
         }
         
+        describe("Update") {
+            it("should update a previously inserted object") {
+                sut.create(UserFactory.self, number: 20)
+                let elementToUpdate = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: 2)
+                let updated = sut.update(elementToUpdate)
+                let updatedUserInDb = sut.find(UserFactory.self, id: 2)
+                
+                expect(updated).to(be(true))
+                expect(updatedUserInDb?.firstName).to(equal("Joan"))
+                expect(updatedUserInDb?.lastName).to(equal("Romano"))
+                expect(updatedUserInDb?.age).to(equal(28))
+            }
+            
+            it("should not update an object that was never inserted") {
+                sut.create(UserFactory.self, number: 20)
+                let elementToUpdate = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: 45)
+                let updated = sut.update(elementToUpdate)
+                let updatedUserInDb = sut.find(UserFactory.self, id: 45)
+                
+                expect(updated).to(be(false))
+                expect(updatedUserInDb).to(beNil())
+            }
+            
+            it("should not update different kind of objects from different databases with same id") {
+                let anotherDB = KakapoDB()
+                sut.create(UserFactory.self, number: 20)
+                anotherDB.create(CommentFactory.self, number: 20)
+                let updated = sut.update(anotherDB.find(CommentFactory.self, id: 5)!)
+                let updatedUserInDb = sut.find(CommentFactory.self, id: 5)
+                
+                expect(updated).to(be(false))
+                expect(updatedUserInDb).to(beNil())
+            }
+            
+            it("should update same kind of objects from different databases with same id") {
+                let anotherDB = KakapoDB()
+                var theId: Int = 0
+                sut.create(CommentFactory.self, number: 20)
+                anotherDB.insert({ (id) -> CommentFactory in
+                    theId = id
+                    return CommentFactory(text: "a comment", likes: 20, id: id)
+                })
+                let updated = sut.update(anotherDB.find(CommentFactory.self, id: theId)!)
+                let updatedComment = sut.find(CommentFactory.self, id: theId)
+                
+                expect(updated).to(be(true))
+                expect(updatedComment?.text).to(equal("a comment"))
+                expect(updatedComment?.likes).to(equal(20))
+            }
+        }
+        
         describe("Deletion") {
             it("should delete a previously inserted object") {
                 sut.create(UserFactory.self, number: 20)
@@ -238,6 +289,39 @@ class KakapoDBTests: QuickSpec {
                 
                 expect(deleted).to(be(false))
                 expect(usersArray.count).to(equal(20))
+            }
+            
+            it("should not delete objects from different databases with same id") {
+                let anotherDB = KakapoDB()
+                sut.create(UserFactory.self, number: 20)
+                anotherDB.create(CommentFactory.self, number: 20)
+                let deleted = sut.delete(anotherDB.find(CommentFactory.self, id: 5)!)
+                let usersArray = sut.findAll(UserFactory.self)
+                
+                expect(deleted).to(be(false))
+                expect(usersArray.count).to(equal(20))
+            }
+            
+            it("should delete objects from different databases with same id and data representation") {
+                let anotherDB = KakapoDB()
+                var theId: Int = 0
+                sut.insert { (id) -> UserFactory in
+                    theId = id
+                    return UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                }
+                
+                sut.create(UserFactory.self, number: 44)
+                
+                anotherDB.insert { (id) -> UserFactory in
+                    return UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                }
+                
+                let elementToDelete = anotherDB.find(UserFactory.self, id: theId)!
+                let deleted = sut.delete(elementToDelete)
+                let usersArray = sut.findAll(UserFactory.self)
+                
+                expect(deleted).to(be(true))
+                expect(usersArray.count).to(equal(44))
             }
         }
         

@@ -31,6 +31,38 @@ private final class ArrayBox<T> {
     private var value: [T]
 }
 
+private extension Array {
+    
+    func indexOf<T: Storable>(element: T) -> Int? {
+        for (index, object) in enumerate() {
+            if let object = object as? Storable
+                where object.dynamicType == element.dynamicType && object.id == element.id {
+                
+                return index
+            }
+        }
+        
+        return nil
+    }
+    
+    func dataIndexOf<T: Storable>(element: T) -> Int? {
+        guard let elementData = toData(element.serialize()) else { return nil }
+        
+        for (index, object) in enumerate() {
+            if let object = object as? Storable,
+                   objectData = toData(object.serialize())
+                where object.dynamicType == element.dynamicType &&
+                      object.id == element.id &&
+                      objectData.isEqualToData(elementData) {
+                
+                return index
+            }
+        }
+        
+        return nil
+    }
+}
+
 public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
@@ -89,18 +121,23 @@ public class KakapoDB {
         return object
     }
     
+    public func update<T: Storable>(entity: T) -> Bool {
+        let index: Int? = barrierSync {
+            self.lookup(T).value.indexOf(entity)
+        }
+        
+        guard let indexToUpdate = index else { return false }
+        
+        barrierAsync {
+            self.lookup(T).value[indexToUpdate] = entity
+        }
+        
+        return true
+    }
+    
     public func delete<T: Storable>(entity: T) -> Bool {
         let index: Int? = barrierSync {
-            guard let entityData = toData(entity.serialize()) else { return nil }
-            
-            for (index, object) in self.lookup(T).value.enumerate() {
-                if let objectData = toData(object.serialize()) where
-                    object.id == entity.id && objectData.isEqualToData(entityData) {
-                    return index
-                }
-            }
-            
-            return nil
+            self.lookup(T).value.dataIndexOf(entity)
         }
         
         guard let indexToRemove = index else { return false }
