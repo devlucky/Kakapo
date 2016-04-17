@@ -53,8 +53,12 @@ public class KakapoDB {
         dispatch_barrier_async(queue, closure)
     }
 
-    private func sync(closure: () -> ()) {
-        dispatch_sync(queue, closure)
+    private func sync<T>(closure: () -> T) -> T {
+        var object: T?
+        dispatch_sync(queue) {
+            object = closure()
+        }
+        return object!
     }
     
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
@@ -85,24 +89,18 @@ public class KakapoDB {
         return object
     }
     
-    public func find<T: Storable>(_: T.Type, id: Int) -> T? {
-        return filter(T.self) { $0.id == id }.first
-    }
-    
     public func findAll<T: Storable>(_: T.Type) -> [T] {
-        var result = [T]()
-        
-        sync { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            result = weakSelf.lookup(T).value.flatMap{$0 as? T}
+        return sync {
+            self.lookup(T).value.flatMap{$0 as? T}
         }
-        
-        return result
     }
     
     public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
         return findAll(T).filter(includeElement)
+    }
+    
+    public func find<T: Storable>(_: T.Type, id: Int) -> T? {
+        return filter(T.self) { $0.id == id }.first
     }
     
     private func uuid() -> Int {
