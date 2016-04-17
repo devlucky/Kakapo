@@ -415,6 +415,56 @@ class KakapoDBTests: QuickSpec {
                 }
                 expect(user).toEventuallyNot(beNil())
             }
+            
+            it("should not deadlock when synchronously updating the database from another queue during a write operation") {
+                let user = sut.insert { (id) -> UserFactory in
+                    dispatch_sync(queue) {
+                        sut.update(UserFactory(id: 0, db: sut))
+                    }
+                    return UserFactory(id: id, db: sut)
+                }
+                expect(user).toEventuallyNot(beNil())
+            }
+            
+            it("should not deadlock when synchronously deleting the database from another queue during a write operation") {
+                let user = sut.insert { (id) -> UserFactory in
+                    dispatch_sync(queue) {
+                        sut.delete(sut.find(UserFactory.self, id: 0)!)
+                    }
+                    return UserFactory(id: id, db: sut)
+                }
+                
+                let users = sut.findAll(UserFactory.self)
+                
+                expect(user).toEventuallyNot(beNil())
+                expect(users.count).toEventually(equal(1))
+            }
+            
+            it("should not deadlock when deleting into database during a reading operation") {
+                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
+                    sut.delete(sut.find(UserFactory.self, id: 0)!)
+                    return true
+                })
+                
+                let users = sut.findAll(UserFactory.self)
+                
+                expect(result).toEventuallyNot(beNil())
+                expect(users.count).toEventually(equal(0))
+            }
+            
+            it("should not deadlock when updating into database during a reading operation") {
+                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
+                    sut.update(UserFactory(firstName: "Alex", lastName: "Manzella", age: 30, id: 0))
+                    return true
+                })
+                
+                let user = sut.findAll(UserFactory.self).first!
+                
+                expect(result).toEventuallyNot(beNil())
+                expect(user.firstName).toEventually(equal("Alex"))
+                expect(user.lastName).toEventually(equal("Manzella"))
+                expect(user.age).toEventually(equal(30))
+            }
         }
     }
 }

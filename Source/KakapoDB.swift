@@ -46,10 +46,11 @@ private extension Array {
     }
     
     func dataIndexOf<T: Storable>(element: T) -> Int? {
-        guard let elementData = toData(element.serialize()) else { return nil }
+        let elementData = toData(element.serialize())
         
         for (index, object) in enumerate() {
             if let object = object as? Storable,
+                   elementData = elementData,
                    objectData = toData(object.serialize())
                 where object.dynamicType == element.dynamicType &&
                       object.id == element.id &&
