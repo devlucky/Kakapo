@@ -1,6 +1,9 @@
 language: objective-c
 osx_image: xcode7.3
 
+notifications:
+  slack: devlucky:0AP12qjjfc2Zxc0s9yo1cQQm
+
 before_install:
   - gem install fastlane --no-rdoc --no-ri --no-document --quiet
 
