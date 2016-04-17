@@ -78,6 +78,13 @@ extension _PropertyPolicy {
     }
 }
 
+func toData(object: AnyObject) -> NSData? {
+    if !NSJSONSerialization.isValidJSONObject(object) {
+        return nil
+    }
+    return try? NSJSONSerialization.dataWithJSONObject(object, options: .PrettyPrinted)
+}
+
 private func serializeObject(value: Any) -> AnyObject {
     if let value = value as? Serializable {
         return value.serialize()

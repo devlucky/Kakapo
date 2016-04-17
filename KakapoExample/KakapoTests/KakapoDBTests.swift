@@ -11,7 +11,7 @@ import Nimble
 
 @testable import Kakapo
 
-struct UserFactory: Storable, Serializable {
+struct UserFactory: Storable {
     let firstName: String
     let lastName: String
     let age: Int
@@ -49,13 +49,13 @@ class KakapoDBTests: QuickSpec {
     
     override func spec() {
         
-        describe("#KakapoDB") {
-            var sut = KakapoDB()
-            
-            beforeEach({
-                sut = KakapoDB()
-            })
-            
+        var sut = KakapoDB()
+        
+        beforeEach {
+            sut = KakapoDB()
+        }
+        
+        describe("Creation and Insertion") {
             it("should create a large number of elements") {
                 let queue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT)
                 dispatch_apply(1000, queue, { i in
@@ -119,7 +119,9 @@ class KakapoDBTests: QuickSpec {
                 expect(user?.age).toNot(beNil())
                 expect(userObjects.count) == 1000
             }
-
+        }
+        
+        describe("Finding and Filtering") {
             it("should return the expected object with a given id after inserting 20 objects") {
                 sut.create(UserFactory.self, number: 20)
                 let user = sut.find(UserFactory.self, id: 1)
@@ -192,9 +194,61 @@ class KakapoDBTests: QuickSpec {
             }
         }
         
+        describe("Deletion") {
+            it("should delete a previously inserted object") {
+                sut.create(UserFactory.self, number: 20)
+                let elementToDelete = sut.find(UserFactory.self, id: 2)!
+                let deleted = sut.delete(elementToDelete)
+                let usersArray = sut.findAll(UserFactory.self)
+                
+                expect(deleted).to(be(true))
+                expect(usersArray.count).to(equal(19))
+            }
+            
+            it("should delete a previously inserted object with same data representation") {
+                var theId: Int = 0
+                sut.insert { (id) -> UserFactory in
+                    theId = id
+                    return UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                }
+                
+                let elementToDelete = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: theId)
+                let deleted = sut.delete(elementToDelete)
+                let usersArray = sut.findAll(UserFactory.self)
+                
+                expect(deleted).to(be(true))
+                expect(usersArray.count).to(equal(0))
+            }
+            
+            it("should not delete a non previously inserted object, even with same ids, since they have different data representation") {
+                sut.create(UserFactory.self, number: 20)
+                let elementToDelete = UserFactory(id: 2, db: sut)
+                let deleted = sut.delete(elementToDelete)
+                let usersArray = sut.findAll(UserFactory.self)
+                
+                expect(deleted).to(be(false))
+                expect(usersArray.count).to(equal(20))
+            }
+            
+            it("should not delete a non previously inserted object") {
+                sut.create(UserFactory.self, number: 20)
+                let elementToDelete = UserFactory(id: 44, db: sut)
+                let deleted = sut.delete(elementToDelete)
+                let usersArray = sut.findAll(UserFactory.self)
+                
+                expect(deleted).to(be(false))
+                expect(usersArray.count).to(equal(20))
+            }
+        }
+        
         describe("Database Operations Deadlock 💀💀💀💀💀💀💀💀") {
-            let sut = KakapoDB()
             let queue = dispatch_queue_create("com.kakapodb.testDeadlock", DISPATCH_QUEUE_SERIAL)
+            
+            beforeEach {
+                sut.insert { id -> UserFactory in
+                   return UserFactory(id: id, db: sut)
+                }
+            }
             
             it("should not deadlock when writing into database during a writing operation") {
                 let user = sut.insert { (id) -> UserFactory in

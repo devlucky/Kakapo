@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol Storable {
+public protocol Storable: Serializable {
     var id: Int { get }
     init(id: Int, db: KakapoDB)
 }
@@ -87,6 +87,29 @@ public class KakapoDB {
         }
 
         return object
+    }
+    
+    public func delete<T: Storable>(entity: T) -> Bool {
+        let index: Int? = barrierSync {
+            guard let entityData = toData(entity.serialize()) else { return nil }
+            
+            for (index, object) in self.lookup(T).value.enumerate() {
+                if let objectData = toData(object.serialize()) where
+                    object.id == entity.id && objectData.isEqualToData(entityData) {
+                    return index
+                }
+            }
+            
+            return nil
+        }
+        
+        guard let indexToRemove = index else { return false }
+        
+        barrierAsync { 
+            self.lookup(T).value.removeAtIndex(indexToRemove)
+        }
+        
+        return true
     }
     
     public func findAll<T: Storable>(_: T.Type) -> [T] {

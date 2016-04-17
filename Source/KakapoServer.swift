@@ -125,11 +125,4 @@ public class KakapoServer: NSURLProtocol {
         KakapoServer.routes[urlString] = (.PUT, handler)
     }
     
-    private func toData(object: AnyObject) -> NSData? {
-        if !NSJSONSerialization.isValidJSONObject(object) {
-            return nil
-        }
-        return try? NSJSONSerialization.dataWithJSONObject(object, options: .PrettyPrinted)
-    }
-    
 }
