@@ -15,6 +15,7 @@
 		DE33B89C1CB4717B007F6161 /* checkUrlTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8991CB4717B007F6161 /* checkUrlTest.swift */; };
 		DE33B89D1CB4717B007F6161 /* KakapoDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B89A1CB4717B007F6161 /* KakapoDBTests.swift */; };
 		DE33B89E1CB4717B007F6161 /* KakapoServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B89B1CB4717B007F6161 /* KakapoServerTests.swift */; };
+		DE3651DF1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3651DE1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift */; };
 		DE53E2401CAD422600CD1AC0 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E23F1CAD422600CD1AC0 /* Serializer.swift */; };
 		DE53E2421CAD711500CD1AC0 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */; };
 		DE53E2441CAD719D00CD1AC0 /* SerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */; };
@@ -77,6 +78,7 @@
 		DE33B8991CB4717B007F6161 /* checkUrlTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = checkUrlTest.swift; sourceTree = "<group>"; };
 		DE33B89A1CB4717B007F6161 /* KakapoDBTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoDBTests.swift; sourceTree = "<group>"; };
 		DE33B89B1CB4717B007F6161 /* KakapoServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoServerTests.swift; sourceTree = "<group>"; };
+		DE3651DE1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSURLRequest+FixCopy.swift"; sourceTree = "<group>"; };
 		DE53E23F1CAD422600CD1AC0 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
 		DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
 		DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SerializerTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -207,6 +209,7 @@
 				DE33B8911CB47148007F6161 /* KakapoDB.swift */,
 				DE33B8921CB47148007F6161 /* KakapoServer.swift */,
 				DE33B8931CB47148007F6161 /* NSURL+Kakapo.swift */,
+				DE3651DE1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift */,
 				DE33B8941CB47148007F6161 /* String+Kakapo.swift */,
 				DE53E23F1CAD422600CD1AC0 /* Serializer.swift */,
 				DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */,
@@ -424,6 +427,7 @@
 				DE53E2401CAD422600CD1AC0 /* Serializer.swift in Sources */,
 				DE33B8961CB47148007F6161 /* KakapoServer.swift in Sources */,
 				DE33B8981CB47148007F6161 /* String+Kakapo.swift in Sources */,
+				DE3651DF1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
