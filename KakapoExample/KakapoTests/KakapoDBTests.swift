@@ -210,10 +210,9 @@ class KakapoDBTests: QuickSpec {
             it("should update a previously inserted object") {
                 sut.create(UserFactory.self, number: 20)
                 let elementToUpdate = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: 2)
-                let updated = sut.update(elementToUpdate)
+                let _ = try? sut.update(elementToUpdate)
                 let updatedUserInDb = sut.find(UserFactory.self, id: 2)
                 
-                expect(updated).to(be(true))
                 expect(updatedUserInDb?.firstName).to(equal("Joan"))
                 expect(updatedUserInDb?.lastName).to(equal("Romano"))
                 expect(updatedUserInDb?.age).to(equal(28))
@@ -222,10 +221,8 @@ class KakapoDBTests: QuickSpec {
             it("should not update an object that was never inserted") {
                 sut.create(UserFactory.self, number: 20)
                 let elementToUpdate = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: 45)
-                let updated = sut.update(elementToUpdate)
+                expect{ try sut.update(elementToUpdate) }.to(throwError(errorType: KakapoDBError.self))
                 let updatedUserInDb = sut.find(UserFactory.self, id: 45)
-                
-                expect(updated).to(be(false))
                 expect(updatedUserInDb).to(beNil())
             }
             
@@ -233,11 +230,9 @@ class KakapoDBTests: QuickSpec {
                 let anotherDB = KakapoDB()
                 sut.create(UserFactory.self, number: 20)
                 anotherDB.create(CommentFactory.self, number: 20)
-                let updated = sut.update(anotherDB.find(CommentFactory.self, id: 5)!)
-                let updatedUserInDb = sut.find(CommentFactory.self, id: 5)
-                
-                expect(updated).to(be(false))
-                expect(updatedUserInDb).to(beNil())
+                expect{ try sut.update(anotherDB.find(CommentFactory.self, id: 5)!) }.to(throwError(errorType: KakapoDBError.self))
+                let updatedCommentInDb = sut.find(CommentFactory.self, id: 5)
+                expect(updatedCommentInDb).to(beNil())
             }
             
             it("should update same kind of objects from different databases with same id") {
@@ -248,10 +243,9 @@ class KakapoDBTests: QuickSpec {
                     theId = id
                     return CommentFactory(text: "a comment", likes: 20, id: id)
                 })
-                let updated = sut.update(anotherDB.find(CommentFactory.self, id: theId)!)
+                let _ = try? sut.update(anotherDB.find(CommentFactory.self, id: theId)!)
                 let updatedComment = sut.find(CommentFactory.self, id: theId)
                 
-                expect(updated).to(be(true))
                 expect(updatedComment?.text).to(equal("a comment"))
                 expect(updatedComment?.likes).to(equal(20))
             }
@@ -261,10 +255,9 @@ class KakapoDBTests: QuickSpec {
             it("should delete a previously inserted object") {
                 sut.create(UserFactory.self, number: 20)
                 let elementToDelete = sut.find(UserFactory.self, id: 2)!
-                let deleted = sut.delete(elementToDelete)
+                let _ = try? sut.delete(elementToDelete)
                 let usersArray = sut.findAll(UserFactory.self)
                 
-                expect(deleted).to(be(true))
                 expect(usersArray.count).to(equal(19))
             }
             
@@ -276,42 +269,32 @@ class KakapoDBTests: QuickSpec {
                 }
                 
                 let elementToDelete = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: theId)
-                let deleted = sut.delete(elementToDelete)
+                let _ = try? sut.delete(elementToDelete)
                 let usersArray = sut.findAll(UserFactory.self)
                 
-                expect(deleted).to(be(true))
                 expect(usersArray.count).to(equal(0))
             }
             
             it("should not delete a non previously inserted object, even with same ids, since they have different data representation") {
                 sut.create(UserFactory.self, number: 20)
                 let elementToDelete = UserFactory(id: 2, db: sut)
-                let deleted = sut.delete(elementToDelete)
-                let usersArray = sut.findAll(UserFactory.self)
-                
-                expect(deleted).to(be(false))
-                expect(usersArray.count).to(equal(20))
+                expect{ try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
+                expect(sut.findAll(UserFactory.self).count).to(equal(20))
             }
             
             it("should not delete a non previously inserted object") {
                 sut.create(UserFactory.self, number: 20)
                 let elementToDelete = UserFactory(id: 44, db: sut)
-                let deleted = sut.delete(elementToDelete)
-                let usersArray = sut.findAll(UserFactory.self)
-                
-                expect(deleted).to(be(false))
-                expect(usersArray.count).to(equal(20))
+                expect{ try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
+                expect(sut.findAll(UserFactory.self).count).to(equal(20))
             }
             
             it("should not delete objects from different databases with same id") {
                 let anotherDB = KakapoDB()
                 sut.create(UserFactory.self, number: 20)
                 anotherDB.create(CommentFactory.self, number: 20)
-                let deleted = sut.delete(anotherDB.find(CommentFactory.self, id: 5)!)
-                let usersArray = sut.findAll(UserFactory.self)
-                
-                expect(deleted).to(be(false))
-                expect(usersArray.count).to(equal(20))
+                expect{ try sut.delete(anotherDB.find(CommentFactory.self, id: 5)!) }.to(throwError(errorType: KakapoDBError.self))
+                expect(sut.findAll(UserFactory.self).count).to(equal(20))
             }
             
             it("should delete objects from different databases with same id and data representation") {
@@ -329,10 +312,9 @@ class KakapoDBTests: QuickSpec {
                 }
                 
                 let elementToDelete = anotherDB.find(UserFactory.self, id: theId)!
-                let deleted = sut.delete(elementToDelete)
+                let _ = try? sut.delete(elementToDelete)
                 let usersArray = sut.findAll(UserFactory.self)
                 
-                expect(deleted).to(be(true))
                 expect(usersArray.count).to(equal(44))
             }
             
@@ -340,7 +322,7 @@ class KakapoDBTests: QuickSpec {
                 let sut = KakapoDB()
                 sut.create(UserFactory.self, number: 2000)
                 for entity in sut.findAll(UserFactory) {
-                    sut.delete(entity)
+                    let _ = try? sut.delete(entity)
                 }
                 
                 expect(sut.findAll(UserFactory).count).to(equal(0))
@@ -351,7 +333,7 @@ class KakapoDBTests: QuickSpec {
                 
                 dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
                     print(i)
-                    sut.delete(users[i])
+                    let _ = try? sut.delete(users[i])
                 }
                 
                 expect(sut.findAll(UserFactory.self).count).to(equal(0))
@@ -361,8 +343,8 @@ class KakapoDBTests: QuickSpec {
                 let users = sut.create(UserFactory.self, number: 100)
                 
                 dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
-                    sut.update(users[i])
-                    sut.delete(users[i])
+                    let _ = try? sut.update(users[i])
+                    let _ = try? sut.delete(users[i])
                 }
                 
                 expect(sut.findAll(UserFactory.self).count).to(equal(0))
@@ -463,7 +445,7 @@ class KakapoDBTests: QuickSpec {
             it("should not deadlock when synchronously updating the database from another queue during a write operation") {
                 let user = sut.insert { (id) -> UserFactory in
                     dispatch_sync(queue) {
-                        sut.update(UserFactory(id: 0, db: sut))
+                        let _ = try? sut.update(UserFactory(id: 0, db: sut))
                     }
                     return UserFactory(id: id, db: sut)
                 }
@@ -473,7 +455,7 @@ class KakapoDBTests: QuickSpec {
             it("should not deadlock when synchronously deleting the database from another queue during a write operation") {
                 let user = sut.insert { (id) -> UserFactory in
                     dispatch_sync(queue) {
-                        sut.delete(sut.find(UserFactory.self, id: 0)!)
+                        let _ = try? sut.delete(sut.find(UserFactory.self, id: 0)!)
                     }
                     return UserFactory(id: id, db: sut)
                 }
@@ -486,7 +468,7 @@ class KakapoDBTests: QuickSpec {
             
             it("should not deadlock when deleting into database during a reading operation") {
                 let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    sut.delete(sut.find(UserFactory.self, id: 0)!)
+                    let _ = try? sut.delete(sut.find(UserFactory.self, id: 0)!)
                     return true
                 })
                 
@@ -498,7 +480,7 @@ class KakapoDBTests: QuickSpec {
             
             it("should not deadlock when updating into database during a reading operation") {
                 let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    sut.update(UserFactory(firstName: "Alex", lastName: "Manzella", age: 30, id: 0))
+                    let _ = try? sut.update(UserFactory(firstName: "Alex", lastName: "Manzella", age: 30, id: 0))
                     return true
                 })
                 
@@ -540,7 +522,7 @@ class KakapoDBPerformaceTests: XCTestCase {
         sut.create(UserFactory.self, number: 2000)
         measureBlock {
             for entity in sut.findAll(UserFactory) {
-                sut.delete(entity)
+                let _ = try? sut.delete(entity)
             }
         }
     }

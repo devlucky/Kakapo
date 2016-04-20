@@ -16,7 +16,7 @@ public protocol _Storable {
 public protocol Storable: _Storable, Equatable {}
 
 enum KakapoDBError: ErrorType {
-    case InvalidId
+    case InvalidEntity
 }
 
 /**
@@ -92,23 +92,31 @@ public class KakapoDB {
         return object
     }
     
-    public func update<T: Storable>(entity: T) -> Bool {
-        return barrierSync {
+    public func update<T: Storable>(entity: T) throws {
+        let updated: Bool = barrierSync {
             let index = self.lookup(T).value.indexOf { $0.id == entity.id }
             guard let indexToUpdate = index else { return false }
             self.lookup(T).value[indexToUpdate] = entity
             
             return true
         }
+        
+        if !updated {
+            throw KakapoDBError.InvalidEntity
+        }
     }
     
-    public func delete<T: Storable>(entity: T) -> Bool {
-        return barrierSync {
+    public func delete<T: Storable>(entity: T) throws {
+        let deleted: Bool = barrierSync {
             let index = self.lookup(T).value.indexOf { $0 as? T == entity }
             guard let indexToDelete = index else { return false }
             self.lookup(T).value.removeAtIndex(indexToDelete)
             
             return true
+        }
+        
+        if !deleted {
+            throw KakapoDBError.InvalidEntity
         }
     }
     
