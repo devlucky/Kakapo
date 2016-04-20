@@ -8,7 +8,18 @@
 
 import Foundation
 
-public protocol Storable: Serializable {
+public protocol StorableValue {
+    func isEqualTo(other: StorableValue) -> Bool
+}
+
+public extension StorableValue where Self: Equatable {
+    func isEqualTo(otherValue: StorableValue) -> Bool {
+        if let otherValue = otherValue as? Self { return self == otherValue }
+        return false
+    }
+}
+
+public protocol Storable: StorableValue {
     var id: Int { get }
     init(id: Int, db: KakapoDB)
 }
@@ -46,15 +57,9 @@ private extension Array {
     }
     
     func dataIndexOf<T: Storable>(element: T) -> Int? {
-        let elementData = toData(element.serialize())
-        
         for (index, object) in enumerate() {
-            if let object = object as? Storable,
-                   elementData = elementData,
-                   objectData = toData(object.serialize())
-                where object.dynamicType == element.dynamicType &&
-                      object.id == element.id &&
-                      objectData.isEqualToData(elementData) {
+            if let object = object as? Storable
+                where object.isEqualTo(element) {
                 
                 return index
             }
@@ -136,7 +141,7 @@ public class KakapoDB {
         return true
     }
     
-    public func delete<T: Storable>(entity: T) -> Bool {
+    public func delete<T where T: Storable, T: Equatable>(entity: T) -> Bool {
         let index: Int? = barrierSync {
             self.lookup(T).value.dataIndexOf(entity)
         }

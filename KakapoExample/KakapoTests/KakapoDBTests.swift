@@ -11,7 +11,7 @@ import Nimble
 
 @testable import Kakapo
 
-struct UserFactory: Storable {
+struct UserFactory: Storable, Serializable {
     let firstName: String
     let lastName: String
     let age: Int
@@ -29,6 +29,12 @@ struct UserFactory: Storable {
     }
 }
 
+extension UserFactory: Equatable {}
+
+func ==(lhs: UserFactory, rhs: UserFactory) -> Bool {
+    return lhs.firstName == rhs.firstName && lhs.lastName == rhs.lastName && lhs.age == rhs.age && lhs.id == rhs.id
+}
+
 struct CommentFactory: Storable {
     let text: String
     let likes: Int
@@ -43,6 +49,12 @@ struct CommentFactory: Storable {
         self.likes = likes
         self.id = id
     }
+}
+
+extension CommentFactory: Equatable {}
+
+func ==(lhs: CommentFactory, rhs: CommentFactory) -> Bool {
+    return lhs.text == rhs.text && lhs.likes == rhs.likes && lhs.id == rhs.id
 }
 
 class KakapoDBTests: QuickSpec {
@@ -323,6 +335,16 @@ class KakapoDBTests: QuickSpec {
                 expect(deleted).to(be(true))
                 expect(usersArray.count).to(equal(44))
             }
+            
+            it("should have no itms after delleting all") {
+                let sut = KakapoDB()
+                sut.create(UserFactory.self, number: 2000)
+                for entity in sut.findAll(UserFactory) {
+                    sut.delete(entity)
+                }
+                
+                expect(sut.findAll(UserFactory).count).to(equal(0))
+            }
         }
         
         describe("Database Operations Deadlock 💀💀💀💀💀💀💀💀") {
@@ -487,6 +509,16 @@ class KakapoDBPerformaceTests: XCTestCase {
                 sut.insert { (id) -> UserFactory in
                     return UserFactory(id: id, db: sut)
                 }
+            }
+        }
+    }
+    
+    func testMultipleDeletionsPerformance() {
+        let sut = KakapoDB()
+        sut.create(UserFactory.self, number: 2000)
+        measureBlock {
+            for entity in sut.findAll(UserFactory) {
+                sut.delete(entity)
             }
         }
     }
