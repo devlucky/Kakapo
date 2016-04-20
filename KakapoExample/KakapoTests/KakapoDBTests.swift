@@ -336,7 +336,7 @@ class KakapoDBTests: QuickSpec {
                 expect(usersArray.count).to(equal(44))
             }
             
-            it("should have no itms after delleting all") {
+            it("should have no items after deleting all") {
                 let sut = KakapoDB()
                 sut.create(UserFactory.self, number: 2000)
                 for entity in sut.findAll(UserFactory) {
@@ -344,6 +344,28 @@ class KakapoDBTests: QuickSpec {
                 }
                 
                 expect(sut.findAll(UserFactory).count).to(equal(0))
+            }
+            
+            it("should be able to concurrently delete objects") {
+                let users = sut.create(UserFactory.self, number: 100)
+                
+                dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
+                    print(i)
+                    sut.delete(users[i])
+                }
+                
+                expect(sut.findAll(UserFactory.self).count).to(equal(0))
+            }
+            
+            it("should be able to concurrently update and delete objects") {
+                let users = sut.create(UserFactory.self, number: 100)
+                
+                dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
+                    sut.update(users[i])
+                    sut.delete(users[i])
+                }
+                
+                expect(sut.findAll(UserFactory.self).count).to(equal(0))
             }
         }
         

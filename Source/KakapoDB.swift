@@ -8,21 +8,12 @@
 
 import Foundation
 
-public protocol StorableValue {
-    func isEqualTo(other: StorableValue) -> Bool
-}
-
-public extension StorableValue where Self: Equatable {
-    func isEqualTo(otherValue: StorableValue) -> Bool {
-        if let otherValue = otherValue as? Self { return self == otherValue }
-        return false
-    }
-}
-
-public protocol Storable: StorableValue {
+public protocol _Storable {
     var id: Int { get }
     init(id: Int, db: KakapoDB)
 }
+
+public protocol Storable: _Storable, Equatable {}
 
 enum KakapoDBError: ErrorType {
     case InvalidId
@@ -42,38 +33,11 @@ private final class ArrayBox<T> {
     private var value: [T]
 }
 
-private extension Array {
-    
-    func indexOf<T: Storable>(element: T) -> Int? {
-        for (index, object) in enumerate() {
-            if let object = object as? Storable
-                where object.dynamicType == element.dynamicType && object.id == element.id {
-                
-                return index
-            }
-        }
-        
-        return nil
-    }
-    
-    func dataIndexOf<T: Storable>(element: T) -> Int? {
-        for (index, object) in enumerate() {
-            if let object = object as? Storable
-                where object.isEqualTo(element) {
-                
-                return index
-            }
-        }
-        
-        return nil
-    }
-}
-
 public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
     private var _uuid = -1
-    private var store: [String: ArrayBox<Storable>] = [:]
+    private var store: [String: ArrayBox<_Storable>] = [:]
 
     public init() {
         // empty but needed to be initialized from other modules.
@@ -104,12 +68,13 @@ public class KakapoDB {
             return (0..<number).map { _ in self.uuid()}
         }
         
-        let result = ids.map { id in T(id: id, db: self) }
+        let objects = ids.map { id in T(id: id, db: self) }
+        
         barrierAsync {
-            self.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
+            self.lookup(T).value.appendContentsOf(objects.flatMap{ $0 as _Storable })
         }
         
-        return result
+        return objects
     }
     
     public func insert<T: Storable>(handler: (Int) -> T) -> T {
@@ -128,31 +93,23 @@ public class KakapoDB {
     }
     
     public func update<T: Storable>(entity: T) -> Bool {
-        let index: Int? = barrierSync {
-            self.lookup(T).value.indexOf(entity)
-        }
-        
-        guard let indexToUpdate = index else { return false }
-        
-        barrierAsync {
+        return barrierSync {
+            let index = self.lookup(T).value.indexOf { $0.id == entity.id }
+            guard let indexToUpdate = index else { return false }
             self.lookup(T).value[indexToUpdate] = entity
+            
+            return true
         }
-        
-        return true
     }
     
-    public func delete<T where T: Storable, T: Equatable>(entity: T) -> Bool {
-        let index: Int? = barrierSync {
-            self.lookup(T).value.dataIndexOf(entity)
+    public func delete<T: Storable>(entity: T) -> Bool {
+        return barrierSync {
+            let index = self.lookup(T).value.indexOf { $0 as? T == entity }
+            guard let indexToDelete = index else { return false }
+            self.lookup(T).value.removeAtIndex(indexToDelete)
+            
+            return true
         }
-        
-        guard let indexToRemove = index else { return false }
-        
-        barrierAsync { 
-            self.lookup(T).value.removeAtIndex(indexToRemove)
-        }
-        
-        return true
     }
     
     public func findAll<T: Storable>(_: T.Type) -> [T] {
@@ -174,13 +131,13 @@ public class KakapoDB {
         return _uuid
     }
     
-    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<Storable> {
-        var boxedArray: ArrayBox<Storable>
+    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<_Storable> {
+        var boxedArray: ArrayBox<_Storable>
         
         if let storedBoxedArray = store[String(T)] {
             boxedArray = storedBoxedArray
         } else {
-            boxedArray = ArrayBox<Storable>([])
+            boxedArray = ArrayBox<_Storable>([])
             store[String(T)] = boxedArray
         }
         
