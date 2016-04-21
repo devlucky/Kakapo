@@ -8,13 +8,15 @@
 
 import Foundation
 
-public protocol Storable {
+public protocol _Storable {
     var id: Int { get }
     init(id: Int, db: KakapoDB)
 }
 
+public protocol Storable: _Storable, Equatable {}
+
 enum KakapoDBError: ErrorType {
-    case InvalidId
+    case InvalidEntity
 }
 
 /**
@@ -35,7 +37,7 @@ public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
     private var _uuid = -1
-    private var store: [String: ArrayBox<Storable>] = [:]
+    private var store: [String: ArrayBox<_Storable>] = [:]
 
     public init() {
         // empty but needed to be initialized from other modules.
@@ -66,12 +68,13 @@ public class KakapoDB {
             return (0..<number).map { _ in self.uuid()}
         }
         
-        let result = ids.map { id in T(id: id, db: self) }
+        let objects = ids.map { id in T(id: id, db: self) }
+        
         barrierAsync {
-            self.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
+            self.lookup(T).value.appendContentsOf(objects.flatMap{ $0 as _Storable })
         }
         
-        return result
+        return objects
     }
     
     public func insert<T: Storable>(handler: (Int) -> T) -> T {
@@ -87,6 +90,34 @@ public class KakapoDB {
         }
 
         return object
+    }
+    
+    public func update<T: Storable>(entity: T) throws {
+        let updated: Bool = barrierSync {
+            let index = self.lookup(T).value.indexOf { $0.id == entity.id }
+            guard let indexToUpdate = index else { return false }
+            self.lookup(T).value[indexToUpdate] = entity
+            
+            return true
+        }
+        
+        if !updated {
+            throw KakapoDBError.InvalidEntity
+        }
+    }
+    
+    public func delete<T: Storable>(entity: T) throws {
+        let deleted: Bool = barrierSync {
+            let index = self.lookup(T).value.indexOf { $0 as? T == entity }
+            guard let indexToDelete = index else { return false }
+            self.lookup(T).value.removeAtIndex(indexToDelete)
+            
+            return true
+        }
+        
+        if !deleted {
+            throw KakapoDBError.InvalidEntity
+        }
     }
     
     public func findAll<T: Storable>(_: T.Type) -> [T] {
@@ -108,13 +139,13 @@ public class KakapoDB {
         return _uuid
     }
     
-    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<Storable> {
-        var boxedArray: ArrayBox<Storable>
+    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<_Storable> {
+        var boxedArray: ArrayBox<_Storable>
         
         if let storedBoxedArray = store[String(T)] {
             boxedArray = storedBoxedArray
         } else {
-            boxedArray = ArrayBox<Storable>([])
+            boxedArray = ArrayBox<_Storable>([])
             store[String(T)] = boxedArray
         }
         
