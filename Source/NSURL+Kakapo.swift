@@ -10,40 +10,42 @@ import Foundation
 
 public typealias URLInfo = (components: [String : String], queryParameters: [String : String])
 
-/// parseUrl: Checks and parses if a given `handleURL` representation matches a `requestURL`. Examples:
-///
-///
-///     `/users/:id` with `/users/1` produces `queryParameters: ["id" : "1"]`
-///     `/users/:id/comments` with `/users/1/comments` produces `queryParameters: ["id" : "1"]`
-///     `/users/:id/comments/:comment_id` with `/users/1/comments/2?page=2&author=hector` produces `queryParameters: ["id": "1", "comment_id": "2"]` and `params: ["page": "2", "author": "hector"]`
-///
-/// - Parameter handlerURL: the URL with dynamic paths
-/// - Parameter requestURL: the actual URL
-/// - Returns: URLParams
+/**
+ Checks and parses if a given `handleURL` representation matches a `requestURL`. Examples:
+ 
+      `/users/:id` with `/users/1` produces `queryParameters: ["id" : "1"]`
+      `/users/:id/comments` with `/users/1/comments` produces `queryParameters: ["id" : "1"]`
+      `/users/:id/comments/:comment_id` with `/users/1/comments/2?page=2&author=hector` produces `queryParameters: ["id": "1", "comment_id": "2"]` and `components: ["page": "2", "author": "hector"]`
+
+ - parameter handlerURL: the URL with dynamic paths
+ - parameter requestURL: the actual URL
+ 
+ - returns: the URL info
+ */
 func parseUrl(handlerURL: String, requestURL: String) -> URLInfo? {
-    var params: [String : String] = [:]
+    var components: [String : String] = [:]
     var queryParameters: [String : String] = [:]
     
     let handlerURLPaths = splitUrl(handlerURL, withSeparator: ":")
     var requestURLSections = splitUrl(requestURL, withSeparator: "?")
-    var requestURLParams = requestURLSections[0]
+    var requestURLComponents = requestURLSections[0]
     
-    guard splitUrl(handlerURL, withSeparator: "/").count == splitUrl(requestURLParams, withSeparator: "/").count else {
+    guard splitUrl(handlerURL, withSeparator: "/").count == splitUrl(requestURLComponents, withSeparator: "/").count else {
         return nil
     }
     
     for (index, path) in handlerURLPaths.enumerate() {
-        guard requestURLParams.rangeOfString(path) != nil else {
+        guard requestURLComponents.rangeOfString(path) != nil else {
             return nil
         }
         
-        requestURLParams = replaceUrl(requestURLParams, find: path, with: "")
-        let nextPaths = splitUrl(requestURLParams, withSeparator: "/")
+        requestURLComponents = replaceUrl(requestURLComponents, find: path, with: "")
+        let nextPaths = splitUrl(requestURLComponents, withSeparator: "/")
         
         if let next = nextPaths.first {
             if let key = splitUrl(handlerURLPaths[index + 1], withSeparator: "/").first {
-                requestURLParams = replaceUrl(requestURLParams, find: next, with: key)
-                params[key] = next
+                requestURLComponents = replaceUrl(requestURLComponents, find: next, with: key)
+                components[key] = next
             }
         }
     }
@@ -56,7 +58,7 @@ func parseUrl(handlerURL: String, requestURL: String) -> URLInfo? {
         }
     }
     
-    return (params, queryParameters)
+    return (components, queryParameters)
 }
 
 private func splitUrl(url: String, withSeparator separator: Character) -> [String] {
