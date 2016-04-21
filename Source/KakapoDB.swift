@@ -8,13 +8,15 @@
 
 import Foundation
 
-public protocol Storable {
+public protocol _Storable {
     var id: Int { get }
     init(id: Int, db: KakapoDB)
 }
 
+public protocol Storable: _Storable, Equatable {}
+
 enum KakapoDBError: ErrorType {
-    case InvalidId
+    case InvalidEntity
 }
 
 /**
@@ -34,93 +36,102 @@ private final class ArrayBox<T> {
 public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
-    private let queueKey = NSString(string: "dbQueue").UTF8String
-    private let _queueContext = NSObject()
-    private var queueContext: UnsafeMutablePointer<Void> {
-        get {
-            return UnsafeMutablePointer<Void>(Unmanaged.passRetained(_queueContext).toOpaque())
-        }
-    }
-    
     private var _uuid = -1
-    private var store: [String: ArrayBox<Storable>] = [:]
+    private var store: [String: ArrayBox<_Storable>] = [:]
 
     public init() {
-        dispatch_queue_set_specific(queue, queueKey, queueContext, nil)
+        // empty but needed to be initialized from other modules.
     }
     
-    private func synchronizeDBWrite(closure: () -> ()) {
-        if dispatch_get_specific(queueKey) == queueContext {
-            closure()
-        } else {
-            dispatch_barrier_sync(queue, closure)
+    private func barrierSync<T>(closure: () -> T) -> T {
+        var object: T?
+        dispatch_barrier_sync(queue) {
+            object = closure()
         }
+        return object!
     }
 
-    private func synchronizeDBRead(closure: () -> ()) {
-        if dispatch_get_specific(queueKey) == queueContext {
-            closure()
-        } else {
-            dispatch_sync(queue, closure)
+    private func barrierAsync(closure: () -> ()) {
+        dispatch_barrier_async(queue, closure)
+    }
+
+    private func sync<T>(closure: () -> T) -> T {
+        var object: T?
+        dispatch_sync(queue) {
+            object = closure()
         }
+        return object!
     }
     
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
-        var ids = [Int]()
-        synchronizeDBWrite {
-            ids = (0..<number).map { _ in self.uuid()}
+        let ids = barrierSync {
+            return (0..<number).map { _ in self.uuid()}
         }
         
-        let result = ids.map { id in T(id: id, db: self) }
-        synchronizeDBWrite {
-            self.lookup(T).value.appendContentsOf(result.flatMap{ $0 as Storable })
+        let objects = ids.map { id in T(id: id, db: self) }
+        
+        barrierAsync {
+            self.lookup(T).value.appendContentsOf(objects.flatMap{ $0 as _Storable })
         }
         
-        return result
+        return objects
     }
     
     public func insert<T: Storable>(handler: (Int) -> T) -> T {
-        var id: Int = 0
-        synchronizeDBWrite {
-            id = self.uuid()
+        let id = barrierSync {
+            return self.uuid()
         }
         
         let object = handler(id)
             
         precondition(object.id == id, "Tried to insert an invalid id")
-        synchronizeDBWrite {
+        barrierAsync {
             self.lookup(T).value.append(object)
         }
 
         return object
     }
     
-    public func find<T: Storable>(_: T.Type, id: Int) -> T? {
-        var result: T?
-        
-        synchronizeDBRead { [weak self] in
-            guard let weakSelf = self else { return }
+    public func update<T: Storable>(entity: T) throws {
+        let updated: Bool = barrierSync {
+            let index = self.lookup(T).value.indexOf { $0.id == entity.id }
+            guard let indexToUpdate = index else { return false }
+            self.lookup(T).value[indexToUpdate] = entity
             
-            result = weakSelf.lookup(T).value.filter{ $0.id == id }.flatMap{ $0 as? T }.first
+            return true
         }
         
-        return result
+        if !updated {
+            throw KakapoDBError.InvalidEntity
+        }
+    }
+    
+    public func delete<T: Storable>(entity: T) throws {
+        let deleted: Bool = barrierSync {
+            let index = self.lookup(T).value.indexOf { $0 as? T == entity }
+            guard let indexToDelete = index else { return false }
+            self.lookup(T).value.removeAtIndex(indexToDelete)
+            
+            return true
+        }
+        
+        if !deleted {
+            throw KakapoDBError.InvalidEntity
+        }
     }
     
     public func findAll<T: Storable>(_: T.Type) -> [T] {
-        var result = [T]()
-        
-        synchronizeDBRead { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            result = weakSelf.lookup(T).value.flatMap{$0 as? T}
+        return sync {
+            self.lookup(T).value.flatMap{$0 as? T}
         }
-        
-        return result
     }
     
     public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
         return findAll(T).filter(includeElement)
+    }
+    
+    public func find<T: Storable>(_: T.Type, id: Int) -> T? {
+        return filter(T.self) { $0.id == id }.first
     }
     
     private func uuid() -> Int {
@@ -128,13 +139,13 @@ public class KakapoDB {
         return _uuid
     }
     
-    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<Storable> {
-        var boxedArray: ArrayBox<Storable>
+    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<_Storable> {
+        var boxedArray: ArrayBox<_Storable>
         
         if let storedBoxedArray = store[String(T)] {
             boxedArray = storedBoxedArray
         } else {
-            boxedArray = ArrayBox<Storable>([])
+            boxedArray = ArrayBox<_Storable>([])
             store[String(T)] = boxedArray
         }
         

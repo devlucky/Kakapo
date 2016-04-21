@@ -77,3 +77,20 @@ struct Post: Serializable, Storable {
         self.likes = likes
     }
 }
+
+func ==(lhs: Person, rhs: Person) -> Bool {
+    return lhs.id == rhs.id && lhs.name == rhs.name
+}
+
+
+func ==(lhs: Comment, rhs: Comment) -> Bool {
+    return lhs.id == rhs.id && lhs.text == rhs.text
+}
+
+func ==(lhs: Like, rhs: Like) -> Bool {
+    return lhs.id == rhs.id && lhs.author == rhs.author
+}
+
+func ==(lhs: Post, rhs: Post) -> Bool {
+    return lhs.id == rhs.id && lhs.content == rhs.content && lhs.comments == rhs.comments && lhs.likes == rhs.likes
+}

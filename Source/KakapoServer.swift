@@ -8,59 +8,30 @@
 
 import Foundation
 
-private let RequestHTTPBodyKey = "kkp_requestHTTPBody"
+public typealias RouteHandler = Request -> Serializable?
 
-/**
- We swizzle NSURLRequest to be able to use the HTTPBody when handling NSURLSession. If a custom NSURLProtocol is provided to NSURLSession, 
- even if the NSURLRequest has an HTTPBody non-nil when the request is passed to the NRURLProtocol (such as canInitWithRequest: or 
- canonicalRequestForRequest:) has an empty body.
- 
- **[See radar](http://openradar.appspot.com/15993891)**
- **[See issue #9](https://github.com/devlucky/Kakapo/issues/9)**
- **[See relevant issue](https://github.com/AliSoftware/OHHTTPStubs/issues/52)**
- */
-extension NSURLRequest {
-    public override class func initialize() {
-        struct Static {
-            static var token: dispatch_once_t = 0
-        }
-        
-        dispatch_once(&Static.token) {
-            let originalSelector = Selector("copy") //#selector(copy as () -> AnyObject)
-            let swizzledSelector = Selector("kkp_copy") //#selector(kkp_copy)
-            
-            let originalMethod = class_getInstanceMethod(self, originalSelector)
-            let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-            
-            let didAddMethod = class_addMethod(self, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
-            
-            if didAddMethod {
-                class_replaceMethod(self, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
-            } else {
-                method_exchangeImplementations(originalMethod, swizzledMethod)
-            }
-        }
+public struct Request {
+    public let info: URLInfo
+    public let HTTPBody: NSData?
+}
+
+public struct Response: CustomSerializable {
+    let code: Int
+    let body: Serializable
+    let headerFields: [String : String]?
+    
+    init(code: Int, body: Serializable, headerFields: [String : String]? = nil) {
+        self.code = code
+        self.body = body
+        self.headerFields = headerFields
     }
     
-    // MARK: - Method Swizzling
-    func kkp_copy() -> AnyObject {
-        if let request = self as? NSMutableURLRequest,
-               body = HTTPBody {
-            NSURLProtocol.setProperty(body, forKey: RequestHTTPBodyKey, inRequest: request)
-        }
-        
-        return self.kkp_copy()
+    public func customSerialize() -> AnyObject {
+        return body.serialize()
     }
 }
 
 public class KakapoServer: NSURLProtocol {
-    
-    public typealias RouteHandler = Request -> Serializable?
-    
-    public struct Request {
-        public let info: URLInfo
-        public let HTTPBody: NSData?
-    }
 
     private typealias Route = (method: HTTPMethod, handler: RouteHandler)
     
@@ -96,14 +67,16 @@ public class KakapoServer: NSURLProtocol {
     }
     
     override public func startLoading() {
-        guard let requestString = request.URL?.absoluteString,
+        guard let URL = request.URL,
                   client = client else { return }
         
+        var statusCode = 200
+        var headerFields = [String : String]?()
         var dataBody: NSData?
-        var serializableObjects: Serializable?
+        var serializableObject: Serializable?
         
         for (key, route) in KakapoServer.routes {
-            if let info = parseUrl(key, requestURL: requestString) {
+            if let info = parseUrl(key, requestURL: URL.absoluteString) {
                 
                 if let dataFromNSURLRequest = request.HTTPBody {
                     dataBody = dataFromNSURLRequest
@@ -112,16 +85,21 @@ public class KakapoServer: NSURLProtocol {
                     dataBody = dataFromProtocol
                 }
                 
-                serializableObjects = route.handler(Request(info: info, HTTPBody: dataBody))
+                serializableObject = route.handler(Request(info: info, HTTPBody: dataBody))
                 break
             }
         }
         
-        // TODO: handle status codes and header fields
-        let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "", headerFields: nil)
-        client.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .AllowedInMemoryOnly)
+        if let serializableObject = serializableObject as? Response {
+            statusCode = serializableObject.code
+            headerFields = serializableObject.headerFields
+        }
         
-        if let serialized = serializableObjects?.serialize(), let data = toData(serialized) {
+        if let response = NSHTTPURLResponse(URL: URL, statusCode: statusCode, HTTPVersion: "HTTP/1.1", headerFields: headerFields) {
+            client.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
+        }
+        
+        if let data = serializableObject?.toData() {
             client.URLProtocol(self, didLoadData: data)
         }
         
@@ -144,13 +122,6 @@ public class KakapoServer: NSURLProtocol {
     
     public static func put(urlString: String, handler: RouteHandler) {
         KakapoServer.routes[urlString] = (.PUT, handler)
-    }
-    
-    private func toData(object: AnyObject) -> NSData? {
-        if !NSJSONSerialization.isValidJSONObject(object) {
-            return nil
-        }
-        return try? NSJSONSerialization.dataWithJSONObject(object, options: .PrettyPrinted)
     }
     
 }
