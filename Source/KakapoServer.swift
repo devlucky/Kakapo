@@ -11,8 +11,8 @@ import Foundation
 public typealias RouteHandler = Request -> Serializable?
 
 public struct Request {
-    let info: URLInfo
-    let HTTPBody: NSData?
+    public let info: URLInfo
+    public let HTTPBody: NSData?
 }
 
 public struct Response: CustomSerializable {
@@ -99,8 +99,7 @@ public class KakapoServer: NSURLProtocol {
             client.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
         }
         
-        if let serialized = serializableObject?.serialize(),
-               data = toData(serialized) {
+        if let data = serializableObject?.toData() {
             client.URLProtocol(self, didLoadData: data)
         }
         
@@ -123,13 +122,6 @@ public class KakapoServer: NSURLProtocol {
     
     public static func put(urlString: String, handler: RouteHandler) {
         KakapoServer.routes[urlString] = (.PUT, handler)
-    }
-    
-    private func toData(object: AnyObject) -> NSData? {
-        if !NSJSONSerialization.isValidJSONObject(object) {
-            return nil
-        }
-        return try? NSJSONSerialization.dataWithJSONObject(object, options: .PrettyPrinted)
     }
     
 }

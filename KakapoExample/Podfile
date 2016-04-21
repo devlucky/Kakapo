@@ -8,3 +8,9 @@ end
 target 'KakapoTests' do
     testing_pods
 end
+
+target 'KakapoExample' do
+    pod 'Fakery'
+    pod 'SnapKit'
+    pod 'SwiftyJSON'
+end
