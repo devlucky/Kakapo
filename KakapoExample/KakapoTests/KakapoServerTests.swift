@@ -33,8 +33,8 @@ class KakapoServerTests: QuickSpec {
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = nil
                 
-                KakapoServer.get("/users/:id"){ request in
-                    info = request.info
+                KakapoServer.get("/users/:id") { request in
+                    info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
@@ -42,8 +42,8 @@ class KakapoServerTests: QuickSpec {
                     responseURL = response?.URL
                 }.resume()
                 
-                expect(info?.params).toEventually(equal(["id" : "1"]))
-                expect(info?.queryParams).toEventually(equal([ : ]))
+                expect(info?.components).toEventually(equal(["id" : "1"]))
+                expect(info?.queryParameters).toEventually(equal([ : ]))
                 expect(responseURL?.absoluteString).toEventually(equal("/users/1"))
             }
             
@@ -55,29 +55,29 @@ class KakapoServerTests: QuickSpec {
                 
                 KakapoServer.get("/comments/:id") { request in
                     XCTFail("Shouldn't reach here")
-                    usersInfo = request.info
+                    usersInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
                 KakapoServer.get("/users/:id") { request in
-                    usersInfo = request.info
+                    usersInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
                 KakapoServer.get("/commentaries/:id") { request in
                     XCTFail("Shouldn't reach here")
-                    usersInfo = request.info
+                    usersInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
                 KakapoServer.get("/users/:id/comments/:comment_id") { request in
-                    usersCommentsInfo = request.info
+                    usersCommentsInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
                 KakapoServer.get("/users/:id/comments/:comment_id/whatever") { request in
                     XCTFail("Shouldn't reach here")
-                    usersCommentsInfo = request.info
+                    usersCommentsInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
@@ -89,11 +89,11 @@ class KakapoServerTests: QuickSpec {
                     usersCommentsResponseURL = response?.URL
                 }.resume()
                 
-                expect(usersInfo?.params).toEventually(equal(["id" : "1"]))
-                expect(usersInfo?.queryParams).toEventually(equal([ : ]))
+                expect(usersInfo?.components).toEventually(equal(["id" : "1"]))
+                expect(usersInfo?.queryParameters).toEventually(equal([ : ]))
                 expect(usersResponseURL?.absoluteString).toEventually(equal("/users/1"))
-                expect(usersCommentsInfo?.params).toEventually(equal(["id": "1", "comment_id": "2"]))
-                expect(usersCommentsInfo?.queryParams).toEventually(equal(["page": "2", "author": "hector"]))
+                expect(usersCommentsInfo?.components).toEventually(equal(["id": "1", "comment_id": "2"]))
+                expect(usersCommentsInfo?.queryParameters).toEventually(equal(["page": "2", "author": "hector"]))
                 expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("/users/1/comments/2?page=2&author=hector"))
             }
         }
@@ -106,7 +106,7 @@ class KakapoServerTests: QuickSpec {
                 
                 KakapoServer.get("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
-                    info = request.info
+                    info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
@@ -116,8 +116,8 @@ class KakapoServerTests: QuickSpec {
                     responseError = error
                     }.resume()
                 
-                expect(info?.params).toEventually(beNil())
-                expect(info?.queryParams).toEventually(beNil())
+                expect(info?.components).toEventually(beNil())
+                expect(info?.queryParameters).toEventually(beNil())
                 expect(responseURL?.absoluteString).toEventually(beNil())
                 expect(responseError).toNotEventually(beNil())
             }
@@ -129,7 +129,7 @@ class KakapoServerTests: QuickSpec {
                 
                 KakapoServer.del("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
-                    info = request.info
+                    info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
@@ -161,7 +161,7 @@ class KakapoServerTests: QuickSpec {
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
                 KakapoServer.post("/users/:id") { request in
-                    info = request.info
+                    info = (components: request.components, queryParameters: request.queryParameters)
                     bodyData = request.HTTPBody
                     bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
                     
@@ -170,8 +170,8 @@ class KakapoServerTests: QuickSpec {
                 
                 NSURLSession.sharedSession().dataTaskWithRequest(request){ (_, _, _) in }.resume()
                 
-                expect(info?.params).toEventually(equal(["id" : "1"]))
-                expect(info?.queryParams).toEventually(equal([ : ]))
+                expect(info?.components).toEventually(equal(["id" : "1"]))
+                expect(info?.queryParameters).toEventually(equal([ : ]))
                 expect(bodyData).toNotEventually(beNil())
                 expect(bodyDictionary!["username"] as? String).toEventually(equal("test"))
                 expect(bodyDictionary!["password"] as? String).toEventually(equal("pass"))
@@ -190,7 +190,7 @@ class KakapoServerTests: QuickSpec {
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
                 KakapoServer.put("/user_equipment/:id") { request in
-                    info = request.info
+                    info = (components: request.components, queryParameters: request.queryParameters)
                     bodyData = request.HTTPBody
                     bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
                     
@@ -199,8 +199,8 @@ class KakapoServerTests: QuickSpec {
                 
                 let _ = NSURLConnection(request: request, delegate: nil)
                 
-                expect(info?.params).toEventually(equal(["id" : "1"]))
-                expect(info?.queryParams).toEventually(equal([ : ]))
+                expect(info?.components).toEventually(equal(["id" : "1"]))
+                expect(info?.queryParameters).toEventually(equal([ : ]))
                 expect(bodyData).toNotEventually(beNil())
                 expect(bodyDictionary!["username"] as? String).toEventually(equal("manzo"))
                 expect(bodyDictionary!["token"] as? String).toEventually(equal("power"))
@@ -214,7 +214,7 @@ class KakapoServerTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 
                 KakapoServer.get("/users/:id"){ request in
-                    return db.find(UserFactory.self, id: Int(request.info.params["id"]!)!)
+                    return db.find(UserFactory.self, id: Int(request.components["id"]!)!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
@@ -247,7 +247,7 @@ class KakapoServerTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 
                 KakapoServer.get("/users/:id"){ request in
-                    return Response(code: 200, body: db.find(UserFactory.self, id: Int(request.info.params["id"]!)!))
+                    return Response(code: 200, body: db.find(UserFactory.self, id: Int(request.components["id"]!)!))
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in

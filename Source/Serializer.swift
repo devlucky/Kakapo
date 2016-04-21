@@ -34,6 +34,14 @@ extension Serializable {
         }
         return Kakapo.serialize(self)
     }
+    
+    func toData() -> NSData? {
+        let object = serialize()
+        if !NSJSONSerialization.isValidJSONObject(object) {
+            return nil
+        }
+        return try? NSJSONSerialization.dataWithJSONObject(object, options: .PrettyPrinted)
+    }
 }
 
 extension Array: CustomSerializable {

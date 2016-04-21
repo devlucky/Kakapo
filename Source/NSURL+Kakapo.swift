@@ -8,21 +8,21 @@
 
 import Foundation
 
-public typealias URLInfo = (params: [String : String], queryParams: [String : String])
+public typealias URLInfo = (components: [String : String], queryParameters: [String : String])
 
 /// parseUrl: Checks and parses if a given `handleURL` representation matches a `requestURL`. Examples:
 ///
 ///
-///     `/users/:id` with `/users/1` produces `queryParams: ["id" : "1"]`
-///     `/users/:id/comments` with `/users/1/comments` produces `queryParams: ["id" : "1"]`
-///     `/users/:id/comments/:comment_id` with `/users/1/comments/2?page=2&author=hector` produces `queryParams: ["id": "1", "comment_id": "2"]` and `params: ["page": "2", "author": "hector"]`
+///     `/users/:id` with `/users/1` produces `queryParameters: ["id" : "1"]`
+///     `/users/:id/comments` with `/users/1/comments` produces `queryParameters: ["id" : "1"]`
+///     `/users/:id/comments/:comment_id` with `/users/1/comments/2?page=2&author=hector` produces `queryParameters: ["id": "1", "comment_id": "2"]` and `params: ["page": "2", "author": "hector"]`
 ///
 /// - Parameter handlerURL: the URL with dynamic paths
 /// - Parameter requestURL: the actual URL
 /// - Returns: URLParams
 func parseUrl(handlerURL: String, requestURL: String) -> URLInfo? {
     var params: [String : String] = [:]
-    var queryParams: [String : String] = [:]
+    var queryParameters: [String : String] = [:]
     
     let handlerURLPaths = splitUrl(handlerURL, withSeparator: ":")
     var requestURLSections = splitUrl(requestURL, withSeparator: "?")
@@ -49,14 +49,14 @@ func parseUrl(handlerURL: String, requestURL: String) -> URLInfo? {
     }
     
     if requestURLSections.count > 1 {
-        let queryParamsUrl = splitUrl(requestURLSections[1], withSeparator: "&")
-        for param in queryParamsUrl {
+        let queryParametersUrl = splitUrl(requestURLSections[1], withSeparator: "&")
+        for param in queryParametersUrl {
             let values = splitUrl(param, withSeparator: "=")
-            queryParams[values[0]] = values[1]
+            queryParameters[values[0]] = values[1]
         }
     }
     
-    return (params, queryParams)
+    return (params, queryParameters)
 }
 
 private func splitUrl(url: String, withSeparator separator: Character) -> [String] {

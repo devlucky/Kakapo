@@ -22,17 +22,17 @@ class checkUrlTest: QuickSpec {
                 expect(parseUrl("/users/:id/comments", requestURL: "/users/1/comments/2")).to(beNil())
             }
             it("should return the request params if the requested url matches the declared one") {
-                expect(parseUrl("/users", requestURL: "/users")!.params) == [:]
-                expect(parseUrl("/users/:id", requestURL: "/users/1")!.params) == ["id" : "1"]
-                expect(parseUrl("/users/:id/comments", requestURL: "/users/1/comments")!.params) == ["id" : "1"]
-                expect(parseUrl("/users/:user_id/comments/:comment_id", requestURL: "/users/1/comments/2")!.params) == ["user_id" : "1", "comment_id": "2"]
+                expect(parseUrl("/users", requestURL: "/users")!.components) == [:]
+                expect(parseUrl("/users/:id", requestURL: "/users/1")!.components) == ["id" : "1"]
+                expect(parseUrl("/users/:id/comments", requestURL: "/users/1/comments")!.components) == ["id" : "1"]
+                expect(parseUrl("/users/:user_id/comments/:comment_id", requestURL: "/users/1/comments/2")!.components) == ["user_id" : "1", "comment_id": "2"]
             }
             it("should match the url when query params are present") {
-                expect(parseUrl("/users", requestURL: "/users?page=2")!.params) == [:]
-                expect(parseUrl("/users/:id", requestURL: "/users/1?page=2")!.params) == ["id": "1"]
-                expect(parseUrl("/users/:id", requestURL: "/users/1?page=2")!.queryParams) == ["page": "2"]
-                expect(parseUrl("/users/:id/comments/:comment_id", requestURL: "/users/1/comments/2?page=2&author=hector")!.params) == ["id": "1", "comment_id": "2"]
-                expect(parseUrl("/users/:id/comments/:comment_id", requestURL: "/users/1/comments/2?page=2&author=hector")!.queryParams) == ["page": "2", "author": "hector"]
+                expect(parseUrl("/users", requestURL: "/users?page=2")!.components) == [:]
+                expect(parseUrl("/users/:id", requestURL: "/users/1?page=2")!.components) == ["id": "1"]
+                expect(parseUrl("/users/:id", requestURL: "/users/1?page=2")!.queryParameters) == ["page": "2"]
+                expect(parseUrl("/users/:id/comments/:comment_id", requestURL: "/users/1/comments/2?page=2&author=hector")!.components) == ["id": "1", "comment_id": "2"]
+                expect(parseUrl("/users/:id/comments/:comment_id", requestURL: "/users/1/comments/2?page=2&author=hector")!.queryParameters) == ["page": "2", "author": "hector"]
             }
         }
     }
