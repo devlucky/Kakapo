@@ -210,7 +210,7 @@ class KakapoDBTests: QuickSpec {
             it("should update a previously inserted object") {
                 sut.create(UserFactory.self, number: 20)
                 let elementToUpdate = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: 2)
-                let _ = try? sut.update(elementToUpdate)
+                try! sut.update(elementToUpdate)
                 let updatedUserInDb = sut.find(UserFactory.self, id: 2)
                 
                 expect(updatedUserInDb?.firstName).to(equal("Joan"))
@@ -243,7 +243,7 @@ class KakapoDBTests: QuickSpec {
                     theId = id
                     return CommentFactory(text: "a comment", likes: 20, id: id)
                 })
-                let _ = try? sut.update(anotherDB.find(CommentFactory.self, id: theId)!)
+                try! sut.update(anotherDB.find(CommentFactory.self, id: theId)!)
                 let updatedComment = sut.find(CommentFactory.self, id: theId)
                 
                 expect(updatedComment?.text).to(equal("a comment"))
@@ -255,7 +255,7 @@ class KakapoDBTests: QuickSpec {
             it("should delete a previously inserted object") {
                 sut.create(UserFactory.self, number: 20)
                 let elementToDelete = sut.find(UserFactory.self, id: 2)!
-                let _ = try? sut.delete(elementToDelete)
+                try! sut.delete(elementToDelete)
                 let usersArray = sut.findAll(UserFactory.self)
                 
                 expect(usersArray.count).to(equal(19))
@@ -269,7 +269,7 @@ class KakapoDBTests: QuickSpec {
                 }
                 
                 let elementToDelete = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: theId)
-                let _ = try? sut.delete(elementToDelete)
+                try! sut.delete(elementToDelete)
                 let usersArray = sut.findAll(UserFactory.self)
                 
                 expect(usersArray.count).to(equal(0))
@@ -312,7 +312,7 @@ class KakapoDBTests: QuickSpec {
                 }
                 
                 let elementToDelete = anotherDB.find(UserFactory.self, id: theId)!
-                let _ = try? sut.delete(elementToDelete)
+                try! sut.delete(elementToDelete)
                 let usersArray = sut.findAll(UserFactory.self)
                 
                 expect(usersArray.count).to(equal(44))
@@ -322,7 +322,7 @@ class KakapoDBTests: QuickSpec {
                 let sut = KakapoDB()
                 sut.create(UserFactory.self, number: 2000)
                 for entity in sut.findAll(UserFactory) {
-                    let _ = try? sut.delete(entity)
+                    try! sut.delete(entity)
                 }
                 
                 expect(sut.findAll(UserFactory).count).to(equal(0))
@@ -333,7 +333,7 @@ class KakapoDBTests: QuickSpec {
                 
                 dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
                     print(i)
-                    let _ = try? sut.delete(users[i])
+                    try! sut.delete(users[i])
                 }
                 
                 expect(sut.findAll(UserFactory.self).count).to(equal(0))
@@ -343,8 +343,8 @@ class KakapoDBTests: QuickSpec {
                 let users = sut.create(UserFactory.self, number: 100)
                 
                 dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
-                    let _ = try? sut.update(users[i])
-                    let _ = try? sut.delete(users[i])
+                    try! sut.update(users[i])
+                    try! sut.delete(users[i])
                 }
                 
                 expect(sut.findAll(UserFactory.self).count).to(equal(0))
@@ -445,7 +445,7 @@ class KakapoDBTests: QuickSpec {
             it("should not deadlock when synchronously updating the database from another queue during a write operation") {
                 let user = sut.insert { (id) -> UserFactory in
                     dispatch_sync(queue) {
-                        let _ = try? sut.update(UserFactory(id: 0, db: sut))
+                        try! sut.update(UserFactory(id: 0, db: sut))
                     }
                     return UserFactory(id: id, db: sut)
                 }
@@ -455,7 +455,7 @@ class KakapoDBTests: QuickSpec {
             it("should not deadlock when synchronously deleting the database from another queue during a write operation") {
                 let user = sut.insert { (id) -> UserFactory in
                     dispatch_sync(queue) {
-                        let _ = try? sut.delete(sut.find(UserFactory.self, id: 0)!)
+                        try! sut.delete(sut.find(UserFactory.self, id: 0)!)
                     }
                     return UserFactory(id: id, db: sut)
                 }
@@ -468,7 +468,7 @@ class KakapoDBTests: QuickSpec {
             
             it("should not deadlock when deleting into database during a reading operation") {
                 let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    let _ = try? sut.delete(sut.find(UserFactory.self, id: 0)!)
+                    try! sut.delete(sut.find(UserFactory.self, id: 0)!)
                     return true
                 })
                 
@@ -480,7 +480,7 @@ class KakapoDBTests: QuickSpec {
             
             it("should not deadlock when updating into database during a reading operation") {
                 let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    let _ = try? sut.update(UserFactory(firstName: "Alex", lastName: "Manzella", age: 30, id: 0))
+                    try! sut.update(UserFactory(firstName: "Alex", lastName: "Manzella", age: 30, id: 0))
                     return true
                 })
                 
@@ -522,7 +522,7 @@ class KakapoDBPerformaceTests: XCTestCase {
         sut.create(UserFactory.self, number: 2000)
         measureBlock {
             for entity in sut.findAll(UserFactory) {
-                let _ = try? sut.delete(entity)
+                try! sut.delete(entity)
             }
         }
     }
