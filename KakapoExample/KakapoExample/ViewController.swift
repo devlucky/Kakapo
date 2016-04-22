@@ -25,6 +25,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = "Posts"
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
@@ -39,19 +41,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             
             let json = JSON(data: data)
             dispatch_async(dispatch_get_main_queue(), { 
-                self.posts = json.arrayValue.map({ (post) -> Post in
-                    
-                    let comments = post["comments"].arrayValue.map { (comment) -> Comment in
-                        return Comment(id: comment["id"].intValue, text: comment["text"].stringValue)
-                    }
-                    
-                    let likes = post["likes"].arrayValue.map { (like) -> Like in
-                        let person = like["author"].dictionaryValue
-                        return Like(id: like["id"].intValue, author: Person(id: person["id"]!.intValue, name: person["name"]!.stringValue))
-                    }
-                    
-                    return Post(id: post["id"].intValue, content: post["content"].stringValue, comments: comments, likes: likes)
-                })
+                self.posts = json.arrayValue.map { Post(json: $0) }
             })
         }.resume()
     }
@@ -65,8 +55,16 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(String(ArticleCell))!
         let post = posts[indexPath.row]
-        cell.textLabel?.text = post.content
+        cell.textLabel?.text = post.title
         cell.detailTextLabel?.text = "\(post.likes.count) ❤️ \(post.comments.count) 💬"
         return cell
     }
+
+    // MARK: UITableViewelegate
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let postId = String(posts[indexPath.row].id)
+        navigationController?.pushViewController(PostViewController(postId: postId), animated: true)
+    }
+
 }

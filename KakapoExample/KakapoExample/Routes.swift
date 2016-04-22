@@ -11,7 +11,9 @@ import Kakapo
 
 struct Route {
     static let Posts = "/posts"
-    static let Post = "/post/:id"
+    static let Post: (String?) -> (String) = { (id) -> String in
+        return "/post/\(id ?? ":id")"
+    }
 }
 
 func setupRoutes(db: KakapoDB) {
@@ -23,10 +25,10 @@ func setupRoutes(db: KakapoDB) {
         db.findAll(Post)
     }
     
-    KakapoServer.get(Route.Post) { (request) -> Serializable? in
+    KakapoServer.get(Route.Post(nil)) { (request) -> Serializable? in
         guard let idString = request.info.params["id"], let id = Int(idString) else {
             fatalError()
         }
-        return db.find(Post.self, id: id)
+        return ["post": db.find(Post.self, id: id)]
     }
 }

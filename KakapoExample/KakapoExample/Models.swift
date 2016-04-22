@@ -59,19 +59,22 @@ struct Like: Serializable, Storable {
 
 struct Post: Serializable, Storable {
     let id: Int
+    let title: String
     let content: String
     let comments: [Comment]
     let likes: [Like]
     
     init(id: Int, db: KakapoDB) {
         self.id = id
+        self.title = sharedFaker.lorem.sentence()
         self.content = sharedFaker.lorem.paragraph(sentencesAmount: random() % 30 + 1)
         self.comments = db.create(Comment.self, number: random() % 5)
         self.likes = db.create(Like.self, number: random() % 30)
     }
     
-    init(id: Int, content: String, comments: [Comment], likes: [Like]) {
+    init(id: Int, title: String, content: String, comments: [Comment], likes: [Like]) {
         self.id = id
+        self.title = title
         self.content = content
         self.comments = comments
         self.likes = likes
