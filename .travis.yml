@@ -3,12 +3,9 @@ language: objective-c
 notifications:
   slack: devlucky:0AP12qjjfc2Zxc0s9yo1cQQm
 
-before_install:
-  - gem install fastlane --no-rdoc --no-ri --no-document --quiet
-
 env:
   global:
-    - FASTLANE_LANE=travis
+    - FASTLANE_LANE=ci_commit KKP_CODECOV=true
 
 matrix:
   include:
@@ -24,4 +21,5 @@ script:
 podfile: KakapoExample/Podfile
 
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
+
