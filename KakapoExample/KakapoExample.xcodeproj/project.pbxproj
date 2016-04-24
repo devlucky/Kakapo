@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		33210B9DB2ED3249862E6A78 /* Pods_KakapoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3180C29CBC1D50E0769D5D15 /* Pods_KakapoTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		DE0A9E671CCD33920030253B /* CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0A9E661CCD33920030253B /* CustomAssertions.swift */; };
 		DE0A9E691CCD33E40030253B /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0A9E681CCD33E40030253B /* XCTestCase+CustomAssertions.swift */; };
+		DE0A9E6B1CCD3DDE0030253B /* CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0A9E6A1CCD3DDE0030253B /* CustomAssertions.swift */; };
 		DE33B8951CB47148007F6161 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8911CB47148007F6161 /* KakapoDB.swift */; };
 		DE33B8961CB47148007F6161 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8921CB47148007F6161 /* KakapoServer.swift */; };
 		DE33B8971CB47148007F6161 /* NSURL+Kakapo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8931CB47148007F6161 /* NSURL+Kakapo.swift */; };
@@ -73,8 +73,8 @@
 /* Begin PBXFileReference section */
 		3180C29CBC1D50E0769D5D15 /* Pods_KakapoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KakapoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3F83AF0069920CA81FFC28B /* Pods-KakapoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KakapoTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KakapoTests/Pods-KakapoTests.debug.xcconfig"; sourceTree = "<group>"; };
-		DE0A9E661CCD33920030253B /* CustomAssertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAssertions.swift; sourceTree = "<group>"; };
 		DE0A9E681CCD33E40030253B /* XCTestCase+CustomAssertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTestCase+CustomAssertions.swift"; sourceTree = "<group>"; };
+		DE0A9E6A1CCD3DDE0030253B /* CustomAssertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAssertions.swift; sourceTree = "<group>"; };
 		DE33B8911CB47148007F6161 /* KakapoDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoDB.swift; sourceTree = "<group>"; };
 		DE33B8921CB47148007F6161 /* KakapoServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoServer.swift; sourceTree = "<group>"; };
 		DE33B8931CB47148007F6161 /* NSURL+Kakapo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSURL+Kakapo.swift"; sourceTree = "<group>"; };
@@ -190,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				DE93528F1CAAF21300AD534C /* Kakapo.h */,
+				DE0A9E6A1CCD3DDE0030253B /* CustomAssertions.swift */,
 				DE9352911CAAF21300AD534C /* Info.plist */,
 			);
 			path = Kakapo;
@@ -218,7 +219,6 @@
 				DE33B8941CB47148007F6161 /* String+Kakapo.swift */,
 				DE53E23F1CAD422600CD1AC0 /* Serializer.swift */,
 				DE53E2411CAD711500CD1AC0 /* PropertyPolicy.swift */,
-				DE0A9E661CCD33920030253B /* CustomAssertions.swift */,
 			);
 			name = Source;
 			path = ../Source;
@@ -434,7 +434,7 @@
 				DE33B8961CB47148007F6161 /* KakapoServer.swift in Sources */,
 				DE33B8981CB47148007F6161 /* String+Kakapo.swift in Sources */,
 				DE3651DF1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift in Sources */,
-				DE0A9E671CCD33920030253B /* CustomAssertions.swift in Sources */,
+				DE0A9E6B1CCD3DDE0030253B /* CustomAssertions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
