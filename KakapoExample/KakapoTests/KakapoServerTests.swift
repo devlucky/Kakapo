@@ -205,6 +205,43 @@ class KakapoServerTests: QuickSpec {
                 expect(bodyDictionary!["username"] as? String).toEventually(equal("manzo"))
                 expect(bodyDictionary!["token"] as? String).toEventually(equal("power"))
             }
+            
+            it("should give back the HTTPHeaders in the handler when a NSURLSession request has it") {
+                var contentType: String? = nil
+                var accept: String? = nil
+                
+                let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
+                request.HTTPMethod = "POST"
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                request.addValue("application/json", forHTTPHeaderField: "Accept")
+                
+                KakapoServer.post("/users/:id") { request in
+                    contentType = request.HTTPHeaders!["Content-Type"]
+                    accept = request.HTTPHeaders!["Accept"]
+                    return nil
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithRequest(request){ (_, _, _) in }.resume()
+                
+                expect(contentType).toEventually(equal("application/json"))
+                expect(accept).toEventually(equal("application/json"))
+            }
+            
+            it("shouldn't give back HTTPHeaders in the handler when the request doesn't provide headers") {
+                var count: Int? = nil
+                
+                let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
+                request.HTTPMethod = "POST"
+                
+                KakapoServer.post("/users/:id") { request in
+                    count = request.HTTPHeaders!.count
+                    return nil
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithRequest(request){ (_, _, _) in }.resume()
+                
+                expect(count).toEventually(be(0))
+            }
         }
         
         describe("Response objects") {
