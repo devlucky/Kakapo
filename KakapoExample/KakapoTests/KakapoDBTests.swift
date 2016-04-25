@@ -172,9 +172,9 @@ class KakapoDBTests: QuickSpec {
                 }
 
                 self.expectPrecondition("Tried to insert an invalid id") {
-                    sut.insert({ (id) -> UserFactory in
+                    sut.insert { (id) -> UserFactory in
                         return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id-1)
-                    })
+                    }
                 }
             }
 
