@@ -19,7 +19,7 @@ let RequestHTTPBodyKey = "kkp_requestHTTPBody"
  **[See issue #9](https://github.com/devlucky/Kakapo/issues/9)**
  **[See relevant issue](https://github.com/AliSoftware/OHHTTPStubs/issues/52)**
  */
-extension NSURLRequest {
+extension NSMutableURLRequest {
     
     public override class func initialize() {
         struct Static {
@@ -27,8 +27,8 @@ extension NSURLRequest {
         }
         
         dispatch_once(&Static.token) {
-            let originalSelector = #selector(copy as () -> AnyObject)
-            let swizzledSelector = #selector(kkp_copy)
+            let originalSelector = Selector("setHTTPBody:")
+            let swizzledSelector = #selector(NSMutableURLRequest.kkp_setHTTPBody(_:))
             
             let originalMethod = class_getInstanceMethod(self, originalSelector)
             let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
@@ -44,12 +44,11 @@ extension NSURLRequest {
     }
     
     // MARK: - Method Swizzling
-    func kkp_copy() -> AnyObject {
-        if let request = self as? NSMutableURLRequest,
-               body = HTTPBody {
-            NSURLProtocol.setProperty(body, forKey: RequestHTTPBodyKey, inRequest: request)
+    func kkp_setHTTPBody(body: NSData?) {
+        if let body = body {
+            NSURLProtocol.setProperty(body, forKey: RequestHTTPBodyKey, inRequest: self)
         }
         
-        return self.kkp_copy()
+        self.kkp_setHTTPBody(body)
     }
 }
