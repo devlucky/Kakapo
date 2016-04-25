@@ -166,15 +166,16 @@ class KakapoDBTests: QuickSpec {
                 expect(user?.id) == 0
             }
             
-            it("should fail when inserting invalid id") {
+            it("should fail a precondition when inserting invalid id") {
                 sut.insert { (id) -> UserFactory in
                     return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id)
                 }
 
-//                TODO: TEST THIS FATAL ERROR
-//                expect{ sut.insert({ (id) -> UserFactory in
-//                    return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id-1)
-//                })}.to(throwError())
+                self.expectPrecondition("Tried to insert an invalid id") {
+                    sut.insert { (id) -> UserFactory in
+                        return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id-1)
+                    }
+                }
             }
 
             it("should return the expected filtered element with valid id") {
