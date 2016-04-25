@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Kakapo"
-  s.version          = "0.0.1-alpha1"
+  s.version          = "0.0.1-alpha2"
   s.summary          = "Next generation network mocking library."
 
   s.description      = <<-DESC 
