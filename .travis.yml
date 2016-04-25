@@ -19,6 +19,7 @@ matrix:
 script:
   - set -o pipefail
   - fastlane $FASTLANE_LANE configuration:Debug --env $FASTLANE_ENV
+  - pod lib lint --quick
 
 podfile: KakapoExample/Podfile
 
