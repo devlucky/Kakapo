@@ -177,7 +177,7 @@ class KakapoServerTests: QuickSpec {
                 expect(bodyDictionary!["password"] as? String).toEventually(equal("pass"))
             }
             
-            it("should give back the body in the handler when a NSURLConnection request has is") {
+            it("should give back the body in the handler when a NSURLConnection request has it") {
                 var info: URLInfo? = nil
                 var bodyData: NSData? = nil
                 var bodyDictionary: NSDictionary? = nil
