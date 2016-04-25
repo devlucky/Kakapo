@@ -1,17 +1,12 @@
+
 default_platform :ios
 
 platform :ios do
 
-  desc "Runs all the tests"
-  lane :travis do
-    scheme = "Kakapo"
-    workspace = "KakapoExample/KakapoExample.xcworkspace"
-
-    # Run tests
+  desc "Build and Test"
+  lane :ci_commit do
     scan(
-      scheme: scheme,
-      workspace: workspace,
-      code_coverage: true
+      code_coverage: ENV["KKP_CODECOV"]
     )
   end
 
