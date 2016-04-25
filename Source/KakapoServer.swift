@@ -14,6 +14,7 @@ public struct Request {
     public let components: [String : String]
     public let queryParameters: [String : String]
     public let HTTPBody: NSData?
+    public let HTTPHeaders: [String: String]?
 }
 
 public struct Response: CustomSerializable {
@@ -86,7 +87,7 @@ public class KakapoServer: NSURLProtocol {
                     dataBody = dataFromProtocol
                 }
                 
-                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody))
+                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: request.allHTTPHeaderFields))
                 break
             }
         }
