@@ -5,21 +5,20 @@ notifications:
 
 env:
   global:
-    - FASTLANE_LANE=ci_commit KKP_CODECOV=true
+    - FASTLANE_LANE=ci_commit
 
 matrix:
   include:
     - osx_image: xcode7.3
       env: FASTLANE_ENV=ios83
     - osx_image: xcode7.3
-      env: FASTLANE_ENV=ios93
+      env: FASTLANE_ENV=ios93 KKP_CODECOV=true
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
 
 script:
   - set -o pipefail
   - fastlane $FASTLANE_LANE configuration:Debug --env $FASTLANE_ENV
 
 podfile: KakapoExample/Podfile
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
 
