@@ -16,11 +16,13 @@ import Nimble
 class KakapoServerTests: QuickSpec {
     
     override func spec() {
+        let host = "www.test.com"
         var db = KakapoDB()
+        var router = Router()
         
         beforeEach{
             db = KakapoDB()
-            KakapoServer.enable()
+            router = KakapoServer.register(host)
         }
         
         afterEach{
@@ -33,18 +35,18 @@ class KakapoServerTests: QuickSpec {
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = nil
                 
-                KakapoServer.get("/users/:id") { request in
+                router.get("/users/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/1")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
                     responseURL = response?.URL
                 }.resume()
                 
                 expect(info?.components).toEventually(equal(["id" : "1"]))
-                expect(info?.queryParameters).toEventually(equal([ : ]))
-                expect(responseURL?.absoluteString).toEventually(equal("/users/1"))
+                expect(info?.queryParameters).toEventually(equal([]))
+                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
             }
             
             it("should call the handler when requesting multiple registered urls") {
@@ -53,48 +55,48 @@ class KakapoServerTests: QuickSpec {
                 var usersCommentsInfo: URLInfo? = nil
                 var usersCommentsResponseURL: NSURL? = nil
                 
-                KakapoServer.get("/comments/:id") { request in
+                router.get("/comments/:id") { request in
                     XCTFail("Shouldn't reach here")
                     usersInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                KakapoServer.get("/users/:id") { request in
+                router.get("/users/:id") { request in
                     usersInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                KakapoServer.get("/commentaries/:id") { request in
+                router.get("/commentaries/:id") { request in
                     XCTFail("Shouldn't reach here")
                     usersInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                KakapoServer.get("/users/:id/comments/:comment_id") { request in
+                router.get("/users/:id/comments/:comment_id") { request in
                     usersCommentsInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                KakapoServer.get("/users/:id/comments/:comment_id/whatever") { request in
+                router.get("/users/:id/comments/:comment_id/whatever") { request in
                     XCTFail("Shouldn't reach here")
                     usersCommentsInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/1")!) { (_, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (_, response, _) in
                     usersResponseURL = response?.URL
                 }.resume()
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/1/comments/2?page=2&author=hector")!) { (_, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2?page=2&author=hector")!) { (_, response, _) in
                     usersCommentsResponseURL = response?.URL
                 }.resume()
                 
                 expect(usersInfo?.components).toEventually(equal(["id" : "1"]))
-                expect(usersInfo?.queryParameters).toEventually(equal([ : ]))
-                expect(usersResponseURL?.absoluteString).toEventually(equal("/users/1"))
+                expect(usersInfo?.queryParameters).toEventually(equal([]))
+                expect(usersResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
                 expect(usersCommentsInfo?.components).toEventually(equal(["id": "1", "comment_id": "2"]))
-                expect(usersCommentsInfo?.queryParameters).toEventually(equal(["page": "2", "author": "hector"]))
-                expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("/users/1/comments/2?page=2&author=hector"))
+                expect(usersCommentsInfo?.queryParameters).toEventually(equal([NSURLQueryItem(name: "page", value: "2"), NSURLQueryItem(name: "author", value: "hector")]))
+                expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
             }
         }
         
@@ -104,22 +106,21 @@ class KakapoServerTests: QuickSpec {
                 var responseURL: NSURL? = NSURL(string: "")
                 var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
                 
-                KakapoServer.get("/users/:id") { request in
+                router.get("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
                     info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/userssssss/1")!) { (_, response, error) in
-                    // Response will be nil since error
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/userssssss/1")!) { (_, response, error) in
                     responseURL = response?.URL
                     responseError = error
                     }.resume()
                 
                 expect(info?.components).toEventually(beNil())
                 expect(info?.queryParameters).toEventually(beNil())
-                expect(responseURL?.absoluteString).toEventually(beNil())
-                expect(responseError).toNotEventually(beNil())
+                expect(responseURL?.host).toEventually(equal("www.test.com"))
+                expect(responseError).toEventually(beNil())
             }
             
             it("should not call the handler when requesting a registered url but using a different HTTPMethod") {
@@ -127,23 +128,22 @@ class KakapoServerTests: QuickSpec {
                 var responseURL: NSURL? = NSURL(string: "")
                 var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
                 
-                KakapoServer.del("/users/:id") { request in
+                router.del("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
                     info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
+                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
                 request.HTTPMethod = "PUT"
                 NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, response, error) in
-                    // Response will be nil since error
                     responseURL = response?.URL
                     responseError = error
                     }.resume()
                 
                 expect(info).toEventually(beNil())
-                expect(responseURL).toEventually(beNil())
-                expect(responseError).toNotEventually(beNil())
+                expect(responseURL?.host).toEventually(equal("www.test.com"))
+                expect(responseError).toEventually(beNil())
             }
         }
         
@@ -153,14 +153,14 @@ class KakapoServerTests: QuickSpec {
                 var bodyData: NSData? = nil
                 var bodyDictionary: NSDictionary? = nil
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
+                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
                 request.HTTPMethod = "POST"
                 let params = ["username":"test", "password":"pass"] as Dictionary<String, String>
                 request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
-                KakapoServer.post("/users/:id") { request in
+                router.post("/users/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
                     bodyData = request.HTTPBody
                     bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
@@ -168,10 +168,10 @@ class KakapoServerTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(request){ (_, _, _) in }.resume()
+                NSURLSession.sharedSession().dataTaskWithRequest(request.copy() as! NSURLRequest){ (_, _, _) in }.resume()
                 
                 expect(info?.components).toEventually(equal(["id" : "1"]))
-                expect(info?.queryParameters).toEventually(equal([ : ]))
+                expect(info?.queryParameters).toEventually(equal([]))
                 expect(bodyData).toNotEventually(beNil())
                 expect(bodyDictionary!["username"] as? String).toEventually(equal("test"))
                 expect(bodyDictionary!["password"] as? String).toEventually(equal("pass"))
@@ -182,14 +182,14 @@ class KakapoServerTests: QuickSpec {
                 var bodyData: NSData? = nil
                 var bodyDictionary: NSDictionary? = nil
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "/user_equipment/1")!)
+                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/user_equipment/1")!)
                 request.HTTPMethod = "PUT"
                 let params = ["username":"manzo", "token":"power"] as Dictionary<String, String>
                 request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
-                KakapoServer.put("/user_equipment/:id") { request in
+                router.put("/user_equipment/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
                     bodyData = request.HTTPBody
                     bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
@@ -200,7 +200,7 @@ class KakapoServerTests: QuickSpec {
                 let _ = NSURLConnection(request: request, delegate: nil)
                 
                 expect(info?.components).toEventually(equal(["id" : "1"]))
-                expect(info?.queryParameters).toEventually(equal([ : ]))
+                expect(info?.queryParameters).toEventually(equal([]))
                 expect(bodyData).toNotEventually(beNil())
                 expect(bodyDictionary!["username"] as? String).toEventually(equal("manzo"))
                 expect(bodyDictionary!["token"] as? String).toEventually(equal("power"))
@@ -213,11 +213,11 @@ class KakapoServerTests: QuickSpec {
                 
                 var responseDictionary: NSDictionary? = nil
                 
-                KakapoServer.get("/users/:id"){ request in
+                router.get("/users/:id"){ request in
                     return db.find(UserFactory.self, id: Int(request.components["id"]!)!)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
                     responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
                     }.resume()
                 
@@ -228,11 +228,11 @@ class KakapoServerTests: QuickSpec {
             it("should return 200 status code when no code specified") {
                 var statusCode: Int? = nil
                 
-                KakapoServer.get("/users"){ request in
+                router.get("/users"){ request in
                     return db.findAll(UserFactory)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
                     let response = response as! NSHTTPURLResponse
                     statusCode = response.statusCode
                     }.resume()
@@ -246,11 +246,11 @@ class KakapoServerTests: QuickSpec {
                 var statusCode: Int? = nil
                 var responseDictionary: NSDictionary? = nil
                 
-                KakapoServer.get("/users/:id"){ request in
+                router.get("/users/:id"){ request in
                     return Response(code: 200, body: db.find(UserFactory.self, id: Int(request.components["id"]!)!))
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
                     let response = response as! NSHTTPURLResponse
                     statusCode = response.statusCode
                     responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
@@ -265,12 +265,12 @@ class KakapoServerTests: QuickSpec {
                 var statusCode: Int? = nil
                 var dataLength = 10000
                 
-                KakapoServer.get("/users/:id"){ request in
+                router.get("/users/:id"){ request in
                     // Optional.Some("none") -> not valid JSON object
                     return Response(code: 400, body: Optional.Some("none"))
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
                     let response = response as! NSHTTPURLResponse
                     statusCode = response.statusCode
                     dataLength = data!.length
@@ -283,11 +283,11 @@ class KakapoServerTests: QuickSpec {
             it("should return the specified response headers inside a response object with code when requesting a registered url") {
                 var allHeaders: [String : String]? = nil
                 
-                KakapoServer.get("/users/:id"){ request in
+                router.get("/users/:id"){ request in
                     return Response(code: 400, body: ["id" : "foo", "type" : "User"], headerFields: ["access_token" : "094850348502", "user_id" : "124"])
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users/2")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
                     let response = response as! NSHTTPURLResponse
                     allHeaders = response.allHeaderFields as? [String : String]
                     }.resume()
@@ -302,11 +302,11 @@ class KakapoServerTests: QuickSpec {
                 
                 var responseArray: NSArray? = nil
                 
-                KakapoServer.get("/users"){ request in
+                router.get("/users"){ request in
                     return db.findAll(UserFactory)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/users")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
                     responseArray = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSArray
                     }.resume()
                 
@@ -318,12 +318,12 @@ class KakapoServerTests: QuickSpec {
             }
             
             it("should return nil for objects not serializable to JSON") {
-                KakapoServer.get("/nothing/:id"){ request in
+                router.get("/nothing/:id"){ request in
                     return Optional.Some("none")
                 }
                 
                 var called = false
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "/nothing/1")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/nothing/1")!) { (data, response, _) in
                     called = true
                     expect(data?.length).to(equal(0))
                 }.resume()
