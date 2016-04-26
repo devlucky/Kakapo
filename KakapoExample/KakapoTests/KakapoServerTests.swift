@@ -331,5 +331,197 @@ class KakapoServerTests: QuickSpec {
                 expect(called).toEventually(beTrue())
             }
         }
+        
+        describe("Multiple Routers") {
+            it("Should handle multiple Routers that register differents urls") {
+                var info: URLInfo? = nil
+                var responseURL: NSURL? = nil
+                
+                var secondInfo: URLInfo? = nil
+                var secondResponseURL: NSURL? = nil
+                let secondRouter = KakapoServer.register("www.host2.com")
+                
+                router.get("/users/:id") { request in
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                secondRouter.get("/messages/:user") { request in
+                    secondInfo = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.URL
+                    }.resume()
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
+                    secondResponseURL = response?.URL
+                    }.resume()
+                
+                expect(info?.components).toEventually(equal(["id" : "1"]))
+                expect(info?.queryParameters).toEventually(equal([]))
+                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
+                
+                expect(secondInfo?.components).toEventually(equal(["user" : "24"]))
+                expect(secondInfo?.queryParameters).toEventually(equal([]))
+                expect(secondResponseURL?.absoluteString).toEventually(equal("http://www.host2.com/messages/24"))
+            }
+            
+            it("Should properly handle multiple registered and unregistered Routers that register differents urls") {
+                var info: URLInfo? = nil
+                var responseURL: NSURL? = nil
+                
+                var secondInfo: URLInfo? = nil
+                var secondResponseURL: NSURL? = nil
+                let secondRouter = KakapoServer.register("www.host2.com")
+                
+                var thirdInfo: URLInfo? = nil
+                var thirdResponseURL: NSURL? = nil
+                let thirdRouter = KakapoServer.register("www.another.com")
+                
+                router.get("/users/:id") { request in
+                    XCTFail("Shouldn't reach here")
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                secondRouter.get("/messages/:user") { request in
+                    secondInfo = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                thirdRouter.get("/sessions/:global_id") { request in
+                    XCTFail("Shouldn't reach here")
+                    thirdInfo = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                KakapoServer.unregister("www.test.com")
+                KakapoServer.unregister("www.another.com")
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.URL
+                    }.resume()
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
+                    secondResponseURL = response?.URL
+                    }.resume()
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.another.com/sessions/55")!) { (data, response, _) in
+                    thirdResponseURL = response?.URL
+                    }.resume()
+                
+                expect(info).toEventually(beNil())
+                expect(responseURL?.host).toEventually(equal("www.test.com"))
+                
+                expect(secondInfo?.components).toEventually(equal(["user" : "24"]))
+                expect(secondInfo?.queryParameters).toEventually(equal([]))
+                expect(secondResponseURL?.absoluteString).toEventually(equal("http://www.host2.com/messages/24"))
+                
+                expect(thirdInfo).toEventually(beNil())
+                expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
+            }
+            
+            it("Should fail when not properly registering Routers") {
+                var info: URLInfo? = nil
+                var responseURL: NSURL? = nil
+                let router = KakapoServer.register("http://www.host2.com")
+                
+                router.get("/users/:id") { request in
+                    XCTFail("Shouldn't reach here")
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.host2.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.URL
+                    }.resume()
+                
+                expect(info).toEventually(beNil())
+                expect(responseURL?.host).toEventually(equal("www.host2.com"))
+            }
+            
+            it("Should not respond any request on any Router when disabling the server") {
+                var info: URLInfo? = nil
+                var responseURL: NSURL? = nil
+                
+                var secondInfo: URLInfo? = nil
+                var secondResponseURL: NSURL? = nil
+                let secondRouter = KakapoServer.register("www.host2.com")
+                
+                var thirdInfo: URLInfo? = nil
+                var thirdResponseURL: NSURL? = nil
+                let thirdRouter = KakapoServer.register("www.another.com")
+                
+                router.get("/users/:id") { request in
+                    XCTFail("Shouldn't reach here")
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                secondRouter.get("/messages/:user") { request in
+                    XCTFail("Shouldn't reach here")
+                    secondInfo = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                thirdRouter.get("/sessions/:global_id") { request in
+                    XCTFail("Shouldn't reach here")
+                    thirdInfo = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                KakapoServer.disable()
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.URL
+                    }.resume()
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
+                    secondResponseURL = response?.URL
+                    }.resume()
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.another.com/sessions/55")!) { (data, response, _) in
+                    thirdResponseURL = response?.URL
+                    }.resume()
+                
+                expect(info).toEventually(beNil())
+                expect(responseURL?.host).toEventually(equal("www.test.com"))
+                
+                expect(secondInfo).toEventually(beNil())
+                expect(secondResponseURL?.host).toEventually(equal("www.host2.com"))
+                
+                expect(thirdInfo).toEventually(beNil())
+                expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
+            }
+            
+            it ("Should not leak any router when disabling or unregistering") {
+                weak var router1: Router? = KakapoServer.register("www.host1.com")
+                weak var router2: Router? = KakapoServer.register("www.host2.com")
+                weak var router3: Router? = KakapoServer.register("www.host3.com")
+                weak var router4: Router? = KakapoServer.register("www.host4.com")
+                
+                expect(router1).toNot(beNil())
+                expect(router2).toNot(beNil())
+                expect(router3).toNot(beNil())
+                expect(router4).toNot(beNil())
+                
+                KakapoServer.unregister("www.host2.com")
+                KakapoServer.unregister("www.host4.com")
+                
+                expect(router1).toNot(beNil())
+                expect(router2).to(beNil())
+                expect(router3).toNot(beNil())
+                expect(router4).to(beNil())
+                
+                KakapoServer.disable()
+                
+                expect(router1).to(beNil())
+                expect(router2).to(beNil())
+                expect(router3).to(beNil())
+                expect(router4).to(beNil())
+            }
+        }
     }
 }
