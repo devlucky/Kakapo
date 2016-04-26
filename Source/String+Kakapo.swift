@@ -8,7 +8,7 @@
 
 import Foundation
 
-func randomString(withLength len: Int = 20) -> String {
+public func randomString(withLength len: Int = 20) -> String {
     let allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     let allowedCharsCount = UInt32(allowedChars.characters.count)
     var randomString = ""

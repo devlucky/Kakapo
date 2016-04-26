@@ -18,7 +18,7 @@ class KakapoServerTests: QuickSpec {
     override func spec() {
         let host = "www.test.com"
         var db = KakapoDB()
-        var router = Router()
+        var router: Router!
         
         beforeEach{
             db = KakapoDB()

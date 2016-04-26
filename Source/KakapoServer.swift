@@ -21,7 +21,7 @@ public struct Response: CustomSerializable {
     let body: Serializable
     let headerFields: [String : String]?
     
-    init(code: Int, body: Serializable, headerFields: [String : String]? = nil) {
+    public init(code: Int, body: Serializable, headerFields: [String : String]? = nil) {
         self.code = code
         self.body = body
         self.headerFields = headerFields
@@ -40,6 +40,11 @@ public class Router {
     private typealias Route = (method: HTTPMethod, handler: RouteHandler)
     
     private var routes: [String : Route] = [:]
+    public let host: String
+    
+    init(host: String) {
+        self.host = host
+    }
     
     func canInitWithRequest(request: NSURLRequest) -> Bool {
         guard let requestURL = request.URL,
@@ -121,7 +126,7 @@ public class KakapoServer: NSURLProtocol {
     public class func register(host: String) -> Router {
         NSURLProtocol.registerClass(self)
         
-        let router = Router()
+        let router = Router(host: host)
         routers[host] = router
 
         return router
