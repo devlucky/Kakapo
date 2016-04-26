@@ -22,7 +22,7 @@ public typealias URLInfo = (components: [String : String], queryParameters: [NSU
  
  - returns: the URL info
  */
-func parseUrl(handlerPath: String, requestURLComponents: NSURLComponents) -> URLInfo? {
+func decomposeURL(handlerPath: String, requestURLComponents: NSURLComponents) -> URLInfo? {
     var components: [String : String] = [:]
     let handlerSplittedPaths = splitUrl(handlerPath, withSeparator: ":")
     
@@ -32,7 +32,7 @@ func parseUrl(handlerPath: String, requestURLComponents: NSURLComponents) -> URL
     }
     
     for (index, path) in handlerSplittedPaths.enumerate() {
-        guard (requestURLPath + "/").rangeOfString(path) != nil else {
+        guard requestURLPath.rangeOfString(path) != nil else {
             return nil
         }
         

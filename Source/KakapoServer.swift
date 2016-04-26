@@ -47,7 +47,7 @@ public class Router {
         
         for (key, route) in routes {
             if  route.method.rawValue == request.HTTPMethod &&
-                parseUrl(key, requestURLComponents: components) != nil {
+                decomposeURL(key, requestURLComponents: components) != nil {
                 return true
             }
         }
@@ -66,7 +66,7 @@ public class Router {
         var serializableObject: Serializable?
         
         for (key, route) in routes {
-            if let info = parseUrl(key, requestURLComponents: components) {
+            if let info = decomposeURL(key, requestURLComponents: components) {
                 
                 if let dataFromNSURLRequest = server.request.HTTPBody {
                     dataBody = dataFromNSURLRequest
