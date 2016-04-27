@@ -41,19 +41,18 @@ public class Router {
     private typealias Route = (method: HTTPMethod, handler: RouteHandler)
     
     private var routes: [String : Route] = [:]
-    public let host: String
+    public let baseURL: String
     
-    init(host: String) {
-        self.host = host
+    init(baseURL: String) {
+        self.baseURL = baseURL
     }
     
     func canInitWithRequest(request: NSURLRequest) -> Bool {
         guard let requestURL = request.URL,
-                  components = NSURLComponents(URL: requestURL, resolvingAgainstBaseURL: requestURL.baseURL != nil) else { return false }
+                  components = requestURL.componentsFromBaseURL(baseURL) else { return false }
         
-        for (key, route) in routes {
-            if  route.method.rawValue == request.HTTPMethod &&
-                decomposeURL(key, requestURLComponents: components) != nil {
+        for (key, route) in routes where route.method.rawValue == request.HTTPMethod {
+            if  decomposeURL(key, requestURLComponents: components) != nil {
                 return true
             }
         }
@@ -63,7 +62,7 @@ public class Router {
     
     func startLoading(server: NSURLProtocol) {
         guard let requestURL = server.request.URL,
-                  components = NSURLComponents(URL: requestURL, resolvingAgainstBaseURL: requestURL.baseURL != nil),
+                  components = requestURL.componentsFromBaseURL(baseURL),
                   client = server.client else { return }
         
         var statusCode = 200
@@ -122,31 +121,31 @@ public class Router {
 
 public class KakapoServer: NSURLProtocol {
     
-    private static var routers: [String : Router] = [:]
+    private static var routers: [Router] = []
     
-    public class func register(host: String) -> Router {
+    public class func register(baseURL: String) -> Router {
         NSURLProtocol.registerClass(self)
         
-        let router = Router(host: host)
-        routers[host] = router
+        let router = Router(baseURL: baseURL)
+        routers.append(router)
 
         return router
     }
     
-    public class func unregister(host: String) {
-        routers.removeValueForKey(host)
+    public class func unregister(baseURL: String) {
+        routers = routers.filter { $0.baseURL != baseURL }
     }
     
     public class func disable() {
-        routers = [:]
+        routers = []
         NSURLProtocol.unregisterClass(self)
     }
     
     override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        guard let host = request.URL?.host,
-                  router = KakapoServer.routers[host] else { return false }
+        guard let URL = request.URL else { return false }
         
-        return router.canInitWithRequest(request)
+        return
+            routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first != nil ? true : false
     }
     
     override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
@@ -154,12 +153,19 @@ public class KakapoServer: NSURLProtocol {
     }
     
     override public func startLoading() {
-        guard let host = request.URL?.host,
-                  router = KakapoServer.routers[host] else { return }
+        guard let URL = request.URL else { return }
         
-        router.startLoading(self)
+        KakapoServer.routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first?.startLoading(self)
     }
     
     override public func stopLoading() {}
+    
+}
+
+private extension NSURL {
+    
+    func componentsFromBaseURL(baseURL: String) -> NSURLComponents? {
+        return NSURLComponents(string: absoluteString.stringByReplacingOccurrencesOfString(baseURL, withString: ""))
+    }
     
 }
