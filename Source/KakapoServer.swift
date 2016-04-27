@@ -81,7 +81,7 @@ public class Router {
                     dataBody = dataFromProtocol
                 }
                 
-                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: request.allHTTPHeaderFields))
+                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields))
                 break
             }
         }

@@ -210,12 +210,12 @@ class KakapoServerTests: QuickSpec {
                 var contentType: String? = nil
                 var accept: String? = nil
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
+                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
                 request.HTTPMethod = "POST"
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
-                KakapoServer.post("/users/:id") { request in
+                router.post("/users/:id") { request in
                     contentType = request.HTTPHeaders!["Content-Type"]
                     accept = request.HTTPHeaders!["Accept"]
                     return nil
@@ -230,10 +230,10 @@ class KakapoServerTests: QuickSpec {
             it("shouldn't give back HTTPHeaders in the handler when the request doesn't provide headers") {
                 var count: Int? = nil
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "/users/1")!)
+                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
                 request.HTTPMethod = "POST"
                 
-                KakapoServer.post("/users/:id") { request in
+                router.post("/users/:id") { request in
                     count = request.HTTPHeaders!.count
                     return nil
                 }
