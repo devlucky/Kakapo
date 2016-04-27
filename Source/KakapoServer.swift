@@ -14,6 +14,7 @@ public struct Request {
     public let components: [String : String]
     public let queryParameters: [NSURLQueryItem]
     public let HTTPBody: NSData?
+    public let HTTPHeaders: [String: String]?
 }
 
 public struct Response: CustomSerializable {
@@ -80,7 +81,7 @@ public class Router {
                     dataBody = dataFromProtocol
                 }
                 
-                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody))
+                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: request.allHTTPHeaderFields))
                 break
             }
         }
