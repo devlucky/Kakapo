@@ -48,7 +48,7 @@ public extension JSONAPIEntity {
             if let label = child.label {
                 if child.value is _PropertyPolicy {
                     
-                } else if let value = child.value as? JSONAPISerializable, let data = value.data(includeRelationships: true, includeAttributes: false) {
+                } else if let value = child.value as? JSONAPISerializable, let data = value.data(includeRelationships: false, includeAttributes: false) {
                     relationships[label] =  ["data": data]
                 } else if let value = child.value as? Serializable {
                     attributes[label] = value.serialize()

@@ -17,12 +17,19 @@ class JSONAPISpec: QuickSpec {
     struct Dog: JSONAPIEntity {
         let id: Int
         let name: String
+        var chasingCat: Cat?
+    }
+    
+    struct Cat: JSONAPIEntity {
+        let id: Int
+        let name: String
     }
     
     struct User: JSONAPIEntity {
         let id: Int
         let name: String
         let dog: Dog
+        let cats: [Cat]
     }
     
     struct Post: JSONAPIEntity {
@@ -32,8 +39,11 @@ class JSONAPISpec: QuickSpec {
     
     override func spec() {
         
-        let user = User(id: 11, name: "Alex", dog: Dog(id: 22, name: "Joan"))
-
+        let cats = [Cat(id: 33, name: "Stancho"), Cat(id: 44, name: "Hez")]
+        let dog = Dog(id: 22, name: "Joan", chasingCat: cats[0])
+        let user = User(id: 11, name: "Alex", dog: dog, cats: cats)
+        let lonelyMax = User(id: 11, name: "Max", dog: dog, cats: [])
+        
         func json(object: Serializable) -> JSON {
             return JSON(object.serialize())
         }
@@ -82,6 +92,15 @@ class JSONAPISpec: QuickSpec {
                 
                 expect(objects.count).to(equal(2))
             }
+            
+            it("should only serialzie actual attributes into attributes") {
+                let object = json(lonelyMax)
+                let lonelyMaxAttributes = object["attributes"].dictionaryValue
+                expect(lonelyMaxAttributes.count).to(equal(1)) // only name should be here, no id, no cats
+                expect(lonelyMaxAttributes["name"]).to(equal("Max"))
+                expect(lonelyMaxAttributes["cats"]).to(beNil())
+                expect(lonelyMaxAttributes["id"]).to(beNil())
+            }
         }
         
         describe("JSON API Entity with PropertyPolicies") {
@@ -90,23 +109,44 @@ class JSONAPISpec: QuickSpec {
         
         describe("JSON API  Entity relationship serialization") {
             it("should serialzie the relationships when they are single JSONAPIEntities") {
-                
+                let object = json(user)
+                let dog = object["relationships"]["dog"]["data"]
+                expect(dog.dictionaryValue).toNot(beNil())
+                expect(dog["id"].stringValue).to(equal("22"))
+                expect(dog["type"].stringValue).to(equal("dog"))
             }
             
             it("should serialzie the relationships when they are arrays of JSONAPIEntities") {
-                
+                let object = json(user)
+                let cats = object["relationships"]["cats"]["data"].arrayValue
+                expect(cats).toNot(beNil())
+                expect(cats.count).to(equal(2))
+                expect(cats[0]["id"].stringValue).to(equal("33"))
+                expect(cats[0]["type"].stringValue).to(equal("cat"))
+                expect(cats[1]["id"].stringValue).to(equal("44"))
+                expect(cats[1]["type"].stringValue).to(equal("cat"))
             }
             
             it("should not serialzie relationships of relationships") {
-                
-            }
-            
-            it("should serialzie the relationships even when an array is empty") {
-                
+                let object = json(user)
+                let dogData = object["relationships"]["dog"]["data"].dictionaryValue
+                expect(dogData).toNot(beNil())
+                expect(dogData["relationships"]).to(beNil())
             }
             
             it("should not serialzie nil relationships") {
-                
+                let object = json(dog)
+                let cat = object["relationships"].dictionaryValue
+                expect(cat["chasingCat"]).to(beNil())
+            }
+            
+            it("should serialzie the relationships even when an array is empty") {
+                let object = json(lonelyMax)
+                let cats = object["relationships"]["cats"].dictionaryValue
+                expect(cats.count).to(equal(1))
+                let dataArray = cats["data"]
+                expect(dataArray).toNot(beNil())
+                expect(dataArray?.count).to(equal(0))
             }
         }
     }
