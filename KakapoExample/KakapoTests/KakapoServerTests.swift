@@ -458,7 +458,7 @@ class KakapoServerTests: QuickSpec {
                 router = KakapoServer.register("http://www.test.com/foo/bar/")
                 var components: [String : String] = ["foo" : "bar"]
                 var responseURL: NSURL? = nil
-                var isReached = false
+                var isReached: Bool?
                 
                 router.get("/comments/foo/bar") { request in
                     XCTFail("Shouldn't reach here")
@@ -487,20 +487,22 @@ class KakapoServerTests: QuickSpec {
                 expect(responseURL?.host).toEventually(equal("www.test.com"))
             }
         
-            it("Should manage which Router has to be selected when registering similar routes") {
+            it("Should manage which Router has to be selected when registering routes with similar baseURL") {
                 var responseURL: NSURL? = nil
                 var components: [String : String]? = nil
                 router = KakapoServer.register("http://www.test.com")
                 let secondRouter = KakapoServer.register("http://www.test.com/v1")
                 let thirdRouter = KakapoServer.register("http://www.test.com/v1/foo/bar")
-                var isReached = false
+                var isReached: Bool?
                 
                 router.get("/users/:id") { request in
+                    XCTFail("Shouldn't reach here")
                     components = request.components
                     return nil
                 }
                 
                 secondRouter.get("/users/:id") { request in
+                    XCTFail("Shouldn't reach here")
                     components = request.components
                     return nil
                 }
@@ -518,6 +520,39 @@ class KakapoServerTests: QuickSpec {
                 expect(isReached).toEventually(beTrue())
                 expect(components).toEventually(equal(["id" : "1"]))
                 expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/v1/foo/bar/users/1"))
+            }
+            
+            it("Should manage which Router has to be selected when registering routes with same baseURL") {
+                router = KakapoServer.register("http://www.test.com")
+                let secondRouter = KakapoServer.register("http://www.test.com")
+                let thirdRouter = KakapoServer.register("http://www.test.com")
+                var isReached: Bool?
+                var responseURL: NSURL? = nil
+                var components: [String : String]? = nil
+                
+                router.get("/users/:user_id/comments/:comment_id") { request in
+                    isReached = true
+                    components = request.components
+                    return nil
+                }
+                
+                secondRouter.get("/users/:id") { request in
+                    components = request.components
+                    return nil
+                }
+                
+                thirdRouter.get("/users/:id/comments") { request in
+                    components = request.components
+                    return nil
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2")!) { (data, response, _) in
+                    responseURL = response?.URL
+                    }.resume()
+                
+                expect(isReached).toEventually(beTrue())
+                expect(components).toEventually(equal(["user_id" : "1", "comment_id" : "2"]))
+                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2"))
             }
             
             it("Should properly handle multiple registered and unregistered Routers that register differents urls") {

@@ -35,10 +35,11 @@ public struct Response: CustomSerializable {
 
 public class Router {
     
+    private typealias Route = (method: HTTPMethod, handler: RouteHandler)
+    
     private enum HTTPMethod: String {
         case GET, POST, PUT, DELETE
     }
-    private typealias Route = (method: HTTPMethod, handler: RouteHandler)
     
     private var routes: [String : Route] = [:]
     public let baseURL: String
