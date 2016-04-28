@@ -11,6 +11,11 @@
 
 Kakapo **dynamically mocks server responses**.
 
+
+7 billion people on Earth Fewer than 150 Kakapo
+
+[![http://kakaporecovery.org.nz/donate/](https://photos-4.dropbox.com/t/2/AACYHFZXOoaEMhzWw-ZKHV2NZ_-S5-rmvCs7J89NxODSzA/12/421965471/png/32x32/3/1461862800/0/2/kakapoDonate.png/ENidr7EDGFAgAigC/GEeEeCDaW4HTIYWtBr-ut82sr9RL_VdLeIbR0Q-zpN8?size_mode=3&size=320x240)](http://kakaporecovery.org.nz/donate/)
+
 ## Contents
 - [Features](#features)
 - [Introduction](#introduction)
