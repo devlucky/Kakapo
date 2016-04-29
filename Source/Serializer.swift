@@ -102,8 +102,8 @@ private func serializeObject(value: Any) -> AnyObject? {
     if let value = value as? Serializable {
         return value.serialize()
     } else {
-        // At this point an object must be nil or an AnyObject and probably also a property list object otherwise the json will fail later.
-//        assert(value == nil || value as! AnyObject)
+        // At this point an object must be an AnyObject and probably also a property list object otherwise the json will fail later.
+        assert((value as? AnyObject) != nil)
         return value as? AnyObject
     }
 }
