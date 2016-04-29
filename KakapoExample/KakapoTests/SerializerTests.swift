@@ -136,6 +136,12 @@ class SerializeSpec: QuickSpec {
                 expect(serialized.count).to(equal(0))
             }
             
+            it("produces nil data and serialized object when nil") {
+                let nilInt: Int? = nil
+                expect(nilInt.serialize()).to(beNil())
+                expect(nilInt.toData()).to(beNil())
+            }
+            
             it("serialize an optional") {
                 let optional = MaybeEmpty(Optional.Some(1))
                 let serialized = optional.serialize() as! [String: AnyObject] as? [String: Int]
