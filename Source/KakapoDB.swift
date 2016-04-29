@@ -9,6 +9,7 @@
 import Foundation
 
 public protocol _Storable {
+    // TODO: default to String and create a protocol that as an Int id with default implementation. Because String is not always convertible to Int but Int can always be converted to String.
     var id: Int { get }
     init(id: Int, db: KakapoDB)
 }
