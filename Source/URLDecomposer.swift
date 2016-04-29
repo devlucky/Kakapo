@@ -1,5 +1,5 @@
 //
-//  NSURL+Kakapo.swift
+//  URLDecomposer.swift
 //  Kakapo
 //
 //  Created by Joan Romano on 31/03/16.
@@ -8,19 +8,22 @@
 
 import Foundation
 
+/**
+ A tuple holding components and query parameters, check `decomposeURL` for more details
+ */
 public typealias URLInfo = (components: [String : String], queryParameters: [NSURLQueryItem])
 
 /**
  Checks and parses if a given `handleURL` representation matches a `requestURL`. Examples:
  
-      `/users/:id` with `/users/1` produces `components: ["id" : "1"]`
-      `/users/:id/comments` with `/users/1/comments` produces `components: ["id" : "1"]`
-      `/users/:id/comments/:comment_id` with `/users/1/comments/2?page=2&author=hector` produces `components: ["id": "1", "comment_id": "2"]` and `queryParameters: ["page": "2", "author": "hector"]`
-
+ `/users/:id` with `/users/1` produces `components: ["id" : "1"]`
+ `/users/:id/comments` with `/users/1/comments` produces `components: ["id" : "1"]`
+ `/users/:id/comments/:comment_id` with `/users/1/comments/2?page=2&author=hector` produces `components: ["id": "1", "comment_id": "2"]` and `queryParameters: ["page": "2", "author": "hector"]`
+ 
  - parameter handlerPath: the URL handler with dynamic paths
  - parameter requestURLComponents: the components of the actual URL
  
- - returns: the URL info
+ - returns: a URL info object containing `components` and `queryParamaters`
  */
 func decomposeURL(handlerPath: String, requestURLComponents: NSURLComponents) -> URLInfo? {
     var components: [String : String] = [:]

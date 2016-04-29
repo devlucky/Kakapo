@@ -8,18 +8,39 @@
 
 import Foundation
 
+/**
+ A RouteHandler used when registering different HTTP methods. This can return any Serializable object, though you would normally want to use the built-in Response object
+ */
 public typealias RouteHandler = Request -> Serializable?
 
+/**
+ A Request struct used in `RouteHandlers` to provide valid requests.
+ */
 public struct Request {
+    /// The decomposed URLInfo components
     public let components: [String : String]
+    
+    /// The decomposed URLInfo query parameters
     public let queryParameters: [NSURLQueryItem]
+    
+    /// An optional request body
     public let HTTPBody: NSData?
+    
+    /// An optional dictionary holding the request header fields
     public let HTTPHeaders: [String: String]?
 }
 
+/**
+ A Response struct which can be used in `RouteHandlers` to provide valid responses.
+ */
 public struct Response: CustomSerializable {
+    /// The response code
     let code: Int
+    
+    /// The Serializable body object
     let body: Serializable
+    
+    /// An optional dictionary holding the response header fields
     let headerFields: [String : String]?
     
     public init(code: Int, body: Serializable, headerFields: [String : String]? = nil) {
@@ -33,6 +54,11 @@ public struct Response: CustomSerializable {
     }
 }
 
+/**
+ A Router object is an object in charge of intercepting outgoing network calls in order to return custom objects. You register new Router objects by using the KakapoServer class.
+ 
+ After that, the router can be used to register different HTTP methods (GET, POST, DEL, PUT) with custom `RouteHandlers`
+ */
 public class Router {
     
     private typealias Route = (method: HTTPMethod, handler: RouteHandler)
@@ -42,6 +68,8 @@ public class Router {
     }
     
     private var routes: [String : Route] = [:]
+    
+    /// The `baseURL` of the Router
     public let baseURL: String
     
     init(baseURL: String) {
@@ -102,28 +130,62 @@ public class Router {
         client.URLProtocolDidFinishLoading(server)
     }
     
-    public func get(urlString: String, handler: RouteHandler) {
-        routes[urlString] = (.GET, handler)
+    /**
+     Registers a GET request in a given relative path
+     
+     - parameter relativePath: A relative URL path to be registered
+     - parameter handler: A `RouteHandler` handler that will be used when intercepting the `path` with the `baseURL` for a GET request
+     */
+    public func get(relativePath: String, handler: RouteHandler) {
+        routes[relativePath] = (.GET, handler)
     }
     
-    public func post(urlString: String, handler: RouteHandler) {
-        routes[urlString] = (.POST, handler)
+    /**
+     Registers a POST request in a given relative path
+     
+     - parameter relativePath: A relative URL path to be registered
+     - parameter handler: A `RouteHandler` handler that will be used when intercepting the `path` with the `baseURL` for a POST request
+     */
+    public func post(relativePath: String, handler: RouteHandler) {
+        routes[relativePath] = (.POST, handler)
     }
     
-    public func del(urlString: String, handler: RouteHandler) {
-        routes[urlString] = (.DELETE, handler)
+    /**
+     Registers a DEL request in a given relative path
+     
+     - parameter relativePath: A relative URL path to be registered
+     - parameter handler: A `RouteHandler` handler that will be used when intercepting the `path` with the `baseURL` for a DEL request
+     */
+    public func del(relativePath: String, handler: RouteHandler) {
+        routes[relativePath] = (.DELETE, handler)
     }
     
-    public func put(urlString: String, handler: RouteHandler) {
-        routes[urlString] = (.PUT, handler)
+    /**
+     Registers a PUT request in a given relative path
+     
+     - parameter relativePath: A relative URL path to be registered
+     - parameter handler: A `RouteHandler` handler that will be used when intercepting the `path` with the `baseURL` for a PUT request
+     */
+    public func put(relativePath: String, handler: RouteHandler) {
+        routes[relativePath] = (.PUT, handler)
     }
     
 }
 
+/**
+ A server that conforms to NSURLProtocol in order to intercept outgoing network communication
+ */
 public class KakapoServer: NSURLProtocol {
     
     private static var routers: [Router] = []
     
+    /**
+     Register and return a new Router in the Server
+     
+     - parameter baseURL: The base URL that this Router will use
+     
+     - returns: An new initialized Router. Note that two Router objects can hold the same baseURL.
+     */
     public class func register(baseURL: String) -> Router {
         NSURLProtocol.registerClass(self)
         
@@ -133,10 +195,18 @@ public class KakapoServer: NSURLProtocol {
         return router
     }
     
+    /**
+     Unregister any Routers with a given baseURL
+     
+     - parameter baseURL: The base URL to be unregistered
+     */
     public class func unregister(baseURL: String) {
         routers = routers.filter { $0.baseURL != baseURL }
     }
     
+    /**
+     Disables the Server so that it stops intercepting outgoing requests
+     */
     public class func disable() {
         routers = []
         NSURLProtocol.unregisterClass(self)

@@ -8,11 +8,17 @@
 
 import Foundation
 
+/**
+ A protocol to store objects into a store, providing an `id` and a generic `init` method for all objects that will be inserted
+ */
 public protocol _Storable {
     var id: Int { get }
     init(id: Int, db: KakapoDB)
 }
 
+/**
+ A procotol to support both `_Storable` and `Equatable` objects, used in KakapoDB
+ */
 public protocol Storable: _Storable, Equatable {}
 
 enum KakapoDBError: ErrorType {
@@ -63,6 +69,14 @@ public class KakapoDB {
         return object!
     }
     
+    /**
+     Inserts Storable objects based on their default initializer
+     
+     - parameter (unamed): The Storable Type to be created
+     - parameter number: The number of elements to create, defaults to 1
+     
+     - returns: An array containing the new inserted Storable objects
+     */
     public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
         let ids = barrierSync {
             return (0..<number).map { _ in self.uuid()}
@@ -77,6 +91,13 @@ public class KakapoDB {
         return objects
     }
     
+    /**
+     Inserts an Storable object returned by a given handler
+     
+     - parameter handler: A handler that will be called with a new `id` and will return the new Storable element to be inserted. The `id` needs to be used when creating the new Storable element, otherwise this method will assert.
+     
+     - returns: The new inserted Storable object
+     */
     public func insert<T: Storable>(handler: (Int) -> T) -> T {
         let id = barrierSync {
             return self.uuid()
@@ -92,6 +113,13 @@ public class KakapoDB {
         return object
     }
     
+    /**
+     Updates the given Storable object
+     
+     - parameter entity: The Storable object to be updated
+     
+     - throws: `KakapoDBError.InvalidEntity` if no Storable object with same `id` was found
+     */
     public func update<T: Storable>(entity: T) throws {
         let updated: Bool = barrierSync {
             let index = self.lookup(T).value.indexOf { $0.id == entity.id }
@@ -106,6 +134,13 @@ public class KakapoDB {
         }
     }
     
+    /**
+     Deletes the given Storable object
+     
+     - parameter entity: The Storable object to be deleted
+     
+     - throws: `KakapoDBError.InvalidEntity` if no Storable object with same `id` was found
+     */
     public func delete<T: Storable>(entity: T) throws {
         let deleted: Bool = barrierSync {
             let index = self.lookup(T).value.indexOf { $0 as? T == entity }
@@ -120,16 +155,39 @@ public class KakapoDB {
         }
     }
     
+    /**
+     Find all the objects in the store of a given Storable Type
+     
+     - parameter (unamed): The Storable Type to be found
+     
+     - returns: An array containing the found Storable objects
+     */
     public func findAll<T: Storable>(_: T.Type) -> [T] {
         return sync {
             self.lookup(T).value.flatMap{$0 as? T}
         }
     }
     
+    /**
+     Filter all the objects in the store of a given Storable Type that satisfy the a given handler
+     
+     - parameter (unamed): The Storable Type to be filtered
+     - parameter includeElement: The predicate to satisfy the filtering
+     
+     - returns: An array containing the filtered Storable objects
+     */
     public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
         return findAll(T).filter(includeElement)
     }
     
+    /**
+     Find all the objects in the store by a given id
+     
+     - parameter (unamed): The Storable Type to be filtered
+     - parameter id: The id to search for
+     
+     - returns: An optional thay may (or not) contain the found Storable object
+     */
     public func find<T: Storable>(_: T.Type, id: Int) -> T? {
         return filter(T.self) { $0.id == id }.first
     }
