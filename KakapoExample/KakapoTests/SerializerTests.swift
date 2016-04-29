@@ -11,22 +11,6 @@ import Quick
 import Nimble
 @testable import Kakapo
 
-class IgnorableNilPropertySpec: QuickSpec {
-    override func spec() {
-        describe("Nil ignorable property") {
-            it("is nil") {
-                let ignorableProperty = IgnorableNilProperty<Int>(nil)
-                expect(ignorableProperty.shouldSerialize).to(beFalse())
-            }
-            
-            it("is not nil") {
-                let ignorableProperty = IgnorableNilProperty(1)
-                expect(ignorableProperty.shouldSerialize).to(beTrue())
-            }
-        }
-    }
-}
-
 struct MaybeEmpty<T>: Serializable {
     let value: T
     
@@ -137,35 +121,6 @@ class SerializeSpec: QuickSpec {
             }
         }
         
-        describe("Property policy serialization") { 
-            it("is not serialized if nil") {
-                let empty = MaybeEmpty(IgnorableNilProperty<Int>(nil))
-                let serialized = empty.serialize() as! [String: AnyObject]
-                expect(serialized.count).to(be(0))
-            }
-            
-            it("is serialized if not nil") {
-                let notEmpty = MaybeEmpty(IgnorableNilProperty(1))
-                let serialized = notEmpty.serialize() as! [String: AnyObject]
-                let value = serialized["value"] as? Int
-                expect(value).to(be(1))
-            }
-            
-            it("recursively serialize the object if needed") {
-                let notEmpty = MaybeEmpty(IgnorableNilProperty(user))
-                let serialized = notEmpty.serialize() as! [String: AnyObject]
-                let value = serialized["value"] as? [String: AnyObject]
-                expect(value?["name"] as? String).to(equal("Alex"))
-            }
-
-            it("recursively serialize IgnorableNilProperties") {
-                let notEmpty = MaybeEmpty(IgnorableNilProperty(IgnorableNilProperty(1)))
-                let serialized = notEmpty.serialize() as! [String: AnyObject]
-                let value = serialized["value"] as? Int
-                expect(value).to(be(1))
-            }
-        }
-        
         describe("Optional property serialization") {
 
             it("should serialize the object if it is an entry point") {
@@ -177,13 +132,14 @@ class SerializeSpec: QuickSpec {
                 let nilInt: Int? = nil
                 let optional = MaybeEmpty(nilInt)
                 let serialized = optional.serialize() as! [String: AnyObject]
-                expect(serialized["value"] as? NSNull).to(be(NSNull()))
+                expect(serialized["value"]).to(beNil())
+                expect(serialized.count).to(equal(0))
             }
             
             it("serialize an optional") {
                 let optional = MaybeEmpty(Optional.Some(1))
                 let serialized = optional.serialize() as! [String: AnyObject] as? [String: Int]
-                expect(serialized?["value"]).to(be(1))
+                expect(serialized?["value"]).to(equal(1))
             }
             
             it("recursively serialize the value") {
