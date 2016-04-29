@@ -1,5 +1,5 @@
 //
-//  KakapoServerTests.swift
+//  RouterTests.swift
 //  KakapoExample
 //
 //  Created by Joan Romano on 02/04/16.
@@ -13,7 +13,7 @@ import Nimble
 
 @testable import Kakapo
 
-class KakapoServerTests: QuickSpec {
+class RouterTests: QuickSpec {
     
     override func spec() {
         var db = KakapoDB()
@@ -23,14 +23,14 @@ class KakapoServerTests: QuickSpec {
         }
         
         afterEach{
-            KakapoServer.disable()
+            Router.disableAll()
         }
         
         describe("Registering urls") {
             var router: Router!
             
             beforeEach{
-                router = KakapoServer.register("http://www.test.com")
+                router = Router.register("http://www.test.com")
             }
             
             it("should call the handler when requesting a registered url") {
@@ -106,7 +106,7 @@ class KakapoServerTests: QuickSpec {
             var router: Router!
             
             beforeEach{
-                router = KakapoServer.register("htpp://www.test.com")
+                router = Router.register("htpp://www.test.com")
             }
             
             it("should not call the handler when requesting a non registered url") {
@@ -159,7 +159,7 @@ class KakapoServerTests: QuickSpec {
             var router: Router!
             
             beforeEach{
-                router = KakapoServer.register("http://www.test.com")
+                router = Router.register("http://www.test.com")
             }
             
             it("should give back the body in the handler when a NSURLSession request has it") {
@@ -262,7 +262,7 @@ class KakapoServerTests: QuickSpec {
             var router: Router!
             
             beforeEach{
-                router = KakapoServer.register("http://www.test.com")
+                router = Router.register("http://www.test.com")
             }
             
             it("should return the specified object when requesting a registered url") {
@@ -393,14 +393,14 @@ class KakapoServerTests: QuickSpec {
             var router: Router!
             
             it("Should handle multiple Routers that register differents urls") {
-                router = KakapoServer.register("http://www.test.com")
+                router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = nil
                 
                 var secondInfo: URLInfo? = nil
                 var secondResponseURL: NSURL? = nil
-                let secondRouter = KakapoServer.register("www.host2.com")
+                let secondRouter = Router.register("www.host2.com")
                 
                 router.get("/users/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
@@ -430,7 +430,7 @@ class KakapoServerTests: QuickSpec {
             }
             
             it ("Should not handle invalid registrations on routers (leading and trailing slashes should match the absolute request)") {
-                router = KakapoServer.register("http://www.test.com/")
+                router = Router.register("http://www.test.com/")
                 var components: [String : String]? = nil
                 var responseURL: NSURL? = nil
                 
@@ -455,7 +455,7 @@ class KakapoServerTests: QuickSpec {
             }
             
             it ("Should not handle invalid registrations on routers (leading and trailing slashes should match the absolute request) 2") {
-                router = KakapoServer.register("http://www.test.com/foo/bar/")
+                router = Router.register("http://www.test.com/foo/bar/")
                 var components: [String : String] = ["foo" : "bar"]
                 var responseURL: NSURL? = nil
                 var isReached: Bool?
@@ -490,9 +490,9 @@ class KakapoServerTests: QuickSpec {
             it("Should manage which Router has to be selected when registering routes with similar baseURL") {
                 var responseURL: NSURL? = nil
                 var components: [String : String]? = nil
-                router = KakapoServer.register("http://www.test.com")
-                let secondRouter = KakapoServer.register("http://www.test.com/v1")
-                let thirdRouter = KakapoServer.register("http://www.test.com/v1/foo/bar")
+                router = Router.register("http://www.test.com")
+                let secondRouter = Router.register("http://www.test.com/v1")
+                let thirdRouter = Router.register("http://www.test.com/v1/foo/bar")
                 var isReached: Bool?
                 
                 router.get("/users/:id") { request in
@@ -523,9 +523,9 @@ class KakapoServerTests: QuickSpec {
             }
             
             it("Should manage which Router has to be selected when registering routes with same baseURL") {
-                router = KakapoServer.register("http://www.test.com")
-                let secondRouter = KakapoServer.register("http://www.test.com")
-                let thirdRouter = KakapoServer.register("http://www.test.com")
+                router = Router.register("http://www.test.com")
+                let secondRouter = Router.register("http://www.test.com")
+                let thirdRouter = Router.register("http://www.test.com")
                 var isReached: Bool?
                 var responseURL: NSURL? = nil
                 var components: [String : String]? = nil
@@ -556,18 +556,18 @@ class KakapoServerTests: QuickSpec {
             }
             
             it("Should properly handle multiple registered and unregistered Routers that register differents urls") {
-                router = KakapoServer.register("http://www.test.com")
+                router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = nil
                 
                 var secondInfo: URLInfo? = nil
                 var secondResponseURL: NSURL? = nil
-                let secondRouter = KakapoServer.register("www.host2.com")
+                let secondRouter = Router.register("www.host2.com")
                 
                 var thirdInfo: URLInfo? = nil
                 var thirdResponseURL: NSURL? = nil
-                let thirdRouter = KakapoServer.register("www.another.com")
+                let thirdRouter = Router.register("www.another.com")
                 
                 router.get("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
@@ -586,8 +586,8 @@ class KakapoServerTests: QuickSpec {
                     return nil
                 }
                 
-                KakapoServer.unregister("http://www.test.com")
-                KakapoServer.unregister("www.another.com")
+                Router.unregister("http://www.test.com")
+                Router.unregister("www.another.com")
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
                     responseURL = response?.URL
@@ -613,11 +613,11 @@ class KakapoServerTests: QuickSpec {
             }
             
             it("Should fail when not properly registering Routers") {
-                router = KakapoServer.register("http://www.test.com")
+                router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = nil
-                let _ = KakapoServer.register("http://www.host2.com")
+                let _ = Router.register("http://www.host2.com")
                 
                 router.get("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
@@ -634,18 +634,18 @@ class KakapoServerTests: QuickSpec {
             }
             
             it("Should not respond any request on any Router when disabling the server") {
-                router = KakapoServer.register("http://www.test.com")
+                router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = nil
                 
                 var secondInfo: URLInfo? = nil
                 var secondResponseURL: NSURL? = nil
-                let secondRouter = KakapoServer.register("www.host2.com")
+                let secondRouter = Router.register("www.host2.com")
                 
                 var thirdInfo: URLInfo? = nil
                 var thirdResponseURL: NSURL? = nil
-                let thirdRouter = KakapoServer.register("www.another.com")
+                let thirdRouter = Router.register("www.another.com")
                 
                 router.get("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
@@ -665,7 +665,7 @@ class KakapoServerTests: QuickSpec {
                     return nil
                 }
                 
-                KakapoServer.disable()
+                Router.disableAll()
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
                     responseURL = response?.URL
@@ -690,25 +690,25 @@ class KakapoServerTests: QuickSpec {
             }
             
             it ("Should not leak any router when disabling or unregistering") {
-                weak var router1: Router? = KakapoServer.register("www.host1.com")
-                weak var router2: Router? = KakapoServer.register("www.host2.com")
-                weak var router3: Router? = KakapoServer.register("www.host3.com")
-                weak var router4: Router? = KakapoServer.register("www.host4.com")
+                weak var router1: Router? = Router.register("www.host1.com")
+                weak var router2: Router? = Router.register("www.host2.com")
+                weak var router3: Router? = Router.register("www.host3.com")
+                weak var router4: Router? = Router.register("www.host4.com")
                 
                 expect(router1).toNot(beNil())
                 expect(router2).toNot(beNil())
                 expect(router3).toNot(beNil())
                 expect(router4).toNot(beNil())
                 
-                KakapoServer.unregister("www.host2.com")
-                KakapoServer.unregister("www.host4.com")
+                Router.unregister("www.host2.com")
+                Router.unregister("www.host4.com")
                 
                 expect(router1).toNot(beNil())
                 expect(router2).to(beNil())
                 expect(router3).toNot(beNil())
                 expect(router4).to(beNil())
                 
-                KakapoServer.disable()
+                Router.disableAll()
                 
                 expect(router1).to(beNil())
                 expect(router2).to(beNil())
