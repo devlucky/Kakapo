@@ -14,7 +14,7 @@ import Foundation
 public typealias URLInfo = (components: [String : String], queryParameters: [NSURLQueryItem])
 
 /**
- Checks and parses if a given `handleURL` representation matches a `requestURL`. Examples:
+ Checks and parses if a given `handlerPath` representation matches a `requestURLComponents`. Examples:
  
  `/users/:id` with `/users/1` produces `components: ["id" : "1"]`
  `/users/:id/comments` with `/users/1/comments` produces `components: ["id" : "1"]`

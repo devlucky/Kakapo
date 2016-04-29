@@ -9,7 +9,9 @@
 import Foundation
 
 /**
- A protocol to store objects into a store, providing an `id` and a generic `init` method for all objects that will be inserted
+ A base protocol providing basic storage behavior with an `id` and a generic `init` method for all objects that will be inserted. 
+ 
+ This is a base protocol and it's only used internally, for your objects you should check `Storable` instead.
  */
 public protocol _Storable {
     var id: Int { get }
@@ -17,7 +19,9 @@ public protocol _Storable {
 }
 
 /**
- A procotol to support both `_Storable` and `Equatable` objects, used in KakapoDB
+ A protocol that supports both `_Storable` and `Equatable` objects, handling an `id` and a generic `init` method, as well as value equality. 
+ 
+ This is the public method which will be used in KakapoDB
  */
 public protocol Storable: _Storable, Equatable {}
 
@@ -70,7 +74,7 @@ public class KakapoDB {
     }
     
     /**
-     Inserts Storable objects based on their default initializer
+     Creates and inserts Storable objects based on their default initializer
      
      - parameter (unamed): The Storable Type to be created
      - parameter number: The number of elements to create, defaults to 1
@@ -92,7 +96,7 @@ public class KakapoDB {
     }
     
     /**
-     Inserts an Storable object returned by a given handler
+     Creates an inserts an Storable object returned by a given handler
      
      - parameter handler: A handler that will be called with a new `id` and will return the new Storable element to be inserted. The `id` needs to be used when creating the new Storable element, otherwise this method will assert.
      

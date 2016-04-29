@@ -14,7 +14,7 @@
 		DE33B8961CB47148007F6161 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8921CB47148007F6161 /* KakapoServer.swift */; };
 		DE33B8971CB47148007F6161 /* URLDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8931CB47148007F6161 /* URLDecomposer.swift */; };
 		DE33B8981CB47148007F6161 /* String+Kakapo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8941CB47148007F6161 /* String+Kakapo.swift */; };
-		DE33B89C1CB4717B007F6161 /* checkUrlTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8991CB4717B007F6161 /* checkUrlTest.swift */; };
+		DE33B89C1CB4717B007F6161 /* URLDecomposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B8991CB4717B007F6161 /* URLDecomposerTests.swift */; };
 		DE33B89D1CB4717B007F6161 /* KakapoDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B89A1CB4717B007F6161 /* KakapoDBTests.swift */; };
 		DE33B89E1CB4717B007F6161 /* KakapoServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE33B89B1CB4717B007F6161 /* KakapoServerTests.swift */; };
 		DE3651DF1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3651DE1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift */; };
@@ -79,7 +79,7 @@
 		DE33B8921CB47148007F6161 /* KakapoServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoServer.swift; sourceTree = "<group>"; };
 		DE33B8931CB47148007F6161 /* URLDecomposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLDecomposer.swift; sourceTree = "<group>"; };
 		DE33B8941CB47148007F6161 /* String+Kakapo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Kakapo.swift"; sourceTree = "<group>"; };
-		DE33B8991CB4717B007F6161 /* checkUrlTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = checkUrlTest.swift; sourceTree = "<group>"; };
+		DE33B8991CB4717B007F6161 /* URLDecomposerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLDecomposerTests.swift; sourceTree = "<group>"; };
 		DE33B89A1CB4717B007F6161 /* KakapoDBTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoDBTests.swift; sourceTree = "<group>"; };
 		DE33B89B1CB4717B007F6161 /* KakapoServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoServerTests.swift; sourceTree = "<group>"; };
 		DE3651DE1CC3AD1900F27C3B /* NSURLRequest+FixCopy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSURLRequest+FixCopy.swift"; sourceTree = "<group>"; };
@@ -199,11 +199,11 @@
 		DE93529C1CAAF21300AD534C /* KakapoTests */ = {
 			isa = PBXGroup;
 			children = (
-				DE33B8991CB4717B007F6161 /* checkUrlTest.swift */,
+				DE93529F1CAAF21300AD534C /* Info.plist */,
 				DE33B89A1CB4717B007F6161 /* KakapoDBTests.swift */,
 				DE33B89B1CB4717B007F6161 /* KakapoServerTests.swift */,
 				DE53E2431CAD719D00CD1AC0 /* SerializerTests.swift */,
-				DE93529F1CAAF21300AD534C /* Info.plist */,
+				DE33B8991CB4717B007F6161 /* URLDecomposerTests.swift */,
 				DE0A9E681CCD33E40030253B /* XCTestCase+CustomAssertions.swift */,
 			);
 			path = KakapoTests;
@@ -442,7 +442,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE33B89C1CB4717B007F6161 /* checkUrlTest.swift in Sources */,
+				DE33B89C1CB4717B007F6161 /* URLDecomposerTests.swift in Sources */,
 				DE33B89D1CB4717B007F6161 /* KakapoDBTests.swift in Sources */,
 				DE0A9E691CCD33E40030253B /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE53E2441CAD719D00CD1AC0 /* SerializerTests.swift in Sources */,

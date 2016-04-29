@@ -9,7 +9,10 @@
 import Foundation
 
 /**
- A RouteHandler used when registering different HTTP methods. This can return any Serializable object, though you would normally want to use the built-in Response object
+ A RouteHandler used when registering different HTTP methods, which can return any Serializable object.
+ 
+ By default, though, the Router will return a 200 status code and no header fields when only returning a Serializable object.
+ In order to customize that behavior, check `Response` to provide custom status code and header fields.
  */
 public typealias RouteHandler = Request -> Serializable?
 
@@ -32,6 +35,8 @@ public struct Request {
 
 /**
  A Response struct which can be used in `RouteHandlers` to provide valid responses.
+ 
+ The struct provides, appart from a Serializable `body` object, a status code and header fields. 
  */
 public struct Response: CustomSerializable {
     /// The response code
