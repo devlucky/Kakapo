@@ -24,11 +24,11 @@ public protocol CustomSerializable: Serializable {
      
      - returns: You should return either another `Serializable` object (also `Array` or `Dictionary`) containing other Serializable objects or property list types that can be serialized into json (primitive types).
      */
-    func customSerialize() -> AnyObject
+    func customSerialize() -> AnyObject?
 }
 
 extension Serializable {
-    func serialize() -> AnyObject {
+    func serialize() -> AnyObject? {
         if let object = self as? CustomSerializable {
             return object.customSerialize()
         }
@@ -36,7 +36,8 @@ extension Serializable {
     }
     
     func toData() -> NSData? {
-        let object = serialize()
+        guard let object = serialize() else { return nil }
+        
         if !NSJSONSerialization.isValidJSONObject(object) {
             return nil
         }
@@ -46,10 +47,12 @@ extension Serializable {
 
 extension Array: CustomSerializable {
     // Array is serialized by creating an Array of its objects serialized
-    public func customSerialize() -> AnyObject {
+    public func customSerialize() -> AnyObject? {
         var array = [AnyObject]()
         for obj in self {
-            array.append(serializeObject(obj))
+            if let serialized = serializeObject(obj) {
+                array.append(serialized)
+            }
         }
         return array
     }
@@ -57,42 +60,52 @@ extension Array: CustomSerializable {
 
 extension Dictionary: CustomSerializable {
     // Dictionary is serialized by creating a Dictionary with the same keys and values serialized
-    public func customSerialize() -> AnyObject {
+    public func customSerialize() -> AnyObject? {
         var dictionary = [String: AnyObject]()
         for (key, value) in self {
             assert(key is String, "key must be a String to be serialized to JSON")
-            dictionary[key as! String] = serializeObject(value)
+            if let serialized = serializeObject(value) {
+                dictionary[key as! String] = serialized
+            }
         }
         return dictionary
     }
 }
 
 extension Optional: CustomSerializable {
-    // Optional serializes its inner object or NSNull if nil
-    public func customSerialize() -> AnyObject {
+    // Optional serializes its inner object or nil if nil
+    public func customSerialize() -> AnyObject? {
         switch self {
         case let .Some(value):
             return serializeObject(value)
         default:
-            return NSNull()
+            return nil
         }
     }
 }
 
-extension _PropertyPolicy {
-    // _PropertyPolicy serializes its inner object
-    public func customSerialize() -> AnyObject {
-        return serializeObject(_object)
+extension PropertyPolicy {
+    // PropertyPolicy serializes as nil when `.None`, as `NSNull` when `.Null` or serialize the object for `.Some`
+    public func customSerialize() -> AnyObject? {
+        switch self {
+        case .None:
+            return nil
+        case .Null:
+            return NSNull()
+        case let .Some(value):
+            return serializeObject(value)
+        }
     }
 }
 
-private func serializeObject(value: Any) -> AnyObject {
+private func serializeObject(value: Any) -> AnyObject? {
     if let value = value as? Serializable {
         return value.serialize()
-    } else {
-        // At this point an object must be an AnyObject and probably also a property list object otherwise the json will fail later.
-        return value as! AnyObject
     }
+    
+    // At this point an object must be an AnyObject and probably also a property list object otherwise the json will fail later.
+    assert((value as? AnyObject) != nil)
+    return value as? AnyObject
 }
 
 /**
@@ -109,14 +122,8 @@ private func serialize(object: Serializable) -> AnyObject {
     var dictionary = [String: AnyObject]()
     let mirror = Mirror(reflecting: object)
     for child in mirror.children {
-        if let label = child.label {
-            if let value = child.value as? _PropertyPolicy {
-                if value.shouldSerialize {
-                    dictionary[label] = serializeObject(value._object)
-                }
-            } else {
-                dictionary[label] = serializeObject(child.value)
-            }
+        if let label = child.label, let value = serializeObject(child.value) {
+            dictionary[label] = value
         }
     }
     

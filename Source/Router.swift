@@ -54,7 +54,7 @@ public struct Response: CustomSerializable {
         self.headerFields = headerFields
     }
     
-    public func customSerialize() -> AnyObject {
+    public func customSerialize() -> AnyObject? {
         return body.serialize()
     }
 }
