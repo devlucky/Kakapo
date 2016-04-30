@@ -44,7 +44,7 @@ public protocol JSONAPIEntity: CustomSerializable, JSONAPISerializable {
  */
 public struct JSONAPISerializer<T: JSONAPIEntity>: CustomSerializable {
     
-    private let data: AnyObject
+    private let data: AnyObject?
     
     /**
      Initialize a serializer with a single `JSONAPIEntity`
@@ -70,7 +70,8 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: CustomSerializable {
     
     // MARK: CustomSerializable
 
-    public func customSerialize() -> AnyObject {
+    public func customSerialize() -> AnyObject? {
+        guard let data = data else { return nil }
         return ["data": data]
     }
 }
@@ -96,7 +97,7 @@ public extension JSONAPIEntity {
     
     // MARK: CustomSerializable
 
-    public func customSerialize() -> AnyObject {
+    public func customSerialize() -> AnyObject? {
         return data(includeRelationships: true, includeAttributes: true)!
     }
     
