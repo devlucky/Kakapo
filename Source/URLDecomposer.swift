@@ -14,7 +14,7 @@ import Foundation
 public typealias URLInfo = (components: [String : String], queryParameters: [NSURLQueryItem])
 
 /**
- Checks and parses if a given `handlerPath` representation matches a `requestURLComponents`. Examples:
+ Parses and checks if a given `handlerPath` representation matches a `requestURLComponents`. Examples:
  
  `/users/:id` with `/users/1` produces `components: ["id" : "1"]`
  `/users/:id/comments` with `/users/1/comments` produces `components: ["id" : "1"]`
@@ -27,7 +27,7 @@ public typealias URLInfo = (components: [String : String], queryParameters: [NSU
  */
 func decomposeURL(handlerPath: String, requestURLComponents: NSURLComponents) -> URLInfo? {
     var components: [String : String] = [:]
-    let handlerSplittedPaths = splitUrl(handlerPath, withSeparator: ":")
+    let handlerSplittedPaths = splitUrl(handlerPath, withSeparator: ":") // ["/users/", "id/comments/", "commentId"] for `/users/:id/comments/:comment_id`
     
     guard var requestURLPath = requestURLComponents.path where
         splitUrl(handlerPath, withSeparator: "/").count == splitUrl(requestURLPath, withSeparator: "/").count else {

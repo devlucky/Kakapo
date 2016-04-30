@@ -21,7 +21,7 @@ public protocol _Storable {
 /**
  A protocol that supports both `_Storable` and `Equatable` objects, handling an `id` and a generic `init` method, as well as value equality. 
  
- This is the public method which will be used in KakapoDB
+ This is the public protocol which will be required in KakapoDB
  */
 public protocol Storable: _Storable, Equatable {}
 
@@ -43,6 +43,21 @@ private final class ArrayBox<T> {
     private var value: [T]
 }
 
+/**
+ An in-memory database that holds state supporting insertion, deletion, updating and finding.
+ 
+ You can use this class together with a Router to achieve the behavior you want after some request is done. An example
+ could be returning an User after a get request with that User's id:
+ 
+    let db = KakapoDB()
+    db.create(User.self, number: 20)
+ 
+    router.get("/users/:id"){ request in
+        return db.find(User.self, id: someId)
+    }
+ 
+ In order for your classes to be used by the database, they must conform to the `Storable` protocol. For more info about `Router` and `Serializable`, check the `Router` class documentation.
+ */
 public class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
@@ -185,7 +200,7 @@ public class KakapoDB {
     }
     
     /**
-     Find all the objects in the store by a given id
+     Find the object in the store by a given id
      
      - parameter (unamed): The Storable Type to be filtered
      - parameter id: The id to search for
