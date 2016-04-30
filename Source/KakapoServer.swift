@@ -1,129 +1,69 @@
 //
 //  KakapoServer.swift
-//  Kakapo
+//  KakapoExample
 //
-//  Created by Joan Romano on 31/03/16.
+//  Created by Joan Romano on 30/04/16.
 //  Copyright © 2016 devlucky. All rights reserved.
 //
 
 import Foundation
 
-public typealias RouteHandler = Request -> Serializable?
-
-public struct Request {
-    public let components: [String : String]
-    public let queryParameters: [String : String]
-    public let HTTPBody: NSData?
-    public let HTTPHeaders: [String: String]?
-}
-
-public struct Response: CustomSerializable {
-    let code: Int
-    let body: Serializable
-    let headerFields: [String : String]?
+/**
+ A server that conforms to NSURLProtocol in order to intercept outgoing network communication
+ */
+class KakapoServer: NSURLProtocol {
     
-    init(code: Int, body: Serializable, headerFields: [String : String]? = nil) {
-        self.code = code
-        self.body = body
-        self.headerFields = headerFields
-    }
+    private static var routers: [Router] = []
     
-    public func customSerialize() -> AnyObject? {
-        return body.serialize()
-    }
-}
-
-public class KakapoServer: NSURLProtocol {
-
-    private typealias Route = (method: HTTPMethod, handler: RouteHandler)
-    
-    private enum HTTPMethod: String {
-        case GET, POST, PUT, DELETE
-    }
-    
-    private static var routes: [String : Route] = [:]
-    
-    public class func enable() {
+    /**
+     Register and return a new Router in the Server
+     
+     - parameter baseURL: The base URL that this Router will use
+     
+     - returns: An new initialized Router. Note that two Router objects can hold the same baseURL.
+     */
+    class func register(baseURL: String) -> Router {
         NSURLProtocol.registerClass(self)
+        
+        let router = Router(baseURL: baseURL)
+        routers.append(router)
+        
+        return router
     }
     
-    public class func disable() {
-        routes = [:]
+    /**
+     Unregister any Routers with a given baseURL
+     
+     - parameter baseURL: The base URL to be unregistered
+     */
+    class func unregister(baseURL: String) {
+        routers = routers.filter { $0.baseURL != baseURL }
+    }
+    
+    /**
+     Disables the Server so that it stops intercepting outgoing requests
+     */
+    class func disable() {
+        routers = []
         NSURLProtocol.unregisterClass(self)
     }
     
-    override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        guard let requestString = request.URL?.absoluteString else { return false }
+    override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+        guard let URL = request.URL else { return false }
         
-        for (key, object) in routes {
-            if object.method.rawValue == request.HTTPMethod && parseUrl(key, requestURL: requestString) != nil {
-                return true
-            }
-        }
-        
-        return false
+        return
+            routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first != nil ? true : false
     }
     
-    override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+    override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
         return request
     }
     
-    override public func startLoading() {
-        guard let URL = request.URL,
-                  client = client else { return }
+    override func startLoading() {
+        guard let URL = request.URL else { return }
         
-        var statusCode = 200
-        var headerFields = [String : String]?()
-        var dataBody: NSData?
-        var serializableObject: Serializable?
-        
-        for (key, route) in KakapoServer.routes {
-            if let info = parseUrl(key, requestURL: URL.absoluteString) {
-                
-                if let dataFromNSURLRequest = request.HTTPBody {
-                    dataBody = dataFromNSURLRequest
-                } else if let dataFromProtocol = NSURLProtocol.propertyForKey(RequestHTTPBodyKey, inRequest: request) as? NSData {
-                    // Using NSURLProtocol property after swizzling NSURLRequest here
-                    dataBody = dataFromProtocol
-                }
-                
-                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: request.allHTTPHeaderFields))
-                break
-            }
-        }
-        
-        if let serializableObject = serializableObject as? Response {
-            statusCode = serializableObject.code
-            headerFields = serializableObject.headerFields
-        }
-        
-        if let response = NSHTTPURLResponse(URL: URL, statusCode: statusCode, HTTPVersion: "HTTP/1.1", headerFields: headerFields) {
-            client.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
-        }
-        
-        if let data = serializableObject?.toData() {
-            client.URLProtocol(self, didLoadData: data)
-        }
-        
-        client.URLProtocolDidFinishLoading(self)
+        KakapoServer.routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first?.startLoading(self)
     }
     
-    override public func stopLoading() {}
-    
-    public static func get(urlString: String, handler: RouteHandler) {
-        KakapoServer.routes[urlString] = (.GET, handler)
-    }
-    
-    public static func post(urlString: String, handler: RouteHandler) {
-        KakapoServer.routes[urlString] = (.POST, handler)
-    }
-    
-    public static func del(urlString: String, handler: RouteHandler) {
-        KakapoServer.routes[urlString] = (.DELETE, handler)
-    }
-    
-    public static func put(urlString: String, handler: RouteHandler) {
-        KakapoServer.routes[urlString] = (.PUT, handler)
-    }
-    
+    override func stopLoading() {}
 }
