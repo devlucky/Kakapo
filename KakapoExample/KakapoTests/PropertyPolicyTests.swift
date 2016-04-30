@@ -29,7 +29,7 @@ class IgnorableNilPropertySpec: QuickSpec {
             }
             
             it("is serialized if not nil") {
-                let serialized = Test(value: PropertyPolicy.Some(object: 1)).serialize() as! [String: AnyObject]
+                let serialized = Test(value: PropertyPolicy.Some(1)).serialize() as! [String: AnyObject]
                 expect(serialized.count).to(be(1))
                 let value = serialized["value"] as? Int
                 expect(value).to(be(1))
@@ -43,15 +43,15 @@ class IgnorableNilPropertySpec: QuickSpec {
             }
             
             it("recursively serialize the object if needed") {
-                let serialized = Test(value: PropertyPolicy.Some(object: User(name: "Alex"))).serialize() as! [String: AnyObject]
+                let serialized = Test(value: PropertyPolicy.Some(User(name: "Alex"))).serialize() as! [String: AnyObject]
                 expect(serialized.count).to(be(1))
                 let value = serialized["value"] as? [String: AnyObject]
                 expect(value?["name"] as? String).to(equal("Alex"))
             }
             
             it("recursively serialize PropertyPolicy") {
-                let policy = PropertyPolicy.Some(object: 1)
-                let policyOfPolicy = PropertyPolicy.Some(object: policy)
+                let policy = PropertyPolicy.Some(1)
+                let policyOfPolicy = PropertyPolicy.Some(policy)
                 let serialized = Test(value: policyOfPolicy).serialize() as! [String: AnyObject]
                 expect(serialized.count).to(be(1))
                 let value = serialized["value"] as? Int

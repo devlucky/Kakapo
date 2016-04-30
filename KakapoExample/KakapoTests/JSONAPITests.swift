@@ -12,6 +12,11 @@ import Nimble
 import SwiftyJSON
 @testable import Kakapo
 
+struct Policy<T>: JSONAPIEntity {
+    let id: String
+    let policy: PropertyPolicy<T>
+}
+
 class JSONAPISpec: QuickSpec {
     
     struct Dog: JSONAPIEntity {
@@ -51,16 +56,21 @@ class JSONAPISpec: QuickSpec {
         let cats = [Cat(id: "33", name: "Stancho"), Cat(id: "44", name: "Hez")]
         let dog = Dog(id: "22", name: "Joan", chasingCat: cats[0])
         let user = User(id: "11", name: "Alex", dog: dog, cats: cats)
-        let lonelyMax = User(id: "11", name: "Max", dog: dog, cats: [])
         
         func json(object: Serializable) -> JSON {
-            return JSON(object.serialize())
+            return JSON(object.serialize()!)
         }
         
         describe("JSON API Serialzier") {
             it("should serialize data") {
                 let object = json(JSONAPISerializer(user))
                 let data = object["data"].dictionaryValue
+                expect(data.count).toNot(equal(0))
+            }
+            
+            it("should serialize data from Array") {
+                let object = json(JSONAPISerializer([user]))
+                let data = object["data"].arrayValue
                 expect(data.count).toNot(equal(0))
             }
         }
@@ -104,30 +114,24 @@ class JSONAPISpec: QuickSpec {
             }
             
             it("should only serialzie actual attributes into attributes") {
+                let lonelyMax = User(id: "11", name: "Max", dog: dog, cats: [])
                 let object = json(lonelyMax)
-                let lonelyMaxAttributes = object["attributes"].dictionaryValue
-                expect(lonelyMaxAttributes.count).to(equal(1)) // only name should be here, no id, no cats
-                expect(lonelyMaxAttributes["name"]).to(equal("Max"))
-                expect(lonelyMaxAttributes["cats"]).to(beNil())
-                expect(lonelyMaxAttributes["id"]).to(beNil())
+                let attributes = object["attributes"].dictionaryValue
+                expect(attributes.count).to(equal(1)) // only name should be here, no id, no cats
+                expect(attributes["name"]).to(equal("Max"))
+                expect(attributes["cats"]).to(beNil())
+                expect(attributes["id"]).to(beNil())
             }
             
             it("should fail to serialize CustomSerializable entities") {
-                // TODO: discuss because there is no way to prevent this and might be unexpected
+                // TODO: discuss because this might be unexpected
                 let object = json(CustomPost(id: "123", title: "Test"))
-                expect(object["id"].string).to(beNil())
+                expect(object["id"].string).toNot(beNil())
+                expect(object["foo"].string).to(beNil())
             }
         }
         
-        describe("JSON API Entity with PropertyPolicies") {
-            // TODO: ....
-        }
-        
-        describe("JSON API Entity with Optionals") {
-            // TODO: ....
-        }
-        
-        describe("JSON API  Entity relationship serialization") {
+        describe("JSON API Entity relationship serialization") {
             it("should serialzie the relationships when they are single JSONAPIEntities") {
                 let object = json(user)
                 let dog = object["relationships"]["dog"]["data"]
@@ -153,6 +157,13 @@ class JSONAPISpec: QuickSpec {
                 expect(dogData?["relationships"]).to(beNil())
             }
             
+            it("should not serialzie attributes of relationships") {
+                let object = json(user)
+                let dogData = object["relationships"]["dog"]["data"].dictionary
+                expect(dogData).toNot(beNil())
+                expect(dogData?["attributes"]).to(beNil())
+            }
+            
             it("should not serialzie nil relationships") {
                 let object = json(dog)
                 let cat = object["relationships"].dictionaryValue
@@ -160,12 +171,60 @@ class JSONAPISpec: QuickSpec {
             }
             
             it("should serialzie the relationships even when an array is empty") {
+                let lonelyMax = User(id: "11", name: "Max", dog: dog, cats: [])
                 let object = json(lonelyMax)
                 let cats = object["relationships"]["cats"].dictionary!
                 expect(cats.count).to(equal(1))
                 let dataArray = cats["data"]
                 expect(dataArray).toNot(beNil())
                 expect(dataArray?.count).to(equal(0))
+            }
+        }
+        
+        
+        describe("JSON API Entity with PropertyPolicies") {
+            it("should handle PropertyPolicies.None") {
+                let object = json(Policy<Int>(id: "12", policy: .None))
+                let attributes = object["attributes"].dictionaryObject
+                expect(attributes).to(beNil())
+
+            }
+            
+            it("should handle PropertyPolicies.Null") {
+                let object = json(Policy<Int>(id: "12", policy: .Null))
+                let attributes = object["attributes"].dictionaryObject!
+                expect(attributes["policy"] as? NSNull).toNot(beNil())
+            }
+            
+            it("should handle PropertyPolicies.Some(T)") {
+                let object = json(Policy(id: "12", policy: .Some(123)))
+                let attributes = object["attributes"].dictionaryValue
+                expect(attributes["policy"]?.intValue).to(equal(123))
+            }
+            
+            it("should handle PropertyPolicy as releantionships when the associated type conforms to JSONAPIEntity") {
+                let object = json(Policy(id: "12", policy: .Some(user)))
+                let data = object["relationships"]["policy"]["data"].dictionaryValue
+                expect(data["type"]!.stringValue).to(equal("user"))
+            }
+            
+            it("should handle PropertyPolicy as releantionships when the associated type is an array of JSONAPIEntity") {
+                let object = json(Policy(id: "12", policy: .Some([user])))
+                let data = object["relationships"]["policy"]["data"].arrayValue
+                expect(data[0]["type"].stringValue).to(equal("user"))
+            }
+            
+            it("should handle PropertyPolicy as releantionships when the associated type is JSONAPIEntity but .Null") {
+                let object = json(Policy<User>(id: "12", policy: .Null))
+                let data = object["relationships"]["policy"].dictionaryObject!["data"] as? [String: AnyObject]
+                expect(data).toNot(beNil())
+                expect(data?.count).to(equal(0))
+            }
+            
+            it("should exclude PropertyPolicy as releantionships when the associated type is JSONAPIEntity but .None") {
+                let object = json(Policy<User>(id: "12", policy: .None))
+                let relationships = object["relationships"].dictionary
+                expect(relationships).to(beNil())
             }
         }
     }

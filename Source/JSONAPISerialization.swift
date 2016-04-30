@@ -22,7 +22,7 @@ public protocol JSONAPISerializable {
 }
 
 /**
- *  A JSON API entity, conforming to this protocol will change the behavior of serialization, `CustomSerializable` cannot use this protocol because their custom serialization would be used instead.
+ *  A JSON API entity, conforming to this protocol will change the behavior of serialization, `CustomSerializable` behavior will be overriden by the JSON API behavior.
  *  Relationships of an entity should also conform to this protocol, relationships are automatically recognized using the staic type of the property. For example an Array of `JSONAPIEntity` would be recognized as a relationship, also when empty, as soon as is static type at compile time is inferred correctly.
  
     ```swift
@@ -44,7 +44,7 @@ public protocol JSONAPIEntity: CustomSerializable, JSONAPISerializable {
  */
 public struct JSONAPISerializer<T: JSONAPIEntity>: CustomSerializable {
     
-    private let data: AnyObject?
+    private let data: AnyObject
     
     /**
      Initialize a serializer with a single `JSONAPIEntity`
@@ -54,7 +54,7 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: CustomSerializable {
      - returns: A serializable object that serializes a `JSONAPIEntity` conforming to JSON API
      */
     public init(_ object: T) {
-        data = object.serialize()
+        data = object.serialize()! // can't fail, JSONAPIEntity must always be serializable
     }
     
     /**
@@ -65,13 +65,12 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: CustomSerializable {
      - returns: A serializable object that serializes an array of `JSONAPIEntity` conforming to JSON API
      */
     public init(_ objects: [T]) {
-        data = objects.serialize()
+        data = objects.serialize()! // can't fail, JSONAPIEntity must always be serializable
     }
     
     // MARK: CustomSerializable
 
     public func customSerialize() -> AnyObject? {
-        guard let data = data else { return nil }
         return ["data": data]
     }
 }
@@ -84,6 +83,31 @@ extension Array: JSONAPISerializable {
     
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject? {
         return Element.self is JSONAPISerializable.Type ? flatMap { ($0 as? JSONAPISerializable)?.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes) } : nil
+    }
+}
+
+extension PropertyPolicy: JSONAPISerializable {
+
+    // MARK: JSONAPISerializable
+    
+    public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject? {
+        guard Value.self is JSONAPISerializable.Type else {
+            return nil
+        }
+        
+        switch self {
+        case let .Some(value):
+            if let value = value as? JSONAPISerializable {
+                return value.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes)
+            }
+            
+        case .Null:
+            return [String: AnyObject]() // included as relationship but empty
+        case .None:
+            return nil
+        }
+        
+        return nil
     }
 }
 
