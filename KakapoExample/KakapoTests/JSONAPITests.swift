@@ -22,13 +22,14 @@ class JSONAPISpec: QuickSpec {
     struct Dog: JSONAPIEntity {
         let id: String
         let name: String
-        var cat: Cat?
+        let cat: Cat?
     }
     
     struct DogSitter: JSONAPIEntity {
         let id: String
         let name: String
-        var dogs: [Dog]?
+        let dogs: [Dog]?
+        let optional: Int?
     }
     
     struct Cat: JSONAPIEntity {
@@ -203,11 +204,20 @@ class JSONAPISpec: QuickSpec {
                 }
                 
                 it("should handle an array of JSONAPIEntity") {
-                    let object = json(DogSitter(id: "123", name: "A", dogs: [dog]))
+                    let object = json(DogSitter(id: "123", name: "A", dogs: [dog], optional: nil))
                     let relationships = object["relationships"].dictionaryValue
                     expect(relationships).toNot(beNil())
                     expect(relationships["dogs"]?["data"][0]["id"].string).to(equal("22"))
                 }
+                
+                it("should not be included when is not a JSONAPIEntity or Array of JSONAPIEntity") {
+                    let object = json(DogSitter(id: "123", name: "A", dogs: [dog], optional: 1))
+                    let relationships = object["relationships"].dictionaryValue
+                    expect(relationships).toNot(beNil())
+                    expect(relationships["optional"]).to(beNil())
+                    expect(object["attributes"]["optional"].intValue).to(equal(1))
+                }
+
             }
         }
         

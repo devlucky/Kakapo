@@ -167,6 +167,10 @@ public extension JSONAPIEntity {
         data["id"] = id
         data["type"] = type
         
+        guard includeRelationships || includeAttributes else {
+            return data
+        }
+        
         let mirror = Mirror(reflecting: self)
         
         var attributes = [String: AnyObject]()
@@ -175,12 +179,16 @@ public extension JSONAPIEntity {
         for child in mirror.children {
             if let label = child.label {
                 if let value = child.value as? JSONAPISerializable, let data = value.data(includeRelationships: false, includeAttributes: false) {
-                    relationships[label] =  ["data": data]
-                } else if let value = child.value as? Serializable {
-                    attributes[label] = value.serialize()
-                } else if label != "id" {
-                    assert(child.value is AnyObject)
-                    attributes[label] = child.value as? AnyObject
+                    if includeRelationships {
+                        relationships[label] =  ["data": data]
+                    }
+                } else if includeAttributes {
+                    if let value = child.value as? Serializable {
+                        attributes[label] = value.serialize()
+                    } else if label != "id" {
+                        assert(child.value is AnyObject)
+                        attributes[label] = child.value as? AnyObject
+                    }
                 }
             }
         }
