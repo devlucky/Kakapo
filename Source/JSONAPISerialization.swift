@@ -23,7 +23,9 @@ public protocol JSONAPISerializable {
 
 /**
  *  A JSON API entity, conforming to this protocol will change the behavior of serialization, `CustomSerializable` behavior will be overriden by the JSON API behavior.
- *  Relationships of an entity should also conform to this protocol, relationships are automatically recognized using the staic type of the property. For example an Array of `JSONAPIEntity` would be recognized as a relationship, also when empty, as soon as is static type at compile time is inferred correctly.
+ *  Relationships of an entity should also needs to conform to this protocol.
+ *  Relationships are automatically recognized using the static type of the property.
+ *  For example an Array of `JSONAPIEntity` would be recognized as a relationship, also when empty, as soon as is static type at compile time is inferred correctly.
  
     ```swift
         struct User: JSONAPIEntity {
@@ -31,6 +33,16 @@ public protocol JSONAPISerializable {
             let enemies: [Any] // incorrect, Any is not JSONAPIEntity so this property is an attribute instead of a relationship
         }
     ```
+ 
+ * The result of serialization is a dictionary containing:
+   1. `type`: the type of the entity
+   2. `id`: the id of the entity
+   3. `attributes`: all the properties of the object excluding id, type and relationships. attributes might be absent if empty.
+   4. `relationships`: all the properties that conform to JSONAPIEntity or array of JSONAPIEntity are recognized as relationships.
+ 
+ * Note: When `JSONAPIEntity` is serialized as relationship only `id` and `type` will be included.
+ 
+ * [See the JSON API documentation](http://jsonapi.org/format/#document-resource-objects)
  */
 public protocol JSONAPIEntity: CustomSerializable, JSONAPISerializable {
     /// The type of this entity, by default the lowercase class name is used.
