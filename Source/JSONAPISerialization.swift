@@ -8,22 +8,29 @@
 
 import Foundation
 
-/// A protocol to serialize entities conforming to JSON API.
+/// A protocol to serialize entities conforming to JSON API or to create JSON API Relationship boxes
 public protocol JSONAPISerializable {
     /**
-     Builds the `data` field conforming to JSON API
+     Builds the `data` field conforming to JSON API, this protocol can be used to create box for `JSONAPIEntity` that are possibly detected as relationships. For example Array implement this method by returning nil when its `Element` is not conforming to `JSONAPISerializable` otherwise an array containing the data of its objects.
      
      - parameter includeRelationships: Defines if it should include the `relationships` field
      - parameter includeAttributes:    Defines if it should include the `attributes` field
      
-     - returns: Return an object representing the `data` field conforming to JSON API
+     - returns: Return an object representing the `data` field conforming to JSON API, for `JSONAPIEntity` boxes the return type will be used to fill the `relationships` field otherwise, when nil, the box will be serialized normally and used for the `attributes` field.
      */
     func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject?
 }
 
 /**
  *  A JSON API entity, conforming to this protocol will change the behavior of serialization, `CustomSerializable` behavior will be overriden by the JSON API behavior.
- *  Relationships of an entity should also needs to conform to this protocol.
+ *  Relationships of an entity should also conform to this protocol.
+ *  Properties recognized as relationships:
+    - conforming to `JSONAPIEntity`
+    - Array of `JSONAPIEntity`
+    - Optional `JSONAPIEntity`
+    - PropertyPolicy `JSONAPIEntity`
+ 
+ * In general to be recognized as potential relationship or relationship wrapper (like Array or Oprionals) an object must conform to `JSONAPISerializable` and implement its methods.
  *  Relationships are automatically recognized using the static type of the property.
  *  For example an Array of `JSONAPIEntity` would be recognized as a relationship, also when empty, as soon as is static type at compile time is inferred correctly.
  
