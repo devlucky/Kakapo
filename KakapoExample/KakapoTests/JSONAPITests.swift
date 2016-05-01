@@ -53,7 +53,7 @@ class JSONAPISpec: QuickSpec {
         let id: String
         let title: String
         
-        func customSerialize() -> AnyObject {
+        func customSerialize() -> AnyObject? {
             return ["foo": "bar"]
         }
     }
@@ -133,8 +133,8 @@ class JSONAPISpec: QuickSpec {
             it("should fail to serialize CustomSerializable entities") {
                 // TODO: discuss because this might be unexpected
                 let object = json(CustomPost(id: "123", title: "Test"))
-                expect(object["id"].string).toNot(beNil())
-                expect(object["foo"].string).to(beNil())
+                expect(object["id"].string).to(beNil())
+                expect(object["foo"].string).to(equal("bar"))
             }
         }
         

@@ -22,7 +22,7 @@ public protocol JSONAPISerializable {
 }
 
 /**
- *  A JSON API entity, conforming to this protocol will change the behavior of serialization, `CustomSerializable` behavior will be overriden by the JSON API behavior.
+ *  A JSON API entity, conforming to this protocol will change the behavior of serialization, `CustomSerializable` entities should not adopt this protocol because the default implementation would be overridden by their custom serialization.
  *  Relationships of an entity should also conform to this protocol.
  *  Properties recognized as relationships:
     - conforming to `JSONAPIEntity`
