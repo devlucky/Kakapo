@@ -11,7 +11,7 @@ import Foundation
 /// A protocol to serialize entities conforming to JSON API or to create JSON API Relationship boxes
 public protocol JSONAPISerializable {
     /**
-     Builds the `data` field conforming to JSON API, this protocol can be used to create box for `JSONAPIEntity` that are possibly detected as relationships. For example Array implement this method by returning nil when its `Element` is not conforming to `JSONAPISerializable` otherwise an array containing the data of its objects.
+     Builds the `data` field conforming to JSON API, this protocol can be used to create boxes for `JSONAPIEntity` that are possibly detected as relationships. For example Array implement this method by returning nil when its `Element` is not conforming to `JSONAPISerializable` otherwise an array containing the data of its objects.
      
      - parameter includeRelationships: Defines if it should include the `relationships` field
      - parameter includeAttributes:    Defines if it should include the `attributes` field
@@ -30,7 +30,7 @@ public protocol JSONAPISerializable {
     - Optional `JSONAPIEntity`
     - PropertyPolicy `JSONAPIEntity`
  
- * In general to be recognized as potential relationship or relationship wrapper (like Array or Oprionals) an object must conform to `JSONAPISerializable` and implement its methods.
+ * In general to be recognized as potential relationship or relationship wrapper (like `Array` or `Optional`) an object must conform to `JSONAPISerializable` and implement its methods.
  *  Relationships are automatically recognized using the static type of the property.
  *  For example an Array of `JSONAPIEntity` would be recognized as a relationship, also when empty, as soon as is static type at compile time is inferred correctly.
  
