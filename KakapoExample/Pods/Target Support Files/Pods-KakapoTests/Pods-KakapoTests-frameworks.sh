@@ -52,13 +52,11 @@ code_sign_if_enabled() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework 'Pods-KakapoTests/Fakery.framework'
   install_framework 'Pods-KakapoTests/Nimble.framework'
   install_framework 'Pods-KakapoTests/Quick.framework'
   install_framework 'Pods-KakapoTests/SwiftyJSON.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework 'Pods-KakapoTests/Fakery.framework'
   install_framework 'Pods-KakapoTests/Nimble.framework'
   install_framework 'Pods-KakapoTests/Quick.framework'
   install_framework 'Pods-KakapoTests/SwiftyJSON.framework'

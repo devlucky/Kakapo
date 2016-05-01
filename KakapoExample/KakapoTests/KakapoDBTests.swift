@@ -8,10 +8,10 @@
 
 import Quick
 import Nimble
-import Fakery
+//import Fakery
 @testable import Kakapo
 
-let faker = Faker()
+//let faker = Faker()
 
 struct UserFactory: Storable, Serializable, Equatable {
     let firstName: String
@@ -20,7 +20,7 @@ struct UserFactory: Storable, Serializable, Equatable {
     let id: Int
     
     init(id: Int, db: KakapoDB) {
-        self.init(firstName: faker.name.firstName(), lastName: faker.name.lastName(), age: random(), id: id)
+        self.init(firstName: "tmp", lastName: "tmp", age: random(), id: id)
     }
     
     init(firstName: String, lastName: String, age: Int, id: Int) {
@@ -41,7 +41,7 @@ struct CommentFactory: Storable {
     let id: Int
     
     init(id: Int, db: KakapoDB) {
-        self.init(text: faker.lorem.sentence(), likes: random(), id: id)
+        self.init(text: "tmp", likes: random(), id: id)
     }
     
     init(text: String, likes: Int, id: Int) {
