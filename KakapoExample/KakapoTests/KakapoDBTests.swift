@@ -8,17 +8,19 @@
 
 import Quick
 import Nimble
-
+import Fakery
 @testable import Kakapo
 
-struct UserFactory: Storable, Serializable {
+let faker = Faker()
+
+struct UserFactory: Storable, Serializable, Equatable {
     let firstName: String
     let lastName: String
     let age: Int
     let id: Int
     
     init(id: Int, db: KakapoDB) {
-        self.init(firstName: randomString(), lastName: randomString(), age: random(), id: id)
+        self.init(firstName: faker.name.firstName(), lastName: faker.name.lastName(), age: random(), id: id)
     }
     
     init(firstName: String, lastName: String, age: Int, id: Int) {
@@ -28,8 +30,6 @@ struct UserFactory: Storable, Serializable {
         self.id = id
     }
 }
-
-extension UserFactory: Equatable {}
 
 func ==(lhs: UserFactory, rhs: UserFactory) -> Bool {
     return lhs.firstName == rhs.firstName && lhs.lastName == rhs.lastName && lhs.age == rhs.age && lhs.id == rhs.id
@@ -41,7 +41,7 @@ struct CommentFactory: Storable {
     let id: Int
     
     init(id: Int, db: KakapoDB) {
-        self.init(text: randomString(), likes: random(), id: id)
+        self.init(text: faker.lorem.sentence(), likes: random(), id: id)
     }
     
     init(text: String, likes: Int, id: Int) {

@@ -16,14 +16,24 @@
 					<string>09 apr 2016, 17:09:47</string>
 				</dict>
 			</dict>
+			<key>testMultipleDeletionsPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.0045145</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>01 mag 2016, 15:33:11</string>
+				</dict>
+			</dict>
 			<key>testMultipleSingleCreationPerformance()</key>
 			<dict>
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.26126</real>
+					<real>0.15714</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>14 apr 2016, 23:17:28</string>
+					<string>01 mag 2016, 15:33:11</string>
 				</dict>
 			</dict>
 			<key>testMultpleInsertions()</key>
@@ -34,6 +44,16 @@
 					<real>0.2452</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>14 apr 2016, 23:17:28</string>
+				</dict>
+			</dict>
+			<key>testMultpleInsertionsPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.15267</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>01 mag 2016, 15:33:11</string>
 				</dict>
 			</dict>
 		</dict>
