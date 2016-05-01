@@ -15,8 +15,8 @@ import Foundation
  - Null:     `Null` when serialized is `NSNull` that will result as a `null` property in the JSON
  - Some:     Serialize the associated object
  */
-public enum PropertyPolicy<Value>: CustomSerializable {
+public enum PropertyPolicy<Wrapped>: CustomSerializable {
     case None
     case Null
-    case Some(Value)
+    case Some(Wrapped)
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// A protocol to serialzie entities conforming to JSON API.
+/// A protocol to serialize entities conforming to JSON API.
 public protocol JSONAPISerializable {
     /**
      Builds the `data` field conforming to JSON API
@@ -103,7 +103,7 @@ extension PropertyPolicy: JSONAPISerializable {
     // MARK: JSONAPISerializable
     
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject? {
-        guard Value.self is JSONAPISerializable.Type else {
+        guard Wrapped.self is JSONAPISerializable.Type else {
             return nil
         }
         
@@ -115,6 +115,28 @@ extension PropertyPolicy: JSONAPISerializable {
             
         case .Null:
             return [String: AnyObject]() // included as relationship but empty
+        case .None:
+            return nil
+        }
+        
+        return nil
+    }
+}
+
+extension Optional: JSONAPISerializable {
+    
+    // MARK: JSONAPISerializable
+    
+    public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject? {
+        guard Wrapped.self is JSONAPISerializable.Type else {
+            return nil
+        }
+        
+        switch self {
+        case let .Some(value):
+            if let value = value as? JSONAPISerializable {
+                return value.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes)
+            }
         case .None:
             return nil
         }
