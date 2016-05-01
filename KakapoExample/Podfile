@@ -3,6 +3,8 @@ use_frameworks!
 def testing_pods
     pod 'Quick', '~> 0.9'
     pod 'Nimble', '~> 4.0'
+    pod 'SwiftyJSON', '~> 2.3'
+#    pod 'Fakery', '~> 1.2'
 end
 
 target 'KakapoTests' do
