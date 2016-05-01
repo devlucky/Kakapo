@@ -1,5 +1,5 @@
 //
-//  JSONAPISerialization.swift
+//  JSONAPISerializer.swift
 //  KakapoExample
 //
 //  Created by Alex Manzella on 28/04/16.

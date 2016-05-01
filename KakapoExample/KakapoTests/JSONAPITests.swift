@@ -110,6 +110,12 @@ class JSONAPISpec: QuickSpec {
                 expect(relatedPostIds[1]).to(equal(2))
                 expect(relatedPostIds[2]).to(equal(3))
             }
+
+            it("should serialize an empty arrays of non-JSONAPIEntities as an attribute") {
+                let object = json(Post(id: "11", relatedPostIds: []))
+                let relatedPostIds = object["attributes"]["relatedPostIds"].arrayValue
+                expect(relatedPostIds.count).to(equal(0))
+            }
             
             it("should serialize an array of JSONAPIEntities") {
                 let objects = json([user, user]).arrayValue
@@ -131,7 +137,6 @@ class JSONAPISpec: QuickSpec {
             }
             
             it("should fail to serialize CustomSerializable entities") {
-                // TODO: discuss because this might be unexpected
                 let object = json(CustomPost(id: "123", title: "Test"))
                 expect(object["id"].string).to(beNil())
                 expect(object["foo"].string).to(equal("bar"))
@@ -190,12 +195,6 @@ class JSONAPISpec: QuickSpec {
             }
             
             context("Optional relationships") {
-                it("should not be included when nil") {
-                    let object = json(Dog(id: "123", name: "A", cat: nil))
-                    let relationships = object["relationships"].dictionaryObject
-                    expect(relationships).to(beNil())
-                }
-                
                 it("should handle a JSONAPIEntity") {
                     let object = json(Dog(id: "123", name: "A", cat: Cat(id: "23", name: "B")))
                     let relationships = object["relationships"].dictionaryValue
