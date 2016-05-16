@@ -19,6 +19,11 @@ struct Policy<T>: JSONAPIEntity {
 
 class JSONAPISpec: QuickSpec {
     
+    struct CustomType: JSONAPIEntity {
+        static var type: String = "custom"
+        let id: String
+    }
+    
     struct Dog: JSONAPIEntity {
         let id: String
         let name: String
@@ -100,6 +105,11 @@ class JSONAPISpec: QuickSpec {
             it("should serialize the type") {
                 let object = json(user)
                 expect(object["type"].stringValue).to(equal("user"))
+            }
+            
+            it("should serialize a custom type") {
+                let object = json(CustomType(id: "1"))
+                expect(object["type"].stringValue).to(equal("custom"))
             }
             
             it("should serialize an arrays of non-JSONAPIEntities as an attribute") {
