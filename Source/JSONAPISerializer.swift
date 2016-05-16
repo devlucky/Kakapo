@@ -156,8 +156,6 @@ public extension JSONAPIEntity {
     
     // MARK: JSONAPIEntity
 
-    var type: String {
-        return String(self.dynamicType).lowercaseString
     static var type: String {
         return String(self).lowercaseString
     }
@@ -174,7 +172,7 @@ public extension JSONAPIEntity {
         var data = [String: AnyObject]()
         
         data["id"] = id
-        data["type"] = type
+        data["type"] = Self.type
         
         guard includeRelationships || includeAttributes else {
             return data
