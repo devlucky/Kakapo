@@ -53,7 +53,7 @@ public protocol JSONAPISerializable {
  */
 public protocol JSONAPIEntity: CustomSerializable, JSONAPISerializable {
     /// The type of this entity, by default the lowercase class name is used.
-    var type: String { get }
+    static var type: String { get }
     /// The id of the entity
     var id: String { get }
 }
@@ -158,6 +158,8 @@ public extension JSONAPIEntity {
 
     var type: String {
         return String(self.dynamicType).lowercaseString
+    static var type: String {
+        return String(self).lowercaseString
     }
     
     // MARK: CustomSerializable
