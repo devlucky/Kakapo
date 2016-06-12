@@ -2,6 +2,7 @@ coverage:
   ignore:
     - Pods/.*
     - Tests/.*
+    - Framework/.*
     - Source/NSURLRequest\+FixCopy\.swift
   
 comment:
