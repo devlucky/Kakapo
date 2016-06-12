@@ -1,8 +1,9 @@
 comment:
-  layout: header, changes, diff, sunburst
+  layout: "header, diff, changes, sunburst, uncovered"
+  branches: null
+  behavior: default
 coverage:
   ignore:
-  - KakapoExample/.*
-  - Source/NSURLRequest\+FixCopy\.swift
+    - KakapoExample/.*
+    - Source/NSURLRequest\+FixCopy\.swift
   status: {}
-
