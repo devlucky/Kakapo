@@ -6,11 +6,11 @@
 //  Copyright © 2016 devlucky. All rights reserved.
 //
 
-import Foundation
-import Quick
-import Nimble
-import SwiftyJSON
-@testable import Kakapo
+//import Foundation
+//import Quick
+//import Nimble
+//import SwiftyJSON
+//@testable import Kakapo
 //
 //class JSONAPIRelationshipsSpec: QuickSpec {
 //    

@@ -1,6 +1,0 @@
-framework module Fakery {
-  umbrella header "Fakery-umbrella.h"
-
-  export *
-  module * { export * }
-}

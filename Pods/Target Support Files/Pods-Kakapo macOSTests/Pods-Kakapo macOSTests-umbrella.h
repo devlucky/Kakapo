@@ -1,4 +1,4 @@
-#import <UIKit/UIKit.h>
+#import <Cocoa/Cocoa.h>
 
 
 FOUNDATION_EXPORT double Pods_Kakapo_macOSTestsVersionNumber;
