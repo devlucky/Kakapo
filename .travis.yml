@@ -21,7 +21,7 @@ script:
   - fastlane $FASTLANE_LANE configuration:Debug --env $FASTLANE_ENV
   - pod lib lint --quick
 
-podfile: KakapoExample/Podfile
+podfile: Podfile
 
 after_failure:
   - cat -n ~/Library/Logs/scan/*
