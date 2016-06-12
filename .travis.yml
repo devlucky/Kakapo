@@ -23,3 +23,8 @@ script:
 
 podfile: KakapoExample/Podfile
 
+after_failure:
+  - cat -n ~/Library/Logs/scan/*
+  - cat -n $TMPDIR/com.apple.dt.XCTest-status/Session*.log
+  - cat -n ~/Library/Logs/DiagnosticReports/xctest*.crash
+
