@@ -13,6 +13,18 @@ import Nimble
 
 @testable import Kakapo
 
+struct CustomResponse: ResponseFieldsProvider {
+    let statusCode: Int
+    let body: Serializable
+    let headerFields: [String : String]?
+    
+    init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
+        self.statusCode = statusCode
+        self.body = body
+        self.headerFields = headerFields
+    }
+}
+
 class RouterTests: QuickSpec {
     
     override func spec() {
@@ -304,7 +316,7 @@ class RouterTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id"){ request in
-                    return Response(code: 200, body: db.find(UserFactory.self, id: Int(request.components["id"]!)!))
+                    return Response(statusCode: 200, body: db.find(UserFactory.self, id: Int(request.components["id"]!)!))
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -324,7 +336,7 @@ class RouterTests: QuickSpec {
                 
                 router.get("/users/:id"){ request in
                     // Optional.Some("none") -> not valid JSON object
-                    return Response(code: 400, body: Optional.Some("none"))
+                    return Response(statusCode: 400, body: Optional.Some("none"))
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -341,7 +353,7 @@ class RouterTests: QuickSpec {
                 var allHeaders: [String : String]? = nil
                 
                 router.get("/users/:id"){ request in
-                    return Response(code: 400, body: ["id" : "foo", "type" : "User"], headerFields: ["access_token" : "094850348502", "user_id" : "124"])
+                    return Response(statusCode: 400, body: ["id" : "foo", "type" : "User"], headerFields: ["access_token" : "094850348502", "user_id" : "124"])
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -352,6 +364,27 @@ class RouterTests: QuickSpec {
                 expect(allHeaders?["access_token"]).toEventually(equal("094850348502"))
                 expect(allHeaders?["user_id"]).toEventually(equal("124"))
                 expect(allHeaders?["bar"]).toEventually(beNil())
+            }
+            
+            it("should gets the response fields from custom response object adopting the ResponseFieldsProvider protocol") {
+                var allHeaders: [String : String]? = nil
+                var responseDictionary: NSDictionary? = nil
+                var statusCode: Int? = nil
+                
+                router.get("/users/:id"){ request in
+                    return CustomResponse(statusCode: 400, body: ["id" : 2], headerFields: ["access_token" : "094850348502"])
+                }
+                
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    allHeaders = response.allHeaderFields as? [String : String]
+                    responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+                    statusCode = response.statusCode
+                    }.resume()
+                
+                expect(allHeaders?["access_token"]).toEventually(equal("094850348502"))
+                expect(statusCode).toEventually(equal(400))
+                expect(responseDictionary?["id"]).toEventually(be(2))
             }
             
             it("should return the specified array of objects when requesting a registered url") {
@@ -610,6 +643,7 @@ class RouterTests: QuickSpec {
                 
                 expect(thirdInfo).toEventually(beNil())
                 expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
+                Swift.assert(thirdResponseURL?.host != nil)
             }
             
             it("Should fail when not properly registering Routers") {

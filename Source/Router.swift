@@ -12,7 +12,7 @@ import Foundation
  A RouteHandler used when registering different HTTP methods, which can return any Serializable object.
  
  By default, though, the Router will return a 200 status code and no header fields when only returning a Serializable object.
- In order to customize that behavior, check `Response` to provide custom status code and header fields.
+ In order to customize that behavior, check `ResponseFieldsProvider` to provide custom status code and header fields.
  */
 public typealias RouteHandler = Request -> Serializable?
 
@@ -34,28 +34,46 @@ public struct Request {
 }
 
 /**
- A Response struct which can be used in `RouteHandlers` to provide valid responses.
- 
- The struct provides, appart from a Serializable `body` object, a status code and header fields. 
+ A protocol to adopt when a Serializable Object needs to also provide response status code and/or headerFields
+ You may usually use `Response` to wrap your `Serializable` object to just achieve the result or directly implement the protocol. For examply `JSONAPISerializer` implement the protocol in order to be able to provide custom status code in the response.
  */
-public struct Response: CustomSerializable {
-    /// The response code
-    let code: Int
+public protocol ResponseFieldsProvider: CustomSerializable {
+    /// The response status code
+    var statusCode: Int { get }
     
     /// The Serializable body object
-    let body: Serializable
-    
+    var body: Serializable { get }
+
     /// An optional dictionary holding the response header fields
-    let headerFields: [String : String]?
-    
-    public init(code: Int, body: Serializable, headerFields: [String : String]? = nil) {
-        self.code = code
-        self.body = body
-        self.headerFields = headerFields
-    }
+    var headerFields: [String : String]? { get }
+}
+
+extension ResponseFieldsProvider {
     
     public func customSerialize() -> AnyObject? {
         return body.serialize()
+    }
+}
+
+/**
+ A ResponseFieldsProvider implementation which can be used in `RouteHandlers` to provide valid responses that can return different status code than the default (200) or headerFields.
+ 
+ The struct provides, appart from a Serializable `body` object, a status code and header fields. 
+ */
+public struct Response: ResponseFieldsProvider {
+    /// The response status code
+    public let statusCode: Int
+    
+    /// The Serializable body object
+    public let body: Serializable
+    
+    /// An optional dictionary holding the response header fields
+    public let headerFields: [String : String]?
+    
+    public init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
+        self.statusCode = statusCode
+        self.body = body
+        self.headerFields = headerFields
     }
 }
 
@@ -146,8 +164,8 @@ public class Router {
             }
         }
         
-        if let serializableObject = serializableObject as? Response {
-            statusCode = serializableObject.code
+        if let serializableObject = serializableObject as? ResponseFieldsProvider {
+            statusCode = serializableObject.statusCode
             headerFields = serializableObject.headerFields
         }
         
