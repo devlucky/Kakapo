@@ -1,0 +1,6 @@
+framework module Pods_Kakapo_tvOSTests {
+  umbrella header "Pods-Kakapo tvOSTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
