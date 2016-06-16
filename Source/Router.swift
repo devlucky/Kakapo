@@ -34,8 +34,8 @@ public struct Request {
 }
 
 /**
- A protocol to adopt when a Serializable Object needs to also provide response status code and/or headerFields
- You may usually use `Response` to wrap your `Serializable` object to just achieve the result or directly implement the protocol. For examply `JSONAPISerializer` implement the protocol in order to be able to provide custom status code in the response.
+ A protocol to adopt when a `Serializable object needs to also provide response status code and/or headerFields
+ For example you may use `Response` to wrap your `Serializable` object to just achieve the result or directly implement the protocol. For examply `JSONAPISerializer` implement the protocol in order to be able to provide custom status code in the response.
  */
 public protocol ResponseFieldsProvider: CustomSerializable {
     /// The response status code
