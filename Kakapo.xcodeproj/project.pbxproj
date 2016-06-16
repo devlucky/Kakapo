@@ -53,9 +53,6 @@
 		DE76E1AD1D0DC77D009721A4 /* Kakapo.h in Headers */ = {isa = PBXBuildFile; fileRef = DE76E0FA1D0DC37E009721A4 /* Kakapo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE76E1AE1D0DC783009721A4 /* Kakapo.h in Headers */ = {isa = PBXBuildFile; fileRef = DE76E0FA1D0DC37E009721A4 /* Kakapo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE76E1AF1D0DC786009721A4 /* Kakapo.h in Headers */ = {isa = PBXBuildFile; fileRef = DE76E0FA1D0DC37E009721A4 /* Kakapo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DE76E1B81D0DC857009721A4 /* JSONAPIRelationshipsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B01D0DC857009721A4 /* JSONAPIRelationshipsTests.swift */; };
-		DE76E1B91D0DC857009721A4 /* JSONAPIRelationshipsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B01D0DC857009721A4 /* JSONAPIRelationshipsTests.swift */; };
-		DE76E1BA1D0DC857009721A4 /* JSONAPIRelationshipsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B01D0DC857009721A4 /* JSONAPIRelationshipsTests.swift */; };
 		DE76E1BB1D0DC857009721A4 /* JSONAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */; };
 		DE76E1BC1D0DC857009721A4 /* JSONAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */; };
 		DE76E1BD1D0DC857009721A4 /* JSONAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */; };
@@ -128,7 +125,6 @@
 		DE76E15C1D0DC65B009721A4 /* Kakapo macOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Kakapo macOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE76E16F1D0DC671009721A4 /* Kakapo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kakapo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE76E1781D0DC672009721A4 /* Kakapo iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Kakapo iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DE76E1B01D0DC857009721A4 /* JSONAPIRelationshipsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIRelationshipsTests.swift; sourceTree = "<group>"; };
 		DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPITests.swift; sourceTree = "<group>"; };
 		DE76E1B21D0DC857009721A4 /* KakapoDBTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoDBTests.swift; sourceTree = "<group>"; };
 		DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicyTests.swift; sourceTree = "<group>"; };
@@ -263,7 +259,6 @@
 		DE76E0FD1D0DC38B009721A4 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				DE76E1B01D0DC857009721A4 /* JSONAPIRelationshipsTests.swift */,
 				DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */,
 				DE76E1B21D0DC857009721A4 /* KakapoDBTests.swift */,
 				DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */,
@@ -748,7 +743,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE76E1B91D0DC857009721A4 /* JSONAPIRelationshipsTests.swift in Sources */,
 				DE76E1BC1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				DE76E1CB1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */,
 				DE76E1BF1D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
@@ -779,7 +773,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE76E1BA1D0DC857009721A4 /* JSONAPIRelationshipsTests.swift in Sources */,
 				DE76E1BD1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				DE76E1CC1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */,
 				DE76E1C01D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
@@ -810,7 +803,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE76E1B81D0DC857009721A4 /* JSONAPIRelationshipsTests.swift in Sources */,
 				DE76E1BB1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				DE76E1CA1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */,
 				DE76E1BE1D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
