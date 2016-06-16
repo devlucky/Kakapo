@@ -1,8 +1,10 @@
 coverage:
   ignore:
-    - "KakapoExample/.*"
-    - "Source/NSURLRequest+FixCopy.swift"
-
+    - Pods/.*
+    - Tests/.*
+    - Framework/.*
+    - Source/NSURLRequest\+FixCopy\.swift
+  
 comment:
   layout: "header, diff, changes, sunburst, uncovered"
   branches: null

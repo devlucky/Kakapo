@@ -1,0 +1,6 @@
+framework module SwiftyJSON {
+  umbrella header "SwiftyJSON-tvOS-umbrella.h"
+
+  export *
+  module * { export * }
+}
