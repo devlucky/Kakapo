@@ -1,6 +1,6 @@
 //
 //  JSONAPITests.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Alex Manzella on 28/04/16.
 //  Copyright © 2016 devlucky. All rights reserved.

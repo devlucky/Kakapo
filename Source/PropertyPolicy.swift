@@ -1,6 +1,6 @@
 //
 //  PropertyPolicy.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Alex Manzella on 31/03/16.
 //  Copyright © 2016 devlucky. All rights reserved.

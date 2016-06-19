@@ -1,6 +1,6 @@
 //
 //  JSONAPISerializer.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Alex Manzella on 28/04/16.
 //  Copyright © 2016 devlucky. All rights reserved.
@@ -19,6 +19,13 @@ public protocol JSONAPISerializable {
      - returns: Return an object representing the `data` field conforming to JSON API, for `JSONAPIEntity` boxes the return type will be used to fill the `relationships` field otherwise, when nil, the box will be serialized normally and used for the `attributes` field.
      */
     func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject?
+    
+    /**
+     <#Description#>
+     
+     - returns: <#return value description#>
+     */
+    func includedRelationships() -> [AnyObject]?
 }
 
 /**
@@ -61,9 +68,10 @@ public protocol JSONAPIEntity: CustomSerializable, JSONAPISerializable {
 /**
  *  An object responsible to serialize a `JSONAPIEntity` or an array of `JSONAPIEntity` conforming to JSON API
  */
-public struct JSONAPISerializer<T: JSONAPIEntity>: CustomSerializable {
+public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
     
     private let data: AnyObject
+    private let included: [AnyObject]?
     
     /**
      Initialize a serializer with a single `JSONAPIEntity`
@@ -74,6 +82,7 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: CustomSerializable {
      */
     public init(_ object: T) {
         data = object.serialize()! // can't fail, JSONAPIEntity must always be serializable
+        included = object.includedRelationships()
     }
     
     /**
@@ -85,12 +94,7 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: CustomSerializable {
      */
     public init(_ objects: [T]) {
         data = objects.serialize()! // can't fail, JSONAPIEntity must always be serializable
-    }
-    
-    // MARK: CustomSerializable
-
-    public func customSerialize() -> AnyObject? {
-        return ["data": data]
+        included = objects.includedRelationships()
     }
 }
 
@@ -103,10 +107,27 @@ extension Array: JSONAPISerializable {
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject? {
         return Element.self is JSONAPISerializable.Type ? flatMap { ($0 as? JSONAPISerializable)?.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes) } : nil
     }
+    
+    public func includedRelationships() -> [AnyObject]? {
+        return Element.self is JSONAPISerializable.Type ? flatMap { ($0 as? JSONAPISerializable)?.includedRelationships() } : nil
+    }
 }
 
 extension PropertyPolicy: JSONAPISerializable {
 
+    private var wrapped: JSONAPISerializable? {
+        guard Wrapped.self is JSONAPISerializable.Type else {
+            return nil
+        }
+        
+        switch self {
+        case let .Some(value):
+            return value as? JSONAPISerializable
+        case .None, .Null:
+            return nil
+        }
+    }
+    
     // MARK: JSONAPISerializable
     
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject? {
@@ -128,27 +149,35 @@ extension PropertyPolicy: JSONAPISerializable {
         
         return nil
     }
+    
+    public func includedRelationships() -> [AnyObject]? {
+        return wrapped?.includedRelationships()
+    }
 }
 
 extension Optional: JSONAPISerializable {
     
-    // MARK: JSONAPISerializable
-    
-    public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject? {
+    private var wrapped: JSONAPISerializable? {
         guard Wrapped.self is JSONAPISerializable.Type else {
             return nil
         }
         
         switch self {
         case let .Some(value):
-            if let value = value as? JSONAPISerializable {
-                return value.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes)
-            }
+            return value as? JSONAPISerializable
         case .None:
             return nil
         }
-        
-        return nil
+    }
+    
+    // MARK: JSONAPISerializable
+    
+    public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject? {
+        return wrapped?.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes)
+    }
+    
+    public func includedRelationships() -> [AnyObject]? {
+        return wrapped?.includedRelationships()
     }
 }
 
@@ -209,5 +238,13 @@ public extension JSONAPIEntity {
         }
 
         return data
+    }
+    
+    public func includedRelationships() -> [AnyObject]? {
+        let mirror = Mirror(reflecting: self)
+        return mirror.children.flatMap{ (label, value) -> AnyObject? in
+            let value = value as? JSONAPISerializable
+            return value?.data(includeRelationships: false, includeAttributes: true)
+        }
     }
 }
