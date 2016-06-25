@@ -333,7 +333,6 @@ class KakapoDBTests: QuickSpec {
                 let users = sut.create(UserFactory.self, number: 100)
                 
                 dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
-                    print(i)
                     try! sut.delete(users[i])
                 }
                 

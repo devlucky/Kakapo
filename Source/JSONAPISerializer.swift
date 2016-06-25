@@ -70,31 +70,41 @@ public protocol JSONAPIEntity: CustomSerializable, JSONAPISerializable {
  */
 public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
     
+    // Top level `data` member: the document’s “primary data”
     private let data: AnyObject
+
+    // Top level `included` member: an array of resource objects that are related to the primary data and/or each other (“included resources”).
     private let included: [AnyObject]?
+
+    // Top level `links` member: a links object related to the primary data.
+    private let links: AnyObject?
     
     /**
      Initialize a serializer with a single `JSONAPIEntity`
      
-     - parameter object: A `JSONAPIEntities`
+     - parameter object: A `JSONAPIEntity`
+     - parameter topLinks: A top `JSONAPILink` optional object
      
      - returns: A serializable object that serializes a `JSONAPIEntity` conforming to JSON API
      */
-    public init(_ object: T) {
+    public init(_ object: T, topLinks: [String: JSONAPILink]? = nil) {
         data = object.serialize()! // can't fail, JSONAPIEntity must always be serializable
         included = object.includedRelationships()
+        links =  topLinks.serialize()
     }
     
     /**
      Initialize a serializer with an array of `JSONAPIEntity`
      
      - parameter objects: An array of `JSONAPIEntity`
+     - parameter topLinks: A top `JSONAPILink` optional object
      
      - returns: A serializable object that serializes an array of `JSONAPIEntity` conforming to JSON API
      */
-    public init(_ objects: [T]) {
+    public init(_ objects: [T], topLinks: [String: JSONAPILink]? = nil) {
         data = objects.serialize()! // can't fail, JSONAPIEntity must always be serializable
         included = objects.includedRelationships()
+        links = topLinks.serialize()
     }
 }
 
@@ -212,16 +222,27 @@ public extension JSONAPIEntity {
         var attributes = [String: AnyObject]()
         var relationships = [String: AnyObject]()
         
+        if let linkedEntity  = self as? JSONAPILinkedEntity,
+               entityLinks = linkedEntity.links where entityLinks.count > 0 {
+            data["links"] = linkedEntity.links.serialize()
+        }
+        
         for child in mirror.children {
             if let label = child.label {
                 if let value = child.value as? JSONAPISerializable, let data = value.data(includeRelationships: false, includeAttributes: false) {
                     if includeRelationships {
-                        relationships[label] =  ["data": data]
+                        var relationship = [String: AnyObject](dictionaryLiteral: ("data", data))
+                        
+                        if let value = value as? JSONAPILinkedEntity {
+                            relationship["links"] = value.topLinks.serialize()
+                        }
+                        
+                        relationships[label] = relationship
                     }
-                } else if includeAttributes {
+                } else if includeAttributes && !["id", "links", "topLinks"].contains(label)  {
                     if let value = child.value as? Serializable {
                         attributes[label] = value.serialize()
-                    } else if label != "id" {
+                    } else {
                         assert(child.value is AnyObject)
                         attributes[label] = child.value as? AnyObject
                     }
