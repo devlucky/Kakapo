@@ -146,7 +146,7 @@ class JSONAPILinksSpec: QuickSpec {
             
             it("should serialize the links inside included objects") {
                 let object = json(JSONAPISerializer(user))
-                var data = object["included"][1][1]["links"].dictionaryValue
+                let data = object["included"][2]["links"].dictionaryValue
                 expect(data).toNot(beNil())
                 expect(data["test"]).to(equal("hello"))
                 expect(data["another"]!["href"]).to(equal("http://example.com/articles/1/comments"))
