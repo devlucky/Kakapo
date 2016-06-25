@@ -275,5 +275,90 @@ class JSONAPISpec: QuickSpec {
                 expect(relationships).to(beNil())
             }
         }
+        
+        describe("JSON API included relationships") {
+            
+            it("should include single relationships and arrays of relationships") {
+                let object = json(JSONAPISerializer(user))
+                let data = object["included"].arrayValue
+
+                expect(data.count).to(equal(3))
+            }
+            
+            it("should include relationships of an array of JSONAPI entities") {
+                let anotherDog = Dog(id: "555", name: "Joan", cat: nil)
+                let anotherUser = User(id: "111111", name: "Alex", dog: anotherDog, cats: [])
+                let object = json(JSONAPISerializer([user, anotherUser]))
+                let data = object["included"].arrayValue
+                
+                expect(data.count).to(equal(4))
+            }
+            
+            it("should include type and id of single relationships") {
+                let object = json(JSONAPISerializer(user))
+                let data = object["included"].arrayValue
+                let dog = data[0].dictionaryValue
+                
+                expect(dog["id"]?.stringValue).to(equal("22"))
+                expect(dog["type"]?.stringValue).to(equal("dog"))
+            }
+            
+            it("should include type and id of array of relationships") {
+                let object = json(JSONAPISerializer(user))
+                let data = object["included"].arrayValue
+                
+                let cat = data[1].dictionaryValue
+                let cat2 = data[2].dictionaryValue
+                
+                expect(cat["id"]?.stringValue).to(equal("33"))
+                expect(cat2["id"]?.stringValue).to(equal("44"))
+                expect(cat["type"]?.stringValue).to(equal("cat"))
+                expect(cat2["type"]?.stringValue).to(equal("cat"))
+            }
+            
+            it("should include relationships attributes") {
+                let object = json(JSONAPISerializer(user))
+                let data = object["included"].arrayValue
+                let dog = data[0].dictionaryValue
+                let attributes = dog["attributes"]?.dictionaryValue
+                
+                expect(attributes?["name"]?.stringValue).to(equal("Joan"))
+            }
+            
+            it("should include relationships of an array of entity") {
+                let object = json(JSONAPISerializer(user))
+                let data = object["included"].arrayValue
+                
+                let cat = data[1].dictionaryValue
+                let cat2 = data[2].dictionaryValue
+                
+                ["Stancho": cat, "Hez": cat2].forEach { (name, cat) in
+                    let attributes = cat["attributes"]?.dictionaryValue
+                    expect(attributes?["name"]?.stringValue).to(equal(name))
+                }
+            }
+            
+            it("should include relationships of relationships") {
+                let user = User(id: "111111", name: "Alex", dog: dog, cats: [])
+                let object = json(JSONAPISerializer(user))
+                let data = object["included"].arrayValue
+                expect(data.count).to(equal(2))
+            }
+            
+            it("should not include duplicated relationships") {
+                let user = User(id: "111111", name: "Alex", dog: dog, cats: [dog.cat!, dog.cat!])
+                let object = json(JSONAPISerializer(user))
+                let data = object["included"].arrayValue
+                expect(data.count).to(equal(2))
+            }
+            
+            it("should only include attributes of relationships") {
+                let object = json(JSONAPISerializer(user))
+                let data = object["included"].arrayValue
+                let dog = data[0].dictionaryValue
+                let attributes = dog["attributes"]!.dictionary!
+                expect(attributes["cat"]).to(beNil())
+            }
+        }
     }
 }
