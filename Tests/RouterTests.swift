@@ -643,7 +643,6 @@ class RouterTests: QuickSpec {
                 
                 expect(thirdInfo).toEventually(beNil())
                 expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
-                Swift.assert(thirdResponseURL?.host != nil)
             }
             
             it("Should fail when not properly registering Routers") {

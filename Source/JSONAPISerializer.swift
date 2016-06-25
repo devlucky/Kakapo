@@ -109,7 +109,8 @@ extension Array: JSONAPISerializable {
     }
     
     public func includedRelationships() -> [AnyObject]? {
-        return Element.self is JSONAPISerializable.Type ? flatMap { ($0 as? JSONAPISerializable)?.includedRelationships() } : nil
+        guard Element.self is JSONAPISerializable.Type else { return nil }
+        return flatMap { ($0 as? JSONAPISerializable)?.includedRelationships() }.flatMap { $0 }
     }
 }
 
@@ -242,9 +243,18 @@ public extension JSONAPIEntity {
     
     public func includedRelationships() -> [AnyObject]? {
         let mirror = Mirror(reflecting: self)
-        return mirror.children.flatMap{ (label, value) -> AnyObject? in
+        return mirror.children.flatMap { (label, value) -> [AnyObject] in
             let value = value as? JSONAPISerializable
-            return value?.data(includeRelationships: false, includeAttributes: true)
+            
+            guard let include = value?.data(includeRelationships: false, includeAttributes: true) else {
+                return []
+            }
+            
+            if let include = include as? [AnyObject] {
+                return include
+            }
+            
+            return [include]
         }
     }
 }
