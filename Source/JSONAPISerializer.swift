@@ -21,11 +21,13 @@ public protocol JSONAPISerializable {
     func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject?
     
     /**
-     <#Description#>
+     Creates the `included` field by aggregating and unifying the attrbiutes of the relationships recursively
      
-     - returns: <#return value description#>
+     - parameter includeChildren: Include relationships of relationships recursively, by default `JSONAPISerializer` won't include children
+
+     - returns: An array of included relationsips or nil if no relationsips are incldued.
      */
-    func includedRelationships() -> [AnyObject]?
+    func includedRelationships(includeChildren: Bool) -> [AnyObject]?
 }
 
 /**
@@ -73,28 +75,37 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
     private let data: AnyObject
     private let included: [AnyObject]?
     
+    private typealias JSONAPIConvertible = protocol<JSONAPISerializable, Serializable>
+    
+    private static func commonInit(object: JSONAPIConvertible, includeChildren: Bool) -> (data: AnyObject, included: [AnyObject]?) {
+        return (
+            data: object.serialize()!, // can't fail, JSONAPIEntity must always be serializable
+            included: object.includedRelationships(includeChildren)?.unifiedIncludedRelationships()
+        )
+    }
+    
     /**
      Initialize a serializer with a single `JSONAPIEntity`
      
      - parameter object: A `JSONAPIEntities`
-     
+     - parameter includeChildren: when true it wll include relationships of relationships, false by default.
+
      - returns: A serializable object that serializes a `JSONAPIEntity` conforming to JSON API
      */
-    public init(_ object: T) {
-        data = object.serialize()! // can't fail, JSONAPIEntity must always be serializable
-        included = object.includedRelationships()
+    public init(_ object: T, includeChildren: Bool = false) {
+        (data, included) = JSONAPISerializer.commonInit(object, includeChildren: includeChildren)
     }
     
     /**
      Initialize a serializer with an array of `JSONAPIEntity`
      
      - parameter objects: An array of `JSONAPIEntity`
-     
+     - parameter includeChildren: when true it wll include relationships of relationships, false by default.
+
      - returns: A serializable object that serializes an array of `JSONAPIEntity` conforming to JSON API
      */
-    public init(_ objects: [T]) {
-        data = objects.serialize()! // can't fail, JSONAPIEntity must always be serializable
-        included = objects.includedRelationships()
+    public init(_ objects: [T], includeChildren: Bool = false) {
+        (data, included) = JSONAPISerializer.commonInit(objects, includeChildren: includeChildren)
     }
 }
 
@@ -108,9 +119,25 @@ extension Array: JSONAPISerializable {
         return Element.self is JSONAPISerializable.Type ? flatMap { ($0 as? JSONAPISerializable)?.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes) } : nil
     }
     
-    public func includedRelationships() -> [AnyObject]? {
+    public func includedRelationships(includeChildren: Bool) -> [AnyObject]? {
         guard Element.self is JSONAPISerializable.Type else { return nil }
-        return flatMap { ($0 as? JSONAPISerializable)?.includedRelationships() }.flatMap { $0 }
+        return flatMap { ($0 as? JSONAPISerializable)?.includedRelationships(includeChildren) }.flatMap { $0 }
+    }
+    
+    private func unifiedIncludedRelationships() -> [AnyObject] {
+        var dictionary = [String: AnyObject]()
+        
+        forEach { (obj) in
+            guard let relationship = obj as? [String: AnyObject],
+            let key = relationship["id"] as? String,
+            let type = relationship["type"] as? String else {
+                return
+            }
+            
+            dictionary[key + type] = relationship
+        }
+        
+        return dictionary.map { $0.1 }
     }
 }
 
@@ -151,8 +178,8 @@ extension PropertyPolicy: JSONAPISerializable {
         return nil
     }
     
-    public func includedRelationships() -> [AnyObject]? {
-        return wrapped?.includedRelationships()
+    public func includedRelationships(includeChildren: Bool) -> [AnyObject]? {
+        return wrapped?.includedRelationships(includeChildren)
     }
 }
 
@@ -177,8 +204,8 @@ extension Optional: JSONAPISerializable {
         return wrapped?.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes)
     }
     
-    public func includedRelationships() -> [AnyObject]? {
-        return wrapped?.includedRelationships()
+    public func includedRelationships(includeChildren: Bool) -> [AnyObject]? {
+        return wrapped?.includedRelationships(includeChildren)
     }
 }
 
@@ -241,20 +268,30 @@ public extension JSONAPIEntity {
         return data
     }
     
-    public func includedRelationships() -> [AnyObject]? {
+    public func includedRelationships(includeChildren: Bool) -> [AnyObject]? {
         let mirror = Mirror(reflecting: self)
-        return mirror.children.flatMap { (label, value) -> [AnyObject] in
-            let value = value as? JSONAPISerializable
+        let includedRelationships = mirror.children.flatMap { (label, value) -> [AnyObject] in
             
-            guard let include = value?.data(includeRelationships: false, includeAttributes: true) else {
+            guard let value = value as? JSONAPISerializable,
+                let include = value.data(includeRelationships: false, includeAttributes: true) else {
                 return []
             }
             
-            if let include = include as? [AnyObject] {
-                return include
+            let relationships: [AnyObject] = {
+                if let include = include as? [AnyObject] {
+                    return include
+                }
+                
+                return [include]
+            }()
+            
+            if includeChildren, let childRelationships = value.includedRelationships(includeChildren) {
+                return childRelationships + relationships
             }
             
-            return [include]
+            return relationships
         }
+        
+        return includedRelationships.count > 0 ? includedRelationships : nil
     }
 }
