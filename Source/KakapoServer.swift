@@ -1,6 +1,6 @@
 //
 //  KakapoServer.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Joan Romano on 30/04/16.
 //  Copyright © 2016 devlucky. All rights reserved.
