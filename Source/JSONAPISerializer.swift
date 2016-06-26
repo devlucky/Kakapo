@@ -102,7 +102,7 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
      
      - parameter object: A `JSONAPIEntities`
      - parameter topLevelLinks: A top `JSONAPILink` optional object
-     - parameter topLevelMeta: A meta object that will be serialzied and placed in the top level of the json.
+     - parameter topLevelMeta: A meta object that will be serialized and placed in the top level of the json.
      - parameter includeChildren: when true it will include relationships of relationships, false by default.
 
      - returns: A serializable object that serializes a `JSONAPIEntity` conforming to JSON API
@@ -116,7 +116,7 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
      
      - parameter objects: An array of `JSONAPIEntity`
      - parameter topLevelLinks: A top `JSONAPILink` optional object
-     - parameter topLevelMeta: A meta object that will be serialzied and placed in the top level of the json.
+     - parameter topLevelMeta: A meta object that will be serialized and placed in the top level of the json.
      - parameter includeChildren: when true it wll include relationships of relationships, false by default.
 
      - returns: A serializable object that serializes an array of `JSONAPIEntity` conforming to JSON API
