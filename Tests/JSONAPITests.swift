@@ -1,6 +1,6 @@
 //
 //  JSONAPITests.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Alex Manzella on 28/04/16.
 //  Copyright © 2016 devlucky. All rights reserved.
@@ -231,20 +231,20 @@ class JSONAPISpec: QuickSpec {
         }
         
         describe("JSON API Entity with PropertyPolicies") {
-            it("should handle PropertyPolicies.None") {
+            it("should handle PropertyPolicy.None") {
                 let object = json(Policy<Int>(id: "12", policy: .None))
                 let attributes = object["attributes"].dictionaryObject
                 expect(attributes).to(beNil())
 
             }
             
-            it("should handle PropertyPolicies.Null") {
+            it("should handle PropertyPolicy.Null") {
                 let object = json(Policy<Int>(id: "12", policy: .Null))
                 let attributes = object["attributes"].dictionaryObject!
                 expect(attributes["policy"] as? NSNull).toNot(beNil())
             }
             
-            it("should handle PropertyPolicies.Some(T)") {
+            it("should handle PropertyPolicy.Some(T)") {
                 let object = json(Policy(id: "12", policy: .Some(123)))
                 let attributes = object["attributes"].dictionaryValue
                 expect(attributes["policy"]?.intValue).to(equal(123))
@@ -273,6 +273,148 @@ class JSONAPISpec: QuickSpec {
                 let object = json(Policy<User>(id: "12", policy: .None))
                 let relationships = object["relationships"].dictionary
                 expect(relationships).to(beNil())
+            }
+        }
+        
+        describe("JSON API included relationships") {
+            
+            func includedRelationshipsById(object: JSON) -> [String: JSON] {
+                let included = object["included"].arrayValue
+                var dictionary = [String: JSON]()
+                
+                included.forEach { (relationship) in
+                    let id = relationship.dictionaryValue["id"]!.string!
+                    dictionary[id] = relationship
+                }
+                
+                return dictionary
+            }
+            
+            it("should not include if the entities don't have relationships") {
+                let object = json(JSONAPISerializer(cats.first!))
+                let included = object["included"].array
+                
+                expect(included).to(beNil())
+            }
+            
+            it("should include single relationships and arrays of relationships") {
+                let object = json(JSONAPISerializer(user))
+                let included = object["included"].arrayValue
+
+                expect(included.count).to(equal(3))
+            }
+            
+            it("should include relationships of an array of JSONAPI entities") {
+                let anotherDog = Dog(id: "555", name: "Joan", cat: nil)
+                let anotherUser = User(id: "111111", name: "Alex", dog: anotherDog, cats: [])
+                let object = json(JSONAPISerializer([user, anotherUser]))
+                let included = object["included"].arrayValue
+                
+                expect(included.count).to(equal(4))
+            }
+            
+            it("should include relationships of relationships when requested") {
+                let cats = [Cat(id: "33", name: "Stancho"), Cat(id: "44", name: "Hez")]
+                let dog = Dog(id: "22", name: "Joan", cat: Cat(id: "55", name: "Max"))
+                let user = User(id: "11", name: "Alex", dog: dog, cats: cats)
+
+                let object = json(JSONAPISerializer(user, includeChildren: true))
+                let included = object["included"].arrayValue
+                expect(included.count).to(equal(4))
+            }
+            
+            it("should include type and id of single relationships") {
+                let object = json(JSONAPISerializer(user))
+                let included = includedRelationshipsById(object)
+                let dog = included["22"]
+                
+                expect(dog).toNot(beNil())
+                expect(dog?["type"].stringValue).to(equal("dog"))
+            }
+            
+            it("should include type and id of array of relationships") {
+                let object = json(JSONAPISerializer(user))
+                let included = includedRelationshipsById(object)
+                
+                let cat = included["33"]
+                let cat2 = included["44"]
+                
+                expect(cat).toNot(beNil())
+                expect(cat?["type"].stringValue).to(equal("cat"))
+                expect(cat2).toNot(beNil())
+                expect(cat2?["type"].stringValue).to(equal("cat"))
+            }
+            
+            it("should include relationships attributes") {
+                let object = json(JSONAPISerializer(user))
+                let included = includedRelationshipsById(object)
+
+                let dog = included["22"]
+                
+                expect(dog).toNot(beNil())
+                expect(dog?["type"].stringValue).to(equal("dog"))
+
+                let attributes = dog?["attributes"].dictionaryValue
+                
+                expect(attributes?["name"]?.stringValue).to(equal("Joan"))
+            }
+            
+            it("should include relationships of an array of entity") {
+                let object = json(JSONAPISerializer(user))
+                let included = includedRelationshipsById(object)
+                
+                let cat = included["33"]
+                let cat2 = included["44"]
+                
+                ["Stancho": cat, "Hez": cat2].forEach { (name, cat) in
+                    let attributes = cat?["attributes"].dictionaryValue
+                    expect(attributes?["name"]?.stringValue).to(equal(name))
+                }
+            }
+            
+            it("should not include duplicated relationships") {
+                let user = User(id: "111111", name: "Alex", dog: dog, cats: [dog.cat!, dog.cat!])
+                let object = json(JSONAPISerializer(user))
+                let included = object["included"].arrayValue
+                expect(included.count).to(equal(2))
+            }
+            
+            it("should only include attributes of relationships") {
+                let object = json(JSONAPISerializer(user))
+                let included = includedRelationshipsById(object)
+                let dog = included["22"]
+                let attributes = dog!["attributes"].dictionary!
+                expect(attributes["cat"]).to(beNil())
+            }
+            
+            context("included PropertyPolicies") {
+                
+                it("should handle PropertyPolicy.None") {
+                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .None), includeChildren: true))
+                    let included = includedRelationshipsById(object)
+                    expect(included.count).to(equal(0))
+                }
+                
+                it("should handle PropertyPolicy.Null") {
+                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .Null), includeChildren: true))
+                    let included = includedRelationshipsById(object)
+                    expect(included.count).to(equal(0))
+                }
+                
+                it("should handle PropertyPolicy.Some(T)") {
+                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .Some(user)), includeChildren: true))
+                    let included = includedRelationshipsById(object)
+                    let dog = included["22"]
+                    
+                    expect(dog).toNot(beNil())
+                    expect(dog?["type"].stringValue).to(equal("dog"))
+                }
+                
+                it("should be empty if PropertyPolicy is not a JSONAPIEntity") {
+                    let object = json(JSONAPISerializer(Policy<Int>(id: "1111", policy: .Some(1)), includeChildren: true))
+                    let included = includedRelationshipsById(object)
+                    expect(included.count).to(equal(0))
+                }
             }
         }
     }
