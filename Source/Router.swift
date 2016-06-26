@@ -82,7 +82,7 @@ public struct Response: ResponseFieldsProvider {
  
  After that, the router can be used to register different HTTP methods (GET, POST, DEL, PUT) with custom `RouteHandlers`
  */
-public class Router {
+public final class Router {
     
     private typealias Route = (method: HTTPMethod, handler: RouteHandler)
     

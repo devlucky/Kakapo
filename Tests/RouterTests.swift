@@ -13,6 +13,42 @@ import Nimble
 
 @testable import Kakapo
 
+/**
+ A test server that conforms to NSURLProtocol, in order to intercept outgoing network for unit tests. As `NSURLProtocol` documentation states:
+ 
+ "Classes are consulted in the reverse order of their registration. A similar design governs the process to create the canonical form of a request with canonicalRequestForRequest:."
+ 
+ Thus, we use this test server to intercept real network calls in tests as a fallback for `KakapoServer`.
+ */
+private final class RouterTestServer: NSURLProtocol {
+    
+    class func register() {
+        NSURLProtocol.registerClass(self)
+    }
+    
+    class func disable() {
+        NSURLProtocol.unregisterClass(self)
+    }
+    
+    override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+        return true
+    }
+    
+    override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+        return request
+    }
+    
+    override func startLoading() {
+        guard let requestURL = request.URL,
+                  client = client else { return }
+        
+        client.URLProtocol(self, didReceiveResponse: NSHTTPURLResponse(URL: requestURL, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: nil)!, cacheStoragePolicy: .AllowedInMemoryOnly)
+        client.URLProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+}
+
 struct CustomResponse: ResponseFieldsProvider {
     let statusCode: Int
     let body: Serializable
@@ -31,10 +67,12 @@ class RouterTests: QuickSpec {
         var db = KakapoDB()
         
         beforeEach{
+            RouterTestServer.register()
             db = KakapoDB()
         }
         
         afterEach{
+            RouterTestServer.disable()
             Router.disableAll()
         }
         
@@ -118,7 +156,7 @@ class RouterTests: QuickSpec {
             var router: Router!
             
             beforeEach{
-                router = Router.register("htpp://www.test.com")
+                router = Router.register("http://www.test.com")
             }
             
             it("should not call the handler when requesting a non registered url") {
