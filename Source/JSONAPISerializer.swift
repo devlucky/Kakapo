@@ -21,7 +21,7 @@ public protocol JSONAPISerializable {
     func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject?
     
     /**
-     Creates the `included` field by aggregating and unifying the attrbiutes of the relationships recursively
+     Creates the `included` field by aggregating and unifying the attributes of the relationships recursively
      
      - parameter includeChildren: Include relationships of relationships recursively, by default `JSONAPISerializer` won't include children
 
@@ -97,7 +97,7 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
      
      - parameter object: A `JSONAPIEntities`
      - parameter topLevelLinks: A top `JSONAPILink` optional object
-     - parameter includeChildren: when true it wll include relationships of relationships, false by default.
+     - parameter includeChildren: when true it will include relationships of relationships, false by default.
 
      - returns: A serializable object that serializes a `JSONAPIEntity` conforming to JSON API
      */
