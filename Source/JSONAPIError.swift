@@ -11,7 +11,6 @@ import Foundation
 // A convenince error object that conform to JSON API
 public struct JSONAPIError: ResponseFieldsProvider {
     
-    
     /// An object containing references to the source of the error, optionally including any of the following members
     public struct Source: Serializable {
         /// A JSON `Pointer` ([RFC6901](https://tools.ietf.org/html/rfc6901)) to the associated entity in the request document [e.g. `/data` for a primary data object, or `/data/attributes/title` for a specific attribute].
@@ -77,7 +76,7 @@ public struct JSONAPIError: ResponseFieldsProvider {
     /**
      Initialize a `JSONAPIError` and build it with `JSONAPIError.Builder`
      
-     - parameter statusCode:   the status code of the response, will be used also to provide a statusCode for your request
+     - parameter statusCode:   The status code of the response, will be used also to provide a statusCode for your request
      - parameter errorBuilder: A builder that can be used to fill the error objects, it contains all you need to provide an error object confiorming to JSON API (**see `JSONAPIError.Builder`**)
      
      - returns: An error that conforms to JSON API specifications and it's ready to be serialized

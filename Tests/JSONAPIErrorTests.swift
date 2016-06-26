@@ -15,6 +15,10 @@ import SwiftyJSON
 
 class JSONAPIErrorsSpec: QuickSpec {
     
+    private struct ErrorDescription: Serializable {
+        let description: String
+    }
+
     override func spec() {
         
         func json(object: Serializable) -> JSON {
@@ -36,16 +40,18 @@ class JSONAPIErrorsSpec: QuickSpec {
             it("should serialize members of the error") {
                 let error = JSONAPIError(statusCode: 404) { (error) in
                     error.source = JSONAPIError.Source(pointer: "ptr", parameter: "param")
-                    error.meta = JSONAPIError.Source(pointer: "ptr", parameter: "param")
+                    error.meta = ErrorDescription(description: "test")
                 }
                 
                 let object = json(error)
                 expect(object.count).to(equal(3))
                 
-                [object["source"].dictionaryValue, object["meta"].dictionaryValue].forEach { (obj) in
-                    expect(obj["pointer"]).to(equal("ptr"))
-                    expect(obj["parameter"]).to(equal("param"))
-                }
+                let source = object["source"].dictionaryValue
+                expect(source["pointer"]).to(equal("ptr"))
+                expect(source["parameter"]).to(equal("param"))
+
+                let meta = object["meta"].dictionaryValue
+                expect(meta["description"]).to(equal("test"))
             }
             
             it("should affect the status code of the request") {
