@@ -84,10 +84,10 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
     private typealias JSONAPIConvertible = protocol<JSONAPISerializable, Serializable>
     private typealias JSONAPISerializerInit = (data: AnyObject, links: AnyObject?, included: [AnyObject]?)
     
-    private static func commonInit(object: JSONAPIConvertible, topLinks: [String: JSONAPILink]?, includeChildren: Bool) -> JSONAPISerializerInit {
+    private static func commonInit(object: JSONAPIConvertible, topLevelLinks: [String: JSONAPILink]?, includeChildren: Bool) -> JSONAPISerializerInit {
         return (
             data: object.serialize()!, // can't fail, JSONAPIEntity must always be serializable
-            links: topLinks.serialize(),
+            links: topLevelLinks.serialize(),
             included: object.includedRelationships(includeChildren)?.unifiedIncludedRelationships()
         )
     }
@@ -96,26 +96,26 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
      Initialize a serializer with a single `JSONAPIEntity`
      
      - parameter object: A `JSONAPIEntities`
-     - parameter topLinks: A top `JSONAPILink` optional object
+     - parameter topLevelLinks: A top `JSONAPILink` optional object
      - parameter includeChildren: when true it wll include relationships of relationships, false by default.
 
      - returns: A serializable object that serializes a `JSONAPIEntity` conforming to JSON API
      */
-    public init(_ object: T, topLinks: [String: JSONAPILink]? = nil, includeChildren: Bool = false) {
-        (data, links, included) = JSONAPISerializer.commonInit(object, topLinks: topLinks, includeChildren: includeChildren)
+    public init(_ object: T, topLevelLinks: [String: JSONAPILink]? = nil, includeChildren: Bool = false) {
+        (data, links, included) = JSONAPISerializer.commonInit(object, topLevelLinks: topLevelLinks, includeChildren: includeChildren)
     }
     
     /**
      Initialize a serializer with an array of `JSONAPIEntity`
      
      - parameter objects: An array of `JSONAPIEntity`
-     - parameter topLinks: A top `JSONAPILink` optional object
+     - parameter topLevelLinks: A top `JSONAPILink` optional object
      - parameter includeChildren: when true it wll include relationships of relationships, false by default.
 
      - returns: A serializable object that serializes an array of `JSONAPIEntity` conforming to JSON API
      */
-    public init(_ objects: [T], topLinks: [String: JSONAPILink]? = nil, includeChildren: Bool = false) {
-        (data, links, included) = JSONAPISerializer.commonInit(objects, topLinks: topLinks, includeChildren: includeChildren)
+    public init(_ objects: [T], topLevelLinks: [String: JSONAPILink]? = nil, includeChildren: Bool = false) {
+        (data, links, included) = JSONAPISerializer.commonInit(objects, topLevelLinks: topLevelLinks, includeChildren: includeChildren)
     }
 }
 
@@ -250,24 +250,25 @@ public extension JSONAPIEntity {
         var attributes = [String: AnyObject]()
         var relationships = [String: AnyObject]()
         
-        if let linkedEntity  = self as? JSONAPILinkedEntity,
+        if let linkedEntity = self as? JSONAPILinkedEntity,
                entityLinks = linkedEntity.links where entityLinks.count > 0 {
-            data["links"] = linkedEntity.links.serialize()
+            data["links"] = entityLinks.serialize()
         }
         
         for child in mirror.children {
             if let label = child.label {
                 if let value = child.value as? JSONAPISerializable, let data = value.data(includeRelationships: false, includeAttributes: false) {
                     if includeRelationships {
-                        var relationship = [String: AnyObject](dictionaryLiteral: ("data", data))
+                        var relationship: [String: AnyObject] = ["data" : data]
                         
-                        if let value = value as? JSONAPILinkedEntity {
-                            relationship["links"] = value.topLinks.serialize()
+                        if let linkedEntity = self as? JSONAPILinkedEntity,
+                               relationshipsLinks = linkedEntity.relationshipsLinks?[label] where relationshipsLinks.count > 0 {
+                            relationship["links"] = relationshipsLinks.serialize()
                         }
                         
                         relationships[label] = relationship
                     }
-                } else if includeAttributes && !["id", "links", "topLinks"].contains(label)  {
+                } else if includeAttributes && !Self.excludedKeys.contains(label)  {
                     if let value = child.value as? Serializable {
                         attributes[label] = value.serialize()
                     } else {
@@ -314,5 +315,9 @@ public extension JSONAPIEntity {
         }
         
         return includedRelationships.count > 0 ? includedRelationships : nil
+    }
+    
+    private static var excludedKeys: [String] {
+        return ["id", "links", "topLinks"]
     }
 }
