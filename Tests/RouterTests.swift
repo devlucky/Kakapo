@@ -1,6 +1,6 @@
 //
 //  RouterTests.swift
-//  KakapoExample
+//  Kakapo
 //
 //  Created by Joan Romano on 02/04/16.
 //  Copyright © 2016 devlucky. All rights reserved.
@@ -643,7 +643,6 @@ class RouterTests: QuickSpec {
                 
                 expect(thirdInfo).toEventually(beNil())
                 expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
-                Swift.assert(thirdResponseURL?.host != nil)
             }
             
             it("Should fail when not properly registering Routers") {
