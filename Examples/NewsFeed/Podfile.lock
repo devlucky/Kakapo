@@ -1,0 +1,16 @@
+PODS:
+  - Kakapo (0.0.1-beta1)
+
+DEPENDENCIES:
+  - Kakapo (from `../../Kakapo.podspec`)
+
+EXTERNAL SOURCES:
+  Kakapo:
+    :path: "../../Kakapo.podspec"
+
+SPEC CHECKSUMS:
+  Kakapo: e973349795a447cb5aae5083bf10edf865cc9c36
+
+PODFILE CHECKSUM: a60c4ba8440adf1e6039da45930ed296d7cef8d1
+
+COCOAPODS: 1.0.1

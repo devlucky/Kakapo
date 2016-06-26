@@ -1,0 +1,5 @@
+use_frameworks!
+
+target 'NewsFeed'
+
+pod 'Kakapo', :path => '../../Kakapo.podspec'
