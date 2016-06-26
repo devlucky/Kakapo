@@ -255,6 +255,8 @@ public extension JSONAPIEntity {
             data["links"] = entityLinks.serialize()
         }
         
+        let excludedKeys: Set<String> = ["id", "links", "topLinks"]
+        
         for child in mirror.children {
             if let label = child.label {
                 if let value = child.value as? JSONAPISerializable, let data = value.data(includeRelationships: false, includeAttributes: false) {
@@ -268,7 +270,7 @@ public extension JSONAPIEntity {
                         
                         relationships[label] = relationship
                     }
-                } else if includeAttributes && !Self.excludedKeys.contains(label)  {
+                } else if includeAttributes && !excludedKeys.contains(label)  {
                     if let value = child.value as? Serializable {
                         attributes[label] = value.serialize()
                     } else {
@@ -315,9 +317,5 @@ public extension JSONAPIEntity {
         }
         
         return includedRelationships.count > 0 ? includedRelationships : nil
-    }
-    
-    private static var excludedKeys: [String] {
-        return ["id", "links", "topLinks"]
     }
 }
