@@ -11,8 +11,19 @@ import Foundation
 // A convenince error object that conform to JSON API
 public struct JSONAPIError: ResponseFieldsProvider {
     
+    
+    /// An object containing references to the source of the error, optionally including any of the following members
+    public struct Source: Serializable {
+        /// A JSON `Pointer` ([RFC6901](https://tools.ietf.org/html/rfc6901)) to the associated entity in the request document [e.g. `/data` for a primary data object, or `/data/attributes/title` for a specific attribute].
+        public let pointer: String?
+        
+        /// A string indicating which URI query parameter caused the error.
+        public let parameter: String?
+    }
+    
     /// A builder for JSONAPIError
-    public struct JSONAPIErrorBuilder: Serializable {
+    public struct Builder: Serializable {
+        
         /// A unique identifier for this particular occurrence of the problem.
         public var id: String?
         
@@ -37,7 +48,7 @@ public struct JSONAPIError: ResponseFieldsProvider {
          - pointer: a JSON `Pointer` ([RFC6901](https://tools.ietf.org/html/rfc6901)) to the associated entity in the request document [e.g. `/data` for a primary data object, or `/data/attributes/title` for a specific attribute].
          - parameter: a string indicating which URI query parameter caused the error.
          */
-        public var source: String?
+        public var source: Source?
         
         /// A meta object containing non-standard meta-information about the error.
         public var meta: Serializable?
@@ -47,7 +58,7 @@ public struct JSONAPIError: ResponseFieldsProvider {
         }
     }
     
-    private let builder: JSONAPIErrorBuilder
+    private let builder: Builder
 
     // MARK: ResponseFieldsProvider
     
@@ -64,15 +75,15 @@ public struct JSONAPIError: ResponseFieldsProvider {
     }
 
     /**
-     Initialize a `JSONAPIError` and build it with `JSONAPIErrorBuilder`
+     Initialize a `JSONAPIError` and build it with `JSONAPIError.Builder`
      
      - parameter statusCode:   the status code of the response, will be used also to provide a statusCode for your request
-     - parameter errorBuilder: A builder that can be used to fill the error objects, it contains all you need to provide an error object confiorming to JSON API (**see `JSONAPIErrorBuilder`**)
+     - parameter errorBuilder: A builder that can be used to fill the error objects, it contains all you need to provide an error object confiorming to JSON API (**see `JSONAPIError.Builder`**)
      
      - returns: An error that conforms to JSON API specifications and it's ready to be serialized
      */
-    public init(statusCode: Int, errorBuilder: (error: inout JSONAPIErrorBuilder) -> ()) {
-        var builder = JSONAPIErrorBuilder(statusCode: statusCode)
+    public init(statusCode: Int, errorBuilder: (error: inout Builder) -> ()) {
+        var builder = Builder(statusCode: statusCode)
         errorBuilder(error: &builder)
         self.builder = builder
     }

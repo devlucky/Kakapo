@@ -33,6 +33,21 @@ class JSONAPIErrorsSpec: QuickSpec {
                 expect(object["title"]).to(equal("test"))
             }
             
+            it("should serialize members of the error") {
+                let error = JSONAPIError(statusCode: 404) { (error) in
+                    error.source = JSONAPIError.Source(pointer: "ptr", parameter: "param")
+                    error.meta = JSONAPIError.Source(pointer: "ptr", parameter: "param")
+                }
+                
+                let object = json(error)
+                expect(object.count).to(equal(3))
+                
+                [object["source"].dictionaryValue, object["meta"].dictionaryValue].forEach { (obj) in
+                    expect(obj["pointer"]).to(equal("ptr"))
+                    expect(obj["parameter"]).to(equal("param"))
+                }
+            }
+            
             it("should affect the status code of the request") {
                 let router = Router.register("http://www.test.com")
                 
