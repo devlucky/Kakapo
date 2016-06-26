@@ -72,22 +72,27 @@ public protocol JSONAPIEntity: CustomSerializable, JSONAPISerializable {
  */
 public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
     
-    // Top level `data` member: the document’s “primary data”
-    private let data: AnyObject
+    private typealias JSONAPIConvertible = protocol<JSONAPISerializable, Serializable>
 
-    // Top level `included` member: an array of resource objects that are related to the primary data and/or each other (“included resources”).
+    /// Top level [`data`](http://jsonapi.org/format/#document-top-level) member: the document’s “primary data”
+    private let data: JSONAPIConvertible
+
+    /// Top level `included` member: an array of resource objects that are related to the primary data and/or each other (“included resources”).
     private let included: [AnyObject]?
 
-    // Top level `links` member: a links object related to the primary data.
-    private let links: AnyObject?
+    /// Top level [`links`](http://jsonapi.org/format/#document-links) member: a links object related to the primary data.
+    private let links: [String: JSONAPILink]?
+
+    /// Top level [`meta`](http://jsonapi.org/format/#document-meta) member: used to include non-standard meta-information.
+    private let meta: Serializable?
+
+    private typealias JSONAPISerializerInit = (data: JSONAPIConvertible, links: [String: JSONAPILink]?, meta: Serializable?, included: [AnyObject]?)
     
-    private typealias JSONAPIConvertible = protocol<JSONAPISerializable, Serializable>
-    private typealias JSONAPISerializerInit = (data: AnyObject, links: AnyObject?, included: [AnyObject]?)
-    
-    private static func commonInit(object: JSONAPIConvertible, topLevelLinks: [String: JSONAPILink]?, includeChildren: Bool) -> JSONAPISerializerInit {
+    private static func commonInit(object: JSONAPIConvertible, topLevelLinks: [String: JSONAPILink]?, meta: Serializable?, includeChildren: Bool) -> JSONAPISerializerInit {
         return (
-            data: object.serialize()!, // can't fail, JSONAPIEntity must always be serializable
-            links: topLevelLinks.serialize(),
+            data: object,
+            links: topLevelLinks,
+            meta: meta,
             included: object.includedRelationships(includeChildren)?.unifiedIncludedRelationships()
         )
     }
@@ -97,12 +102,13 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
      
      - parameter object: A `JSONAPIEntities`
      - parameter topLevelLinks: A top `JSONAPILink` optional object
+     - parameter topLevelMeta: A meta object that will be serialized and placed in the top level of the json.
      - parameter includeChildren: when true it will include relationships of relationships, false by default.
 
      - returns: A serializable object that serializes a `JSONAPIEntity` conforming to JSON API
      */
-    public init(_ object: T, topLevelLinks: [String: JSONAPILink]? = nil, includeChildren: Bool = false) {
-        (data, links, included) = JSONAPISerializer.commonInit(object, topLevelLinks: topLevelLinks, includeChildren: includeChildren)
+    public init(_ object: T, topLevelLinks: [String: JSONAPILink]? = nil, topLevelMeta: Serializable? = nil, includeChildren: Bool = false) {
+        (data, links, meta, included) = JSONAPISerializer.commonInit(object, topLevelLinks: topLevelLinks, meta: topLevelMeta, includeChildren: includeChildren)
     }
     
     /**
@@ -110,12 +116,13 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
      
      - parameter objects: An array of `JSONAPIEntity`
      - parameter topLevelLinks: A top `JSONAPILink` optional object
+     - parameter topLevelMeta: A meta object that will be serialized and placed in the top level of the json.
      - parameter includeChildren: when true it wll include relationships of relationships, false by default.
 
      - returns: A serializable object that serializes an array of `JSONAPIEntity` conforming to JSON API
      */
-    public init(_ objects: [T], topLevelLinks: [String: JSONAPILink]? = nil, includeChildren: Bool = false) {
-        (data, links, included) = JSONAPISerializer.commonInit(objects, topLevelLinks: topLevelLinks, includeChildren: includeChildren)
+    public init(_ objects: [T], topLevelLinks: [String: JSONAPILink]? = nil, topLevelMeta: Serializable? = nil, includeChildren: Bool = false) {
+        (data, links, meta, included) = JSONAPISerializer.commonInit(objects, topLevelLinks: topLevelLinks, meta: topLevelMeta, includeChildren: includeChildren)
     }
 }
 
