@@ -317,7 +317,7 @@ public extension JSONAPIEntity {
         return includedRelationships.count > 0 ? includedRelationships : nil
     }
     
-    private static var excludedKeys: [String] {
+    private static var excludedKeys: Set<String> {
         return ["id", "links", "topLinks"]
     }
 }
