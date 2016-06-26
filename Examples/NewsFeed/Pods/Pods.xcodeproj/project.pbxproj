@@ -1,0 +1,564 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		191FFA7D7B3B38EA35C352D730629F96 /* Pods-NewsFeed-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BCC1567E784A7992E40709A8233B7B7 /* Pods-NewsFeed-dummy.m */; };
+		1D131642D7EBD098A249AE8E2C7FA77A /* URLDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB317916613E4DA3CCE2AC5DD46D66E3 /* URLDecomposer.swift */; };
+		2817EF65CA4FF7B27A25B0F0531C50FF /* Pods-NewsFeed-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F427CD948584D1F7A8ACA4A46503E10 /* Pods-NewsFeed-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2FE287808826D37760C4B10183FBE61E /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450D7ABEF59818BA2C68CF169F8273AF /* JSONAPISerializer.swift */; };
+		3236411D68CB0334A40D7AC56383BECA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+		3F2ABB288B151AA98C35F05F40F17019 /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828B2003A3CF3976DA2B44F1E7E8E185 /* JSONAPIError.swift */; };
+		75FBF8352CE2B2AC64927D6B5EAA06D4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+		841B41A41CB20B790D3DA2381CC79B4F /* NSURLRequest+FixCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF80769F68F5154D68F89921CD9287D /* NSURLRequest+FixCopy.swift */; };
+		8A3ED0E1F4D6115B9CD73D415C5BCD96 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0A63E8772B7E8E705DB489E625D8F0 /* KakapoDB.swift */; };
+		B49C3130416C65D813E7E499AE918A37 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AABABF4B03A1270C2E0B4AC8BC983C1 /* Router.swift */; };
+		C103EB10371612D9D1E05BEF3359332E /* Kakapo-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 09EB9DB2535A21D6046CCB8960D1D9D5 /* Kakapo-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C32A671679E8DC8A4A3848890F60E6F1 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901A3EE15C264AC385015AF3DA224993 /* Serializer.swift */; };
+		C3D822BBDBE73BE25EF6FF3724697ECE /* Kakapo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B00A75FFD146A297A129C63BCCF46662 /* Kakapo-dummy.m */; };
+		D2DE2EA84DBBCB29786A4C67ADDF473D /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07116583A2F87AED3752AEB21E0DE7B /* KakapoServer.swift */; };
+		DF865209432FDB16DC78DF4F29BD1F53 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB485711A841642E31AED4AE48C72AF /* PropertyPolicy.swift */; };
+		EB286BF76BCDDDBFF475064E43485D06 /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71EDFDAF835293B2B86AD52783F7D95F /* JSONAPILinks.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		264FB5C8CDD470DDA0C639C67140B9D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F95A5E8E76DB67159A6EEB8C147F8251;
+			remoteInfo = Kakapo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		059F62705AC6D0B449E3532780228557 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		09EB9DB2535A21D6046CCB8960D1D9D5 /* Kakapo-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Kakapo-umbrella.h"; sourceTree = "<group>"; };
+		1318BF3E7200D9A0D4AE37D88DB9D9C7 /* Pods-NewsFeed.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NewsFeed.release.xcconfig"; sourceTree = "<group>"; };
+		1AABABF4B03A1270C2E0B4AC8BC983C1 /* Router.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		3A0A63E8772B7E8E705DB489E625D8F0 /* KakapoDB.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KakapoDB.swift; sourceTree = "<group>"; };
+		450D7ABEF59818BA2C68CF169F8273AF /* JSONAPISerializer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JSONAPISerializer.swift; sourceTree = "<group>"; };
+		49CB765C93616E7C469FFA17092805F7 /* Kakapo.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Kakapo.xcconfig; sourceTree = "<group>"; };
+		54E9FE922470F4BD11794F65264DD7F0 /* Pods_NewsFeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NewsFeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		599335465CF0CACB453416238B28F643 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		71EDFDAF835293B2B86AD52783F7D95F /* JSONAPILinks.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JSONAPILinks.swift; sourceTree = "<group>"; };
+		782011CAE2ED9E4FF82580452E24CB2F /* Kakapo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kakapo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		786F3AB15BCE5F6F60B8FC13032073EB /* Pods-NewsFeed-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-NewsFeed-resources.sh"; sourceTree = "<group>"; };
+		828B2003A3CF3976DA2B44F1E7E8E185 /* JSONAPIError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JSONAPIError.swift; sourceTree = "<group>"; };
+		8BF9D2FC5116DDB32153D16B73008661 /* Pods-NewsFeed-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-NewsFeed-acknowledgements.markdown"; sourceTree = "<group>"; };
+		8DF80769F68F5154D68F89921CD9287D /* NSURLRequest+FixCopy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "NSURLRequest+FixCopy.swift"; sourceTree = "<group>"; };
+		8F427CD948584D1F7A8ACA4A46503E10 /* Pods-NewsFeed-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-NewsFeed-umbrella.h"; sourceTree = "<group>"; };
+		901A3EE15C264AC385015AF3DA224993 /* Serializer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9BCC1567E784A7992E40709A8233B7B7 /* Pods-NewsFeed-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-NewsFeed-dummy.m"; sourceTree = "<group>"; };
+		9EB485711A841642E31AED4AE48C72AF /* PropertyPolicy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
+		B00A75FFD146A297A129C63BCCF46662 /* Kakapo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Kakapo-dummy.m"; sourceTree = "<group>"; };
+		BB317916613E4DA3CCE2AC5DD46D66E3 /* URLDecomposer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLDecomposer.swift; sourceTree = "<group>"; };
+		C178C29D889F43F5E1C5CDA15B7F6A95 /* Pods-NewsFeed.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NewsFeed.debug.xcconfig"; sourceTree = "<group>"; };
+		C338156F4F599E0F12AACDD2855CC00C /* Pods-NewsFeed-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-NewsFeed-frameworks.sh"; sourceTree = "<group>"; };
+		C9EBD35895AEAE7BB31AD56F5606F83A /* Kakapo-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Kakapo-prefix.pch"; sourceTree = "<group>"; };
+		CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		D1C0F8A0DD43B2C984680F16B2F9F43E /* Kakapo.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = Kakapo.modulemap; sourceTree = "<group>"; };
+		D4719E9680BB9403ED50C7708B79D878 /* Pods-NewsFeed-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-NewsFeed-acknowledgements.plist"; sourceTree = "<group>"; };
+		E600464C23FD63EEBE58F930BC2D539C /* Pods-NewsFeed.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-NewsFeed.modulemap"; sourceTree = "<group>"; };
+		F07116583A2F87AED3752AEB21E0DE7B /* KakapoServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KakapoServer.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B365B2450E33D9651CD61EF60B38E12B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3236411D68CB0334A40D7AC56383BECA /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF693B6B5467A6E17513D347679ADD43 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75FBF8352CE2B2AC64927D6B5EAA06D4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		12C000092DB1B39B9017F1E66907B3DC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				782011CAE2ED9E4FF82580452E24CB2F /* Kakapo.framework */,
+				54E9FE922470F4BD11794F65264DD7F0 /* Pods_NewsFeed.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1A4A2BCABFFB5049622CD3962F758E34 /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				70A848B6E6022C87C23211AA2048D4CE /* Kakapo */,
+			);
+			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		3A6F742B2D8D44B860D66E74F680248D /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				828B2003A3CF3976DA2B44F1E7E8E185 /* JSONAPIError.swift */,
+				71EDFDAF835293B2B86AD52783F7D95F /* JSONAPILinks.swift */,
+				450D7ABEF59818BA2C68CF169F8273AF /* JSONAPISerializer.swift */,
+				3A0A63E8772B7E8E705DB489E625D8F0 /* KakapoDB.swift */,
+				F07116583A2F87AED3752AEB21E0DE7B /* KakapoServer.swift */,
+				8DF80769F68F5154D68F89921CD9287D /* NSURLRequest+FixCopy.swift */,
+				9EB485711A841642E31AED4AE48C72AF /* PropertyPolicy.swift */,
+				1AABABF4B03A1270C2E0B4AC8BC983C1 /* Router.swift */,
+				901A3EE15C264AC385015AF3DA224993 /* Serializer.swift */,
+				BB317916613E4DA3CCE2AC5DD46D66E3 /* URLDecomposer.swift */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		3DCAB2B7CDE207B3958B6CB957FCC758 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		70A848B6E6022C87C23211AA2048D4CE /* Kakapo */ = {
+			isa = PBXGroup;
+			children = (
+				3A6F742B2D8D44B860D66E74F680248D /* Source */,
+				C1BB36C236F56967408EC25FCFF82522 /* Support Files */,
+			);
+			name = Kakapo;
+			path = ../../..;
+			sourceTree = "<group>";
+		};
+		7CAB4E006E8262983433FAF4B11D1555 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				C5DF8BFD3750FCC52814913213035C3F /* Pods-NewsFeed */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				1A4A2BCABFFB5049622CD3962F758E34 /* Development Pods */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
+				12C000092DB1B39B9017F1E66907B3DC /* Products */,
+				7CAB4E006E8262983433FAF4B11D1555 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3DCAB2B7CDE207B3958B6CB957FCC758 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C1BB36C236F56967408EC25FCFF82522 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				599335465CF0CACB453416238B28F643 /* Info.plist */,
+				D1C0F8A0DD43B2C984680F16B2F9F43E /* Kakapo.modulemap */,
+				49CB765C93616E7C469FFA17092805F7 /* Kakapo.xcconfig */,
+				B00A75FFD146A297A129C63BCCF46662 /* Kakapo-dummy.m */,
+				C9EBD35895AEAE7BB31AD56F5606F83A /* Kakapo-prefix.pch */,
+				09EB9DB2535A21D6046CCB8960D1D9D5 /* Kakapo-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "Examples/NewsFeed/Pods/Target Support Files/Kakapo";
+			sourceTree = "<group>";
+		};
+		C5DF8BFD3750FCC52814913213035C3F /* Pods-NewsFeed */ = {
+			isa = PBXGroup;
+			children = (
+				059F62705AC6D0B449E3532780228557 /* Info.plist */,
+				E600464C23FD63EEBE58F930BC2D539C /* Pods-NewsFeed.modulemap */,
+				8BF9D2FC5116DDB32153D16B73008661 /* Pods-NewsFeed-acknowledgements.markdown */,
+				D4719E9680BB9403ED50C7708B79D878 /* Pods-NewsFeed-acknowledgements.plist */,
+				9BCC1567E784A7992E40709A8233B7B7 /* Pods-NewsFeed-dummy.m */,
+				C338156F4F599E0F12AACDD2855CC00C /* Pods-NewsFeed-frameworks.sh */,
+				786F3AB15BCE5F6F60B8FC13032073EB /* Pods-NewsFeed-resources.sh */,
+				8F427CD948584D1F7A8ACA4A46503E10 /* Pods-NewsFeed-umbrella.h */,
+				C178C29D889F43F5E1C5CDA15B7F6A95 /* Pods-NewsFeed.debug.xcconfig */,
+				1318BF3E7200D9A0D4AE37D88DB9D9C7 /* Pods-NewsFeed.release.xcconfig */,
+			);
+			name = "Pods-NewsFeed";
+			path = "Target Support Files/Pods-NewsFeed";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3F1884DEE444B1B22673CD82000406F3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C103EB10371612D9D1E05BEF3359332E /* Kakapo-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		417510198CC714FD3C93D003F585BE79 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2817EF65CA4FF7B27A25B0F0531C50FF /* Pods-NewsFeed-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		AB35AA153AEAA911226C5325E2AF858A /* Pods-NewsFeed */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 856B0B0FCE3EAE9FA8778323F46F0B26 /* Build configuration list for PBXNativeTarget "Pods-NewsFeed" */;
+			buildPhases = (
+				F4663E0013D3595546E2461CB6A1462C /* Sources */,
+				EF693B6B5467A6E17513D347679ADD43 /* Frameworks */,
+				417510198CC714FD3C93D003F585BE79 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				018BBA1909C13AFB41CBE62A340F07E3 /* PBXTargetDependency */,
+			);
+			name = "Pods-NewsFeed";
+			productName = "Pods-NewsFeed";
+			productReference = 54E9FE922470F4BD11794F65264DD7F0 /* Pods_NewsFeed.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		F95A5E8E76DB67159A6EEB8C147F8251 /* Kakapo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4509098809AF158F5F465D8F87CE0A30 /* Build configuration list for PBXNativeTarget "Kakapo" */;
+			buildPhases = (
+				AE6E98FD65FDA73EE53A7D7F73C65A5D /* Sources */,
+				B365B2450E33D9651CD61EF60B38E12B /* Frameworks */,
+				3F1884DEE444B1B22673CD82000406F3 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Kakapo;
+			productName = Kakapo;
+			productReference = 782011CAE2ED9E4FF82580452E24CB2F /* Kakapo.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = 12C000092DB1B39B9017F1E66907B3DC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F95A5E8E76DB67159A6EEB8C147F8251 /* Kakapo */,
+				AB35AA153AEAA911226C5325E2AF858A /* Pods-NewsFeed */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AE6E98FD65FDA73EE53A7D7F73C65A5D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F2ABB288B151AA98C35F05F40F17019 /* JSONAPIError.swift in Sources */,
+				EB286BF76BCDDDBFF475064E43485D06 /* JSONAPILinks.swift in Sources */,
+				2FE287808826D37760C4B10183FBE61E /* JSONAPISerializer.swift in Sources */,
+				C3D822BBDBE73BE25EF6FF3724697ECE /* Kakapo-dummy.m in Sources */,
+				8A3ED0E1F4D6115B9CD73D415C5BCD96 /* KakapoDB.swift in Sources */,
+				D2DE2EA84DBBCB29786A4C67ADDF473D /* KakapoServer.swift in Sources */,
+				841B41A41CB20B790D3DA2381CC79B4F /* NSURLRequest+FixCopy.swift in Sources */,
+				DF865209432FDB16DC78DF4F29BD1F53 /* PropertyPolicy.swift in Sources */,
+				B49C3130416C65D813E7E499AE918A37 /* Router.swift in Sources */,
+				C32A671679E8DC8A4A3848890F60E6F1 /* Serializer.swift in Sources */,
+				1D131642D7EBD098A249AE8E2C7FA77A /* URLDecomposer.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4663E0013D3595546E2461CB6A1462C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				191FFA7D7B3B38EA35C352D730629F96 /* Pods-NewsFeed-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		018BBA1909C13AFB41CBE62A340F07E3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Kakapo;
+			target = F95A5E8E76DB67159A6EEB8C147F8251 /* Kakapo */;
+			targetProxy = 264FB5C8CDD470DDA0C639C67140B9D5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3FA451D268613890FA8A5A03801E11D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5E62115DE8C09934BF8D2FE5D15FED1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				ONLY_ACTIVE_ARCH = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		7E4CAE54DBE038CF582EF09BD27B1E6C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C178C29D889F43F5E1C5CDA15B7F6A95 /* Pods-NewsFeed.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-NewsFeed/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-NewsFeed/Pods-NewsFeed.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_NewsFeed;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		96B3512C8CFAF47A2D21EFF62F1FEA8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49CB765C93616E7C469FFA17092805F7 /* Kakapo.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/Kakapo/Kakapo-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Kakapo/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/Kakapo/Kakapo.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = Kakapo;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B1F5F6C17A6A2360EF72C09F82F9F5DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49CB765C93616E7C469FFA17092805F7 /* Kakapo.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/Kakapo/Kakapo-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Kakapo/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/Kakapo/Kakapo.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = Kakapo;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		DE0763A572E6D394F596E95E6590B670 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1318BF3E7200D9A0D4AE37D88DB9D9C7 /* Pods-NewsFeed.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-NewsFeed/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-NewsFeed/Pods-NewsFeed.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_NewsFeed;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E62115DE8C09934BF8D2FE5D15FED1E /* Debug */,
+				3FA451D268613890FA8A5A03801E11D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4509098809AF158F5F465D8F87CE0A30 /* Build configuration list for PBXNativeTarget "Kakapo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96B3512C8CFAF47A2D21EFF62F1FEA8E /* Debug */,
+				B1F5F6C17A6A2360EF72C09F82F9F5DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		856B0B0FCE3EAE9FA8778323F46F0B26 /* Build configuration list for PBXNativeTarget "Pods-NewsFeed" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7E4CAE54DBE038CF582EF09BD27B1E6C /* Debug */,
+				DE0763A572E6D394F596E95E6590B670 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}
