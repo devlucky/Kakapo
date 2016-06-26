@@ -85,6 +85,27 @@ class JSONAPISpec: QuickSpec {
                 let data = object["data"].arrayValue
                 expect(data.count).toNot(equal(0))
             }
+            
+            
+            context("top level meta") {
+                it("should be include in the top level") {
+                    let object = json(JSONAPISerializer(user, topLevelMeta: ["test": "meta"]))
+                    let meta = object["meta"].dictionary
+                    expect(meta).toNot(beNil())
+                }
+                
+                it("should serialize a simple dictionary") {
+                    let object = json(JSONAPISerializer(user, topLevelMeta: ["test": "meta"]))
+                    let meta = object["meta"].dictionary
+                    expect(meta?["test"]).to(equal("meta"))
+                }
+                
+                it("should serialize a serializable object") {
+                    let object = json(JSONAPISerializer(user, topLevelMeta: ["test": user]))
+                    let meta = object["meta"].dictionary
+                    expect(meta?["test"]?.dictionaryValue["id"]).to(equal("11"))
+                }
+            }
         }
         
         describe("JSON API Entity Serialization") {
