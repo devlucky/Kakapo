@@ -81,6 +81,13 @@
 		DE76E1CD1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
 		DE76E1CE1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
 		DE76E1CF1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
+		DE82027A1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
+		DE82027B1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
+		DE82027C1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
+		DE82027D1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
+		DE82027F1D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
+		DE8202801D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
+		DE8202811D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,6 +148,8 @@
 		DE76E1B51D0DC857009721A4 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializerTests.swift; sourceTree = "<group>"; };
 		DE76E1B61D0DC857009721A4 /* URLDecomposerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLDecomposerTests.swift; sourceTree = "<group>"; };
 		DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTestCase+CustomAssertions.swift"; sourceTree = "<group>"; };
+		DE8202791D20068A00552FEC /* JSONAPIError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIError.swift; sourceTree = "<group>"; };
+		DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIErrorTests.swift; sourceTree = "<group>"; };
 		DEBD3C741D16BC9A004E0A23 /* README.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = README.playground; sourceTree = "<group>"; };
 		DFC29110721D31BE30199824 /* Pods-Kakapo iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kakapo iOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Kakapo iOSTests/Pods-Kakapo iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E357918ACA29146B64834E63 /* Pods-Kakapo tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kakapo tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Kakapo tvOSTests/Pods-Kakapo tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -273,6 +282,7 @@
 				DE76E0FE1D0DC38B009721A4 /* Info.plist */,
 				8BE0FC7E1D16BD8300FE706A /* JSONAPILinksTests.swift */,
 				DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */,
+				DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */,
 				DE76E1B21D0DC857009721A4 /* KakapoDBTests.swift */,
 				DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */,
 				DE76E1B41D0DC857009721A4 /* RouterTests.swift */,
@@ -286,6 +296,7 @@
 		DE76E1001D0DC395009721A4 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				DE8202791D20068A00552FEC /* JSONAPIError.swift */,
 				8BE0FC831D172EC900FE706A /* JSONAPILinks.swift */,
 				DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */,
 				DE76E1021D0DC395009721A4 /* KakapoDB.swift */,
@@ -732,6 +743,7 @@
 				DE76E19C1D0DC755009721A4 /* Serializer.swift in Sources */,
 				DE76E1961D0DC755009721A4 /* JSONAPISerializer.swift in Sources */,
 				DE76E19B1D0DC755009721A4 /* Router.swift in Sources */,
+				DE82027B1D20068A00552FEC /* JSONAPIError.swift in Sources */,
 				DE76E1991D0DC755009721A4 /* NSURLRequest+FixCopy.swift in Sources */,
 				DE76E1A71D0DC762009721A4 /* CustomAssertions.swift in Sources */,
 			);
@@ -749,6 +761,7 @@
 				DE76E1941D0DC755009721A4 /* Serializer.swift in Sources */,
 				DE76E18E1D0DC755009721A4 /* JSONAPISerializer.swift in Sources */,
 				DE76E1931D0DC755009721A4 /* Router.swift in Sources */,
+				DE82027C1D20068A00552FEC /* JSONAPIError.swift in Sources */,
 				DE76E1911D0DC755009721A4 /* NSURLRequest+FixCopy.swift in Sources */,
 				DE76E1A81D0DC762009721A4 /* CustomAssertions.swift in Sources */,
 			);
@@ -764,6 +777,7 @@
 				DE76E1BF1D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
 				DE76E1C81D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C51D0DC857009721A4 /* RouterTests.swift in Sources */,
+				DE8202801D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
 				DE76E1CE1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C21D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 			);
@@ -781,6 +795,7 @@
 				DE76E18C1D0DC754009721A4 /* Serializer.swift in Sources */,
 				DE76E1861D0DC754009721A4 /* JSONAPISerializer.swift in Sources */,
 				DE76E18B1D0DC754009721A4 /* Router.swift in Sources */,
+				DE82027D1D20068A00552FEC /* JSONAPIError.swift in Sources */,
 				DE76E1891D0DC754009721A4 /* NSURLRequest+FixCopy.swift in Sources */,
 				DE76E1A91D0DC763009721A4 /* CustomAssertions.swift in Sources */,
 			);
@@ -796,6 +811,7 @@
 				DE76E1C01D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
 				DE76E1C91D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C61D0DC857009721A4 /* RouterTests.swift in Sources */,
+				DE8202811D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
 				DE76E1CF1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C31D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 			);
@@ -813,6 +829,7 @@
 				DE76E1A41D0DC756009721A4 /* Serializer.swift in Sources */,
 				DE76E19E1D0DC756009721A4 /* JSONAPISerializer.swift in Sources */,
 				DE76E1A31D0DC756009721A4 /* Router.swift in Sources */,
+				DE82027A1D20068A00552FEC /* JSONAPIError.swift in Sources */,
 				DE76E1A11D0DC756009721A4 /* NSURLRequest+FixCopy.swift in Sources */,
 				DE76E1A61D0DC761009721A4 /* CustomAssertions.swift in Sources */,
 			);
@@ -828,6 +845,7 @@
 				DE76E1BE1D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
 				DE76E1C71D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C41D0DC857009721A4 /* RouterTests.swift in Sources */,
+				DE82027F1D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
 				DE76E1CD1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C11D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 			);
