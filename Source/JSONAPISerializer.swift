@@ -21,7 +21,7 @@ public protocol JSONAPISerializable {
     func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool) -> AnyObject?
     
     /**
-     Creates the `included` field by aggregating and unifying the attrbiutes of the relationships recursively
+     Creates the `included` field by aggregating and unifying the attributes of the relationships recursively
      
      - parameter includeChildren: Include relationships of relationships recursively, by default `JSONAPISerializer` won't include children
 
@@ -97,7 +97,7 @@ public struct JSONAPISerializer<T: JSONAPIEntity>: Serializable {
      
      - parameter object: A `JSONAPIEntities`
      - parameter topLevelLinks: A top `JSONAPILink` optional object
-     - parameter includeChildren: when true it wll include relationships of relationships, false by default.
+     - parameter includeChildren: when true it will include relationships of relationships, false by default.
 
      - returns: A serializable object that serializes a `JSONAPIEntity` conforming to JSON API
      */
@@ -255,6 +255,8 @@ public extension JSONAPIEntity {
             data["links"] = entityLinks.serialize()
         }
         
+        let excludedKeys: Set<String> = ["id", "links", "topLinks"]
+        
         for child in mirror.children {
             if let label = child.label {
                 if let value = child.value as? JSONAPISerializable, let data = value.data(includeRelationships: false, includeAttributes: false) {
@@ -268,7 +270,7 @@ public extension JSONAPIEntity {
                         
                         relationships[label] = relationship
                     }
-                } else if includeAttributes && !Self.excludedKeys.contains(label)  {
+                } else if includeAttributes && !excludedKeys.contains(label)  {
                     if let value = child.value as? Serializable {
                         attributes[label] = value.serialize()
                     } else {
@@ -315,9 +317,5 @@ public extension JSONAPIEntity {
         }
         
         return includedRelationships.count > 0 ? includedRelationships : nil
-    }
-    
-    private static var excludedKeys: Set<String> {
-        return ["id", "links", "topLinks"]
     }
 }
