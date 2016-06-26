@@ -59,7 +59,7 @@ private final class ArrayBox<T> {
  
  In order for your classes to be used by the database, they must conform to the `Storable` protocol. For more info about `Router` and `Serializable`, check the `Router` class documentation.
  */
-public class KakapoDB {
+public final class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
     private var _uuid = -1

@@ -11,7 +11,7 @@ import Foundation
 /**
  A server that conforms to NSURLProtocol in order to intercept outgoing network communication
  */
-class KakapoServer: NSURLProtocol {
+final class KakapoServer: NSURLProtocol {
     
     private static var routers: [Router] = []
     
