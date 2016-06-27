@@ -9,6 +9,7 @@
 import Foundation
 import Quick
 import Nimble
+import SwiftyJSON
 @testable import Kakapo
 
 struct UppercaseTransformer<Wrapped: Serializable>: SerializationTransformer {
@@ -34,6 +35,17 @@ struct LowercaseFirstCharacterTransformer<Wrapped: Serializable>: SerializationT
 
 class SerializationTransformerSpec: QuickSpec {
     
+    private struct Dog: JSONAPIEntity {
+        let id: String
+        let dogName: String
+    }
+    
+    private struct JUser: JSONAPIEntity {
+        let id: String
+        let userName: String
+        let doggyDog: Dog
+    }
+    
     struct User: Serializable {
         let name: String
     }
@@ -52,10 +64,11 @@ class SerializationTransformerSpec: QuickSpec {
     
     override func spec() {
         
+        let user = User(name: "Alex")
+        let friend = Friend(friends: [user])
+        
         describe("Serialization Transformers") {
-            it("transforms the keys of a serialized object") {
-                let user = User(name: "Alex")
-                let friend = Friend(friends: [user])
+            it("transforms the keys of a Serializable objects") {
                 let serialized = UppercaseTransformer(wrapped: friend).serialize() as! [String: AnyObject]
                 let friends = serialized["FRIENDS"] as? [AnyObject]
                 let first = friends?.first as? [String: AnyObject]
@@ -63,9 +76,6 @@ class SerializationTransformerSpec: QuickSpec {
             }
             
             it("should apply transformations in the right order") {
-                let user = User(name: "Alex")
-                let friend = Friend(friends: [user])
-                
                 do {
                     let serialized = LowercaseFirstCharacterTransformer(wrapped: UppercaseTransformer(wrapped: friend)).serialize() as! [String: AnyObject]
                     let friends = serialized["fRIENDS"] as? [AnyObject]
@@ -117,20 +127,88 @@ class SerializationTransformerSpec: QuickSpec {
         // every CustomSerializable in Kakapo must be tested here.
         describe("CustomSerializable needs to handle (or forward) key transformer themselves") {
             
-            context("JSON API") {
-                // TODO:
-            }
-            
             context("Optional") {
-                // TODO:
+                it("should transform the keys") {
+                    let object = Optional.Some(friend)
+                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
+                    expect(serialized["FRIENDS"]).toNot(beNil())
+                }
             }
             
             context("PropertyPolicy") {
-                // TODO:
+                it("should transform the keys") {
+                    let object = PropertyPolicy.Some(friend)
+                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
+                    expect(serialized["FRIENDS"]).toNot(beNil())
+                }
+            }
+            
+            context("ResponseFieldsProvider") {
+                it("should transform the keys") {
+                    let object = Response(statusCode: 200, body: friend)
+                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
+                    expect(serialized["FRIENDS"]).toNot(beNil())
+                }
+            }
+            
+            context("Array") {
+                it("should transform the keys") {
+                    let object = [friend]
+                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [[String: AnyObject]]
+                    expect(serialized.first?["FRIENDS"]).toNot(beNil())
+                }
+            }
+            
+            context("Dictionary") {
+                it("should transform the keys") {
+                    let object = ["lowercase": friend]
+                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: [String: AnyObject]]
+                    expect(serialized["LOWERCASE"]?["FRIENDS"]).toNot(beNil())
+                }
             }
             
             context("JSON API") {
-                // TODO:
+                it("should transform the keys") {
+                    let dog = Dog(id: "22", dogName: "Joan")
+                    let user = JUser(id: "11", userName: "Alex", doggyDog: dog)
+                    let serialized = SnakecaseTransformer(wrapped: JSONAPISerializer(user)).serialize() as! [String: AnyObject]
+                    let json = JSON(serialized)
+                    
+                    let data = json["data"].dictionaryValue
+                    
+                    do {
+                        let attributes = data["attributes"]!.dictionaryValue
+                        expect(attributes["user_name"]?.string).to(equal("Alex"))
+                    }
+
+                    do {
+                        let relationships = data["relationships"]?.dictionaryValue
+                        
+                        let dog = relationships?["doggy_dog"]?.dictionaryValue
+                        let dogData = dog?["data"]?.dictionaryValue
+                        expect(dogData?["id"]?.string).to(equal("22"))
+                        expect(dogData?["type"]?.string).to(equal(Dog.type))
+                    }
+                    
+                    do {
+                        let included = json["included"].arrayValue
+                        let dog = included.first?.dictionaryValue
+                        expect(dog?["id"]?.string).to(equal("22"))
+
+                        let attributes = dog?["attributes"]?.dictionaryValue
+                        expect(attributes?["dog_name"]?.string).to(equal("Joan"))
+                    }
+                }
+            }
+            
+            context("JSON API Links") {
+                it("should transform the keys") {
+                    let object = JSONAPILink.Object(href: "test", meta: friend)
+                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
+                    expect(serialized["href"]).toNot(beNil())
+                    let meta = serialized["meta"] as? [String: AnyObject]
+                    expect(meta?["FRIENDS"]).toNot(beNil())
+                }
             }
         }
     }

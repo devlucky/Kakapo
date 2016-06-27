@@ -86,7 +86,7 @@ private struct JSONAPIIncludedWrapper: CustomSerializable {
     let includeChildren: Bool
     
     private func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
-        return object.includedRelationships(includeChildren, keyTransformer: nil)?.unifiedIncludedRelationships()
+        return object.includedRelationships(includeChildren, keyTransformer: keyTransformer)?.unifiedIncludedRelationships()
     }
 }
 
@@ -265,6 +265,9 @@ public extension JSONAPIEntity {
 
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool, keyTransformer: KeyTransformer?) -> AnyObject? {
         var data = [String: AnyObject]()
+        let transformed: (String) -> (String) = { (key) in
+            return keyTransformer?(key: key) ?? key
+        }
         
         data["id"] = id
         data["type"] = Self.type
@@ -296,14 +299,14 @@ public extension JSONAPIEntity {
                             relationship["links"] = relationshipsLinks.serialize(keyTransformer)
                         }
                         
-                        relationships[label] = relationship
+                        relationships[transformed(label)] = relationship
                     }
                 } else if includeAttributes && !excludedKeys.contains(label)  {
                     if let value = child.value as? Serializable {
-                        attributes[label] = value.serialize(keyTransformer)
+                        attributes[transformed(label)] = value.serialize(keyTransformer)
                     } else {
                         assert(child.value is AnyObject)
-                        attributes[label] = child.value as? AnyObject
+                        attributes[transformed(label)] = child.value as? AnyObject
                     }
                 }
             }

@@ -66,8 +66,9 @@ extension Dictionary: CustomSerializable {
         var dictionary = [String: AnyObject]()
         for (key, value) in self {
             assert(key is String, "key must be a String to be serialized to JSON")
-            if let serialized = serializeObject(value, keyTransformer: keyTransformer) {
-                dictionary[key as! String] = serialized
+            if let serialized = serializeObject(value, keyTransformer: keyTransformer), let key = key as? String {
+                let transformedKey = keyTransformer?(key: key) ?? key
+                dictionary[transformedKey] = serialized
             }
         }
         return dictionary
