@@ -22,7 +22,7 @@ public protocol CustomSerializable: Serializable {
     /**
      Serialize by returning a valid object
 
-     - parameter keyTransformer: An Optional closure to transform the keys, for custom serializations the implementation must take care of transforming the key
+     - parameter keyTransformer: An Optional closure to transform the keys, for custom serializations the implementation must take care of transforming the keys. This closure, for example, is not nil when a `Serializable` object is wrapped in a `SerializationTransformer`, the wrapper object will expect `CustomSerializable` object to correctly handle the key transformation (see `SerializationTransformer`)
 
      - returns: You should return either another `Serializable` object (also `Array` or `Dictionary`) containing other Serializable objects or property list types that can be serialized into json (primitive types).
      */
