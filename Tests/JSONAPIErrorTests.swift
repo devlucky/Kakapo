@@ -63,7 +63,7 @@ class JSONAPIErrorsSpec: QuickSpec {
                     }
                 }
                 
-                var statusCode: Int? = nil
+                var statusCode: Int = -1
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
                     let response = response as! NSHTTPURLResponse
                     statusCode = response.statusCode
