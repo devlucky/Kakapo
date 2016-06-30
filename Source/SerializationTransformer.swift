@@ -12,8 +12,9 @@ import Foundation
 public typealias KeyTransformer = (key: String) -> String
 
 /**
- *  A protocol that special `Serializable` objects can adopt to transform other `Serializable` objects.
- *  At the moment only key transforms are supported, see `SnakecaseTransformer` for a concrete implementations
+ *  A protocol that special `Serializable` objects can adopt to transform other **wrapped** `Serializable` objects.
+ *  At the moment this protocol only provide the key transformation functionality.
+ *  See `SnakecaseTransformer` for a concrete implementation.
  */
 public protocol SerializationTransformer: CustomSerializable {
     
