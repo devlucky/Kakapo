@@ -71,6 +71,25 @@ class JSONAPIErrorsSpec: QuickSpec {
                 
                 expect(statusCode).toEventually(equal(501))
             }
+
+            it("should affect the header fields of the response") {
+                let router = Router.register("http://www.test.com")
+                
+                router.get("/users"){ request in
+                    return JSONAPIError(statusCode: 501, headerFields: ["foo": "bar"]) { (error) in
+                        error.title = "test"
+                    }
+                }
+                
+                var foo: String?
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
+                    let response = response as! NSHTTPURLResponse
+                    let headers = response.allHeaderFields as? [String: String]
+                    foo = headers?["foo"]
+                    }.resume()
+                
+                expect(foo).to(equal("bar"))
+            }
         }
     }
 }

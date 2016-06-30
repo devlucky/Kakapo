@@ -21,6 +21,7 @@ let RequestHTTPBodyKey = "kkp_requestHTTPBody"
  */
 extension NSMutableURLRequest {
     
+    /// Swizzle `setHTTPBody:`
     public override class func initialize() {
         struct Static {
             static var token: dispatch_once_t = 0
@@ -44,6 +45,7 @@ extension NSMutableURLRequest {
     }
     
     // MARK: - Method Swizzling
+    
     func kkp_setHTTPBody(body: NSData?) {
         if let body = body {
             NSURLProtocol.setProperty(body, forKey: RequestHTTPBodyKey, inRequest: self)
