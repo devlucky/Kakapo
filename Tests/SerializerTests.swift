@@ -25,6 +25,14 @@ class SerializeSpec: QuickSpec {
         let name: String
     }
     
+    struct CustomUser: CustomSerializable {
+        let name: String
+        
+        func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
+            return [keyTransformer?(key: "customName") ?? "customName": name]
+        }
+    }
+    
     struct Friend: Serializable {
         let friends: [User]
         
@@ -50,6 +58,13 @@ class SerializeSpec: QuickSpec {
                 expect(first?.keys.first).to(equal("name"))
                 expect(first?.values.first as? String).to(equal("Alex"))
                 expect(friends?.count).to(be(1))
+            }
+            
+            context("when object is CustomSerializable") {
+                it("is correctly serialized using the custom serialization") {
+                    let serialized = CustomUser(name: "Alex").serialize() as! [String: AnyObject]
+                    expect(serialized["customName"] as? String).to(equal("Alex"))
+                }
             }
         }
         
@@ -159,6 +174,18 @@ class SerializeSpec: QuickSpec {
                 let optional = MaybeEmpty(Optional.Some(Optional.Some(1)))
                 let serialized = optional.serialize() as! [String: AnyObject] as? [String: Int]
                 expect(serialized?["value"]).to(be(1))
+            }
+        }
+        
+        describe("KeyTransformer") {
+            it("should handle the keyTransformer when serializing a Serializable object") {
+                let serialized = user.serialize { $0.uppercaseString } as! [String: AnyObject]
+                expect(serialized["NAME"] as? String).to(equal("Alex"))
+            }
+            
+            it("should handle the keyTransformer when serializing a CustomSerializable object") {
+                let serialized = CustomUser(name: "Alex").serialize { $0.uppercaseString } as! [String: AnyObject]
+                expect(serialized["CUSTOMNAME"] as? String).to(equal("Alex"))
             }
         }
     }

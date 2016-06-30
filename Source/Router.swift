@@ -50,8 +50,8 @@ public protocol ResponseFieldsProvider: CustomSerializable {
 
 extension ResponseFieldsProvider {
     
-    public func customSerialize() -> AnyObject? {
-        return body.serialize()
+    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
+        return body.serialize(keyTransformer)
     }
 }
 

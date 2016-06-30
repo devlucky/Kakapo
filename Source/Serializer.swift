@@ -21,18 +21,20 @@ public protocol Serializable {
 public protocol CustomSerializable: Serializable {
     /**
      Serialize by returning a valid object
-     
+
+     - parameter keyTransformer: An Optional closure to transform the keys, for custom serializations the implementation must take care of transforming the keys. This closure, for example, is not nil when a `Serializable` object is wrapped in a `SerializationTransformer`, the wrapper object will expect `CustomSerializable` object to correctly handle the key transformation (see `SerializationTransformer`)
+
      - returns: You should return either another `Serializable` object (also `Array` or `Dictionary`) containing other Serializable objects or property list types that can be serialized into json (primitive types).
      */
-    func customSerialize() -> AnyObject?
+    func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject?
 }
 
 extension Serializable {
-    func serialize() -> AnyObject? {
+    func serialize(keyTransformer: KeyTransformer? = nil) -> AnyObject? {
         if let object = self as? CustomSerializable {
-            return object.customSerialize()
+            return object.customSerialize(keyTransformer)
         }
-        return Kakapo.serialize(self)
+        return Kakapo.serialize(self, keyTransformer: keyTransformer)
     }
     
     func toData() -> NSData? {
@@ -47,10 +49,10 @@ extension Serializable {
 
 extension Array: CustomSerializable {
     // Array is serialized by creating an Array of its objects serialized
-    public func customSerialize() -> AnyObject? {
+    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         var array = [AnyObject]()
         for obj in self {
-            if let serialized = serializeObject(obj) {
+            if let serialized = serializeObject(obj, keyTransformer: keyTransformer) {
                 array.append(serialized)
             }
         }
@@ -60,12 +62,13 @@ extension Array: CustomSerializable {
 
 extension Dictionary: CustomSerializable {
     // Dictionary is serialized by creating a Dictionary with the same keys and values serialized
-    public func customSerialize() -> AnyObject? {
+    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         var dictionary = [String: AnyObject]()
         for (key, value) in self {
             assert(key is String, "key must be a String to be serialized to JSON")
-            if let serialized = serializeObject(value) {
-                dictionary[key as! String] = serialized
+            if let serialized = serializeObject(value, keyTransformer: keyTransformer), let key = key as? String {
+                let transformedKey = keyTransformer?(key: key) ?? key
+                dictionary[transformedKey] = serialized
             }
         }
         return dictionary
@@ -74,10 +77,10 @@ extension Dictionary: CustomSerializable {
 
 extension Optional: CustomSerializable {
     // Optional serializes its inner object or nil if nil
-    public func customSerialize() -> AnyObject? {
+    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         switch self {
         case let .Some(value):
-            return serializeObject(value)
+            return serializeObject(value, keyTransformer: keyTransformer)
         default:
             return nil
         }
@@ -86,21 +89,21 @@ extension Optional: CustomSerializable {
 
 extension PropertyPolicy {
     // PropertyPolicy serializes as nil when `.None`, as `NSNull` when `.Null` or serialize the object for `.Some`
-    public func customSerialize() -> AnyObject? {
+    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         switch self {
         case .None:
             return nil
         case .Null:
             return NSNull()
         case let .Some(value):
-            return serializeObject(value)
+            return serializeObject(value, keyTransformer: keyTransformer)
         }
     }
 }
 
-private func serializeObject(value: Any) -> AnyObject? {
+private func serializeObject(value: Any, keyTransformer: KeyTransformer?) -> AnyObject? {
     if let value = value as? Serializable {
-        return value.serialize()
+        return value.serialize(keyTransformer)
     }
     
     // At this point an object must be an AnyObject and probably also a property list object otherwise the json will fail later.
@@ -113,17 +116,19 @@ private func serializeObject(value: Any) -> AnyObject? {
  It recursively serialize the objects until it reaches primitive types, or fails if not possible. The final objects must be primitive types (property list compatible) or the serialization will fail because it can't be represented by JSON. This means that a `Serializable` objects must make sure that their properties are all `Serializable` or primitive types.
  
  - parameter object: A Serializable object, not a `CustomSerializable`
+ - parameter keyTransformer: The keyTransformer to be used, if not nil, to transform the keys of the json
  
  - returns: A serialized object that may be convered to JSON, usually Array or Dictionary
  */
-private func serialize(object: Serializable) -> AnyObject {
+private func serialize(object: Serializable, keyTransformer: KeyTransformer?) -> AnyObject {
     assert(!(object is CustomSerializable))
 
     var dictionary = [String: AnyObject]()
     let mirror = Mirror(reflecting: object)
     for child in mirror.children {
-        if let label = child.label, let value = serializeObject(child.value) {
-            dictionary[label] = value
+        if let label = child.label, let value = serializeObject(child.value, keyTransformer: keyTransformer) {
+            let key = keyTransformer?(key: label) ?? label
+            dictionary[key] = value
         }
     }
     
