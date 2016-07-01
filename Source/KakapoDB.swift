@@ -14,9 +14,10 @@ import Foundation
  This is a base protocol and it's only used internally, for your objects you should check `Storable` instead.
  */
 public protocol _Storable {
+    // TODO: document
     // TODO: default to String and create a protocol that as an Int id with default implementation. Because String is not always convertible to Int but Int can always be converted to String.
-    var id: Int { get }
-    init(id: Int, db: KakapoDB)
+    var id: String { get }
+    init(id: String, db: KakapoDB)
 }
 
 /**
@@ -118,7 +119,7 @@ public final class KakapoDB {
      
      - returns: The new inserted Storable object
      */
-    public func insert<T: Storable>(handler: (Int) -> T) -> T {
+    public func insert<T: Storable>(handler: (String) -> T) -> T {
         let id = barrierSync {
             return self.uuid()
         }
@@ -208,13 +209,13 @@ public final class KakapoDB {
      
      - returns: An optional thay may (or not) contain the found Storable object
      */
-    public func find<T: Storable>(_: T.Type, id: Int) -> T? {
+    public func find<T: Storable>(_: T.Type, id: String) -> T? {
         return filter(T.self) { $0.id == id }.first
     }
     
-    private func uuid() -> Int {
+    private func uuid() -> String {
         _uuid += 1
-        return _uuid
+        return String(_uuid)
     }
     
     private func lookup<T: Storable>(_: T.Type) -> ArrayBox<_Storable> {
