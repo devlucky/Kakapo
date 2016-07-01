@@ -25,9 +25,9 @@ class JSONAPIErrorsSpec: QuickSpec {
             return JSON(object.serialize()!)
         }
         
-        describe("JSON API errors") {
+        describe("JSONAPIError") {
             
-            it("should serialize errors") {
+            it("should serialize the error") {
                 let error = JSONAPIError(statusCode: 404) { (error) in
                     error.title = "test"
                 }
@@ -54,41 +54,48 @@ class JSONAPIErrorsSpec: QuickSpec {
                 expect(meta["description"]).to(equal("test"))
             }
             
-            it("should affect the status code of the request") {
-                let router = Router.register("http://www.test.com")
+            context("Provides response fields") {
                 
-                router.get("/users"){ request in
-                    return JSONAPIError(statusCode: 501) { (error) in
-                        error.title = "test"
-                    }
+                afterEach {
+                    Router.disableAll()
                 }
                 
-                var statusCode: Int = -1
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
-                    let response = response as! NSHTTPURLResponse
-                    statusCode = response.statusCode
-                    }.resume()
-                
-                expect(statusCode).toEventually(equal(501))
-            }
-
-            it("should affect the header fields of the response") {
-                let router = Router.register("http://www.test.com")
-                
-                router.get("/users"){ request in
-                    return JSONAPIError(statusCode: 501, headerFields: ["foo": "bar"]) { (error) in
-                        error.title = "test"
+                it("should affect the status code of the request") {
+                    let router = Router.register("http://www.test.com")
+                    
+                    router.get("/users"){ request in
+                        return JSONAPIError(statusCode: 501) { (error) in
+                            error.title = "test"
+                        }
                     }
+                    
+                    var statusCode: Int = -1
+                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
+                        let response = response as! NSHTTPURLResponse
+                        statusCode = response.statusCode
+                        }.resume()
+                    
+                    expect(statusCode).toEventually(equal(501))
                 }
                 
-                var foo: String?
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
-                    let response = response as! NSHTTPURLResponse
-                    let headers = response.allHeaderFields as? [String: String]
-                    foo = headers?["foo"]
-                    }.resume()
-                
-                expect(foo).to(equal("bar"))
+                it("should affect the header fields of the response") {
+                    let router = Router.register("http://www.test.com")
+                    
+                    router.get("/users"){ request in
+                        return JSONAPIError(statusCode: 501, headerFields: ["foo": "bar"]) { (error) in
+                            error.title = "test"
+                        }
+                    }
+                    
+                    var foo: String?
+                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
+                        let response = response as! NSHTTPURLResponse
+                        let headers = response.allHeaderFields as? [String: String]
+                        foo = headers?["foo"]
+                        }.resume()
+                    
+                    expect(foo).toEventually(equal("bar"))
+                }
             }
         }
     }
