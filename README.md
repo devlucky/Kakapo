@@ -32,17 +32,52 @@ Kakapo **dynamically mocks server responses**.
 
 ## Features
 
+  * Dynamic mocking
+  * Intercepting of HTTP methods (GET, POST, DEL, PUT) with custom handling
+  * In-memory database
+  * Serialization from any type to JSON
+  * JSONAPI serialization support
+  * Custom key transformers
+
 ## Introduction
 
+Kakapo is a dynamic mocking library. It allows you to fully replicate your backend logic and state in a simple manner.
+
+But is much more than that. With Kakapo, you can easily fully prototype your application based on your backend needs.
 
 ### Why Kakapo?
 
+Explain here the usual way to statically mock stuff
 
 ### Concepts
 
+  * Registering a router and intercepting methods
+  * Using the database
+  * Serializable and custom Serializable
 
 ### How it works?
 
+Kakapo is made with a easy-to-use design in mind. To get started, you can just create a simple Router that intercepts some GET calls like this:
+
+```Swift
+let router = Router.register("http://www.test.com")
+router.get("/users/:id"){ request in
+  return { "id" : 2 }
+}
+```
+
+Now, where is the dynamic part you might ask? Here is when the different components of Kakapo take part:
+
+```Swift
+let db = KakapoDB()
+db.create(UserFactory.self, number: 20)
+
+router.get("/users/:id"){ request in
+  return db.find(UserFactory.self, id: Int(request.components["id"]!)!)
+}
+```
+
+Now, we've created 20 random Users and mocked our request to return the one that matches the id from the request. Yes, *that easy*.
 
 ## Usage
 
@@ -62,4 +97,3 @@ Kakapo **dynamically mocks server responses**.
 
 
 ### Serializable
-
