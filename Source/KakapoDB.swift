@@ -65,6 +65,7 @@ public final class KakapoDB {
     private var _uuid = -1
     private var store: [String: ArrayBox<_Storable>] = [:]
 
+    /// Initialize a new in-memory database
     public init() {
         // empty but needed to be initialized from other modules.
     }
