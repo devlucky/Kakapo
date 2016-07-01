@@ -275,14 +275,7 @@ class KakapoDBTests: QuickSpec {
                 
                 expect(usersArray.count).to(equal(0))
             }
-            
-            it("should not delete a non previously inserted object, even with same ids, since they have different data representation") {
-                sut.create(UserFactory.self, number: 20)
-                let elementToDelete = UserFactory(id: 2, db: sut)
-                expect{ try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
-                expect(sut.findAll(UserFactory.self).count).to(equal(20))
-            }
-            
+                        
             it("should not delete a non previously inserted object") {
                 sut.create(UserFactory.self, number: 20)
                 let elementToDelete = UserFactory(id: 44, db: sut)
