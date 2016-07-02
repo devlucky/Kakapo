@@ -153,10 +153,12 @@ extension Array: JSONAPISerializable {
     
     // MARK: JSONAPISerializable
     
+    /// return the result of recursively forwarding the function to its elements if the associatedtype is JSONAPISerializable, otherwise returns nil
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool, keyTransformer: KeyTransformer?) -> AnyObject? {
         return Element.self is JSONAPISerializable.Type ? flatMap { ($0 as? JSONAPISerializable)?.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes, keyTransformer: keyTransformer) } : nil
     }
     
+    /// return the result of recursively forwarding the function to its elements if the associatedtype is JSONAPISerializable, otherwise returns nil
     public func includedRelationships(includeChildren: Bool, keyTransformer: KeyTransformer?) -> [AnyObject]? {
         guard Element.self is JSONAPISerializable.Type else { return nil }
         return flatMap { ($0 as? JSONAPISerializable)?.includedRelationships(includeChildren, keyTransformer: keyTransformer) }.flatMap { $0 }
@@ -196,6 +198,7 @@ extension PropertyPolicy: JSONAPISerializable {
     
     // MARK: JSONAPISerializable
     
+    /// return nil when `.None` or if the associated type is not `JSONAPISerializable`, an empty dictionary for `.Null` and calls `data(includeRelationships:includeAttributes:)` functions on the wrapped object for `.Some`
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool, keyTransformer: KeyTransformer?) -> AnyObject? {
         guard Wrapped.self is JSONAPISerializable.Type else {
             return nil
@@ -216,6 +219,7 @@ extension PropertyPolicy: JSONAPISerializable {
         return nil
     }
     
+    /// return nil when `.None`, `.Null` or if the associated type is not `JSONAPISerializable`, calls `includedRelationships(_:)` functions on the wrapped object for `.Some`
     public func includedRelationships(includeChildren: Bool, keyTransformer: KeyTransformer?) -> [AnyObject]? {
         return wrapped?.includedRelationships(includeChildren, keyTransformer: keyTransformer)
     }
@@ -238,10 +242,12 @@ extension Optional: JSONAPISerializable {
     
     // MARK: JSONAPISerializable
     
+    /// `Optional` returns the result of forwarding the function to its wrapped object in any, otherwise returns nil
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool, keyTransformer: KeyTransformer?) -> AnyObject? {
         return wrapped?.data(includeRelationships: includeRelationships, includeAttributes: includeAttributes, keyTransformer: keyTransformer)
     }
     
+    /// `Optional` returns the result of forwarding the function to its wrapped object in any, otherwise returns nil
     public func includedRelationships(includeChildren: Bool, keyTransformer: KeyTransformer?) -> [AnyObject]? {
         return wrapped?.includedRelationships(includeChildren, keyTransformer: keyTransformer)
     }
@@ -251,18 +257,21 @@ public extension JSONAPIEntity {
     
     // MARK: JSONAPIEntity
 
+    /// returns the lowercased class name as string by default
     static var type: String {
         return String(self).lowercaseString
     }
     
     // MARK: CustomSerializable
-
+    
+    /// returns the `data` field of the `JSONAPIEntity`
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         return data(includeRelationships: true, includeAttributes: true, keyTransformer: keyTransformer)!
     }
     
     // MARK: JSONAPISerializable
-
+    
+    /// returns the `data` field conforming to JSON API
     public func data(includeRelationships includeRelationships: Bool, includeAttributes: Bool, keyTransformer: KeyTransformer?) -> AnyObject? {
         var data = [String: AnyObject]()
         let transformed: (String) -> (String) = { (key) in
@@ -323,6 +332,7 @@ public extension JSONAPIEntity {
         return data
     }
     
+    /// returns the `included` relationsips field conforming to JSON API
     public func includedRelationships(includeChildren: Bool, keyTransformer: KeyTransformer?) -> [AnyObject]? {
         let mirror = Mirror(reflecting: self)
         let includedRelationships = mirror.children.flatMap { (label, value) -> [AnyObject] in

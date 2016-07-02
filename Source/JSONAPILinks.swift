@@ -21,9 +21,22 @@ import Foundation
  * [See the JSON API documentation on links](http://jsonapi.org/format/#document-links)
  */
 public enum JSONAPILink: CustomSerializable {
+
+    /** A string containing the link’s URL. */
     case Simple(value: String)
+    /**
+     An object which can contain more information than the link itself
+     
+     - parameter href: a string containing the link’s URL.
+     - parameter meta: a meta object containing non-standard meta-information about the link.
+     */
     case Object(href: String, meta: Serializable)
     
+    // MARK: CustomSerializable
+    
+    /**
+     The `JSONAPILink` implementation of `CustomSerializable` returns directly the link for `.Simple` or returns a dictionary containing the link (href key) and the serialized meta object (meta key) for `.Object`
+     */
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         switch self {
         case let Object(href, meta):
@@ -96,7 +109,9 @@ public enum JSONAPILink: CustomSerializable {
  * [See the JSON API documentation on links](http://jsonapi.org/format/#document-links)
  */
 public protocol JSONAPILinkedEntity {
+    /// The related links, must use link-names as keys and links as values.
     var links: [String : JSONAPILink]? { get }
+    /// The relationships links, an object containing relationsips can specify top level links for every relationship type. The object must provide a Dictionary where keys are the relationships types and values are dictionaries with link-names as keys and link as values.
     var relationshipsLinks: [String : [String : JSONAPILink]]? { get }
 }
 

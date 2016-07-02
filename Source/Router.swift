@@ -50,6 +50,7 @@ public protocol ResponseFieldsProvider: CustomSerializable {
 
 extension ResponseFieldsProvider {
     
+    /// The default implementation just return the serialized body.
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         return body.serialize(keyTransformer)
     }
@@ -70,6 +71,15 @@ public struct Response: ResponseFieldsProvider {
     /// An optional dictionary holding the response header fields
     public let headerFields: [String : String]?
     
+    /**
+     Initialize `Response` object that wraps another `Serializable` object for the serialization but, implemententing `ResponseFieldsProvider` can affect some parameters of the HTTP response
+     
+     - parameter statusCode:   the status code that the response should provide to the HTTP repsonse
+     - parameter body:         the body that will be serialized
+     - parameter headerFields: the headerFields that the response should provide to the HTTP repsonse
+     
+     - returns: A wrapper `Serializable` object that affect http requests.
+     */
     public init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
         self.statusCode = statusCode
         self.body = body

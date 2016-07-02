@@ -48,7 +48,7 @@ extension Serializable {
 }
 
 extension Array: CustomSerializable {
-    // Array is serialized by creating an Array of its objects serialized
+    /// `Array` is serialized by creating an Array of its objects serialized
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         var array = [AnyObject]()
         for obj in self {
@@ -61,7 +61,7 @@ extension Array: CustomSerializable {
 }
 
 extension Dictionary: CustomSerializable {
-    // Dictionary is serialized by creating a Dictionary with the same keys and values serialized
+    /// `Dictionary` is serialized by creating a Dictionary with the same keys and values serialized
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         var dictionary = [String: AnyObject]()
         for (key, value) in self {
@@ -76,7 +76,7 @@ extension Dictionary: CustomSerializable {
 }
 
 extension Optional: CustomSerializable {
-    // Optional serializes its inner object or nil if nil
+    /// `Optional` serializes its inner object or nil if nil
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         switch self {
         case let .Some(value):
@@ -88,7 +88,7 @@ extension Optional: CustomSerializable {
 }
 
 extension PropertyPolicy {
-    // PropertyPolicy serializes as nil when `.None`, as `NSNull` when `.Null` or serialize the object for `.Some`
+    /// `PropertyPolicy` serializes as nil when `.None`, as `NSNull` when `.Null` or serialize the object for `.Some`
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         switch self {
         case .None:
