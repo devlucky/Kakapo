@@ -163,16 +163,11 @@ public final class KakapoDB {
      */
     public func delete<T: Storable>(entity: T) throws {
         let deleted: Bool = barrierSync {
-            let index = self.lookup(T).value.indexOf { (obj) in
-                if let obj = obj as? T {
-                    return obj.id == entity.id
-                }
-                
+            guard let index = self.lookup(T).value.indexOf({ $0.id == entity.id }) else {
                 return false
             }
-            
-            guard let indexToDelete = index else { return false }
-            self.lookup(T).value.removeAtIndex(indexToDelete)
+
+            self.lookup(T).value.removeAtIndex(index)
             
             return true
         }
