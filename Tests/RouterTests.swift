@@ -321,7 +321,7 @@ class RouterTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id"){ request in
-                    return db.find(UserFactory.self, id: Int(request.components["id"]!)!)
+                    return db.find(UserFactory.self, id: request.components["id"]!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -329,7 +329,7 @@ class RouterTests: QuickSpec {
                     }.resume()
                 
                 expect(responseDictionary?["firstName"]).toNotEventually(beNil())
-                expect(responseDictionary?["id"]).toEventually(be(2))
+                expect(responseDictionary?["id"] as? String).toEventually(equal("2"))
             }
             
             it("should return 200 status code when no code specified") {
@@ -354,7 +354,7 @@ class RouterTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id"){ request in
-                    return Response(statusCode: 200, body: db.find(UserFactory.self, id: Int(request.components["id"]!)!))
+                    return Response(statusCode: 200, body: db.find(UserFactory.self, id: request.components["id"]!)!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -364,7 +364,7 @@ class RouterTests: QuickSpec {
                     }.resume()
                 
                 expect(responseDictionary?["firstName"]).toNotEventually(beNil())
-                expect(responseDictionary?["id"]).toEventually(be(2))
+                expect(responseDictionary?["id"] as? String).toEventually(equal("2"))
                 expect(statusCode).toEventually(equal(200))
             }
             
@@ -440,9 +440,9 @@ class RouterTests: QuickSpec {
                 
                 expect(responseArray?.count).toEventually(equal(20))
                 expect(responseArray?.firstObject?["firstName"]).toNotEventually(beNil())
-                expect(responseArray?.firstObject?["id"]).toEventually(equal(0))
-                expect(responseArray?[14]["id"]).toEventually(equal(14))
-                expect(responseArray?.lastObject?["id"]).toEventually(equal(19))
+                expect(responseArray?.firstObject?["id"]).toEventually(equal("0"))
+                expect(responseArray?[14]["id"]).toEventually(equal("14"))
+                expect(responseArray?.lastObject?["id"]).toEventually(equal("19"))
             }
             
             it("should return nil for objects not serializable to JSON") {
