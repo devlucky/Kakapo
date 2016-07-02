@@ -8,7 +8,7 @@
 
 import Foundation
 
-// A convenince error object that conform to JSON API
+/// A convenince error object that conform to JSON API
 public struct JSONAPIError: ResponseFieldsProvider {
     
     /// An object containing references to the source of the error, optionally including any of the following members

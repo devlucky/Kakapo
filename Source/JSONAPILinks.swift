@@ -116,6 +116,8 @@ public protocol JSONAPILinkedEntity {
 }
 
 extension JSONAPILinkedEntity {
+    /// Default Implementation returns nil
     public var links: [String : JSONAPILink]? { return nil }
+    /// Default Implementation returns nil
     public var relationshipsLinks: [String : [String : JSONAPILink]]? { return nil }
 }
