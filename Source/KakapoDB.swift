@@ -14,9 +14,17 @@ import Foundation
  This is a base protocol and it's only used internally, for your objects you should check `Storable` instead.
  */
 public protocol _Storable {
-    // TODO: document
-    // TODO: default to String and create a protocol that as an Int id with default implementation. Because String is not always convertible to Int but Int can always be converted to String.
+    /// The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to ssume that the conversion will always succeeed.
     var id: String { get }
+    
+    /**
+     An initializer that is used by `KakapoDB` to create objects to be stored in the db
+     
+     - parameter id: The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to ssume that the conversion will always succeeed.
+     - parameter db: The db that is creating the object, can be used  to generate other `Storable` objects, for example relationsips of the object by using `db.create(MyRelationshipType)`.
+     
+     - returns: A configured object stored in the db.
+     */
     init(id: String, db: KakapoDB)
 }
 
