@@ -18,6 +18,19 @@ public struct JSONAPIError: ResponseFieldsProvider {
         
         /// A string indicating which URI query parameter caused the error.
         public let parameter: String?
+        
+        /**
+         Initialize `Source` with the given parameters
+         
+         - parameter pointer:   A JSON `Pointer` ([RFC6901](https://tools.ietf.org/html/rfc6901)) to the associated entity in the request document [e.g. `/data` for a primary data object, or `/data/attributes/title` for a specific attribute].
+         - parameter parameter: A string indicating which URI query parameter caused the error.
+         
+         - returns: An initialized `Source` representing the source of the `JSONAPIError`.
+         */
+        public init(pointer: String?, parameter: String?) {
+            self.pointer = pointer
+            self.parameter = parameter
+        }
     }
     
     /// A builder for JSONAPIError
