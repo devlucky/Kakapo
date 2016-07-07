@@ -69,6 +69,17 @@ public struct SnakecaseTransformer<Wrapped: Serializable>: SerializationTransfor
     public let wrapped: Wrapped
     
     /**
+     Initialize a `SnakecaseTransformer` wrapping a `Serializable` object to transform its keys during serialization.
+     
+     - parameter wrapped: A wrapped `Serializable` object
+     
+     - returns: A `Serializable` object that will trasform the keys of the wrapped object when serialzied.
+     */
+    public init(_ wrapped: Wrapped) {
+        self.wrapped = wrapped
+    }
+    
+    /**
      Transform the input string from `camelCase` to `snake_case`
      
      - parameter key: A `camelCase` string

@@ -94,7 +94,7 @@ class SerializationTransformerSpec: QuickSpec {
         
         describe("Snake Case Transformer") {
             let user = User(name: "Alex")
-            let transformer = SnakecaseTransformer(wrapped: user)
+            let transformer = SnakecaseTransformer(user)
             
             it("should prefix uppercase characters with _") {
                 expect(transformer.transform(key: "userNameOfALuckyUser")).to(equal("user_name_of_a_lucky_user"))
@@ -118,7 +118,7 @@ class SerializationTransformerSpec: QuickSpec {
             
             it("should transform correctly the wrapped object's keys") {
                 let snake = Snake(theSnakeCamelFriend: "abc")
-                let serialized = SnakecaseTransformer(wrapped: snake).serialize() as? [String: AnyObject]
+                let serialized = SnakecaseTransformer(snake).serialize() as? [String: AnyObject]
                 expect(serialized?.keys.first).to(equal("the_snake_camel_friend"))
             }
         }
@@ -171,7 +171,7 @@ class SerializationTransformerSpec: QuickSpec {
                 it("should transform the keys") {
                     let dog = Dog(id: "22", dogName: "Joan")
                     let user = JUser(id: "11", userName: "Alex", doggyDog: dog)
-                    let serialized = SnakecaseTransformer(wrapped: JSONAPISerializer(user)).serialize() as! [String: AnyObject]
+                    let serialized = SnakecaseTransformer(JSONAPISerializer(user)).serialize() as! [String: AnyObject]
                     let json = JSON(serialized)
                     
                     let data = json["data"].dictionaryValue
