@@ -139,12 +139,20 @@ public final class Router {
         self.baseURL = baseURL
     }
     
+    /**
+     Immediately return false if the request's URL doesn't contain the `baseURL` otherwise true if a route matches the request
+     
+     - parameter request: A URL request
+     
+     - returns: true if a route matches the request
+     */
     func canInitWithRequest(request: NSURLRequest) -> Bool {
-        guard let requestURL = request.URL,
-                  components = requestURL.componentsFromBaseURL(baseURL) else { return false }
+        // TODO: test
+        guard let requestURL = request.URL
+            where requestURL.absoluteString.containsString(baseURL) else { return false }
         
-        for (key, route) in routes where route.method.rawValue == request.HTTPMethod {
-            if  decomposeURL(key, requestURLComponents: components) != nil {
+        for (key, route) in routes where route.method.rawValue == request.HTTPMethod{
+            if  decomposeURL(base: baseURL, path: key, requestURL: requestURL) != nil {
                 return true
             }
         }
@@ -154,7 +162,6 @@ public final class Router {
     
     func startLoading(server: NSURLProtocol) {
         guard let requestURL = server.request.URL,
-                  components = requestURL.componentsFromBaseURL(baseURL),
                   client = server.client else { return }
         
         var statusCode = 200
@@ -163,7 +170,7 @@ public final class Router {
         var serializableObject: Serializable?
         
         for (key, route) in routes {
-            if let info = decomposeURL(key, requestURLComponents: components) {
+            if let info = decomposeURL(base: baseURL, path: key, requestURL: requestURL) {
                 
                 if let dataFromNSURLRequest = server.request.HTTPBody {
                     dataBody = dataFromNSURLRequest
@@ -242,14 +249,6 @@ public final class Router {
      */
     public func put(relativePath: String, handler: RouteHandler) {
         routes[relativePath] = (.PUT, handler)
-    }
-    
-}
-
-private extension NSURL {
-    
-    func componentsFromBaseURL(baseURL: String) -> NSURLComponents? {
-        return NSURLComponents(string: absoluteString.stringByReplacingOccurrencesOfString(baseURL, withString: ""))
     }
     
 }

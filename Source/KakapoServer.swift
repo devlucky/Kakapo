@@ -49,10 +49,7 @@ final class KakapoServer: NSURLProtocol {
     }
     
     override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        guard let URL = request.URL else { return false }
-        
-        return
-            routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first != nil ? true : false
+        return routers.filter { $0.canInitWithRequest(request) }.first != nil
     }
     
     override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
@@ -60,9 +57,7 @@ final class KakapoServer: NSURLProtocol {
     }
     
     override func startLoading() {
-        guard let URL = request.URL else { return }
-        
-        KakapoServer.routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first?.startLoading(self)
+        KakapoServer.routers.filter { $0.canInitWithRequest(request) }.first!.startLoading(self)
     }
     
     override func stopLoading() {}
