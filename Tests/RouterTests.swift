@@ -83,6 +83,12 @@ class RouterTests: QuickSpec {
                 router = Router.register("http://www.test.com")
             }
             
+            context("when the Router is initialized") {
+                it("should not have latency") {
+                    expect(router.latency) == 0
+                }
+            }
+            
             it("should call the handler when requesting a registered url") {
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = nil
@@ -149,6 +155,26 @@ class RouterTests: QuickSpec {
                 expect(usersCommentsInfo?.components).toEventually(equal(["id": "1", "comment_id": "2"]))
                 expect(usersCommentsInfo?.queryParameters).toEventually(equal([NSURLQueryItem(name: "page", value: "2"), NSURLQueryItem(name: "author", value: "hector")]))
                 expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
+            }
+            
+            context("when the Router has latency") {
+                it("should delay the mocked response") {
+                    var responseData: NSData? = nil
+                    router.latency = 2.0
+                    router.get("/users/:id") { request in
+                        return ["test": "value"]
+                    }
+                    
+                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                        responseData = data
+                        }.resume()
+                    
+                    
+                    let startTime = CFAbsoluteTimeGetCurrent()
+                    expect(responseData).toNotEventually(beNil(), timeout: 3)
+                    let endTime = CFAbsoluteTimeGetCurrent()
+                    expect(endTime - startTime) >= 2.0
+                }
             }
         }
         

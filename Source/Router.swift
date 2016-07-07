@@ -105,6 +105,9 @@ public final class Router {
     /// The `baseURL` of the Router
     public let baseURL: String
     
+    /// The desired latency to delay the mocked responses. Default value is 0.
+    public var latency: NSTimeInterval = 0
+    
     /**
      Register and return a new Router in the Server
      
@@ -187,7 +190,18 @@ public final class Router {
             client.URLProtocol(server, didLoadData: data)
         }
         
-        client.URLProtocolDidFinishLoading(server)
+        let didFinishLoading: (NSURLProtocol) -> () = { (server) in
+            client.URLProtocolDidFinishLoading(server)
+        }
+        
+        if latency > 0 {
+            let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
+            dispatch_after(delayTime, dispatch_get_main_queue()) {
+                didFinishLoading(server)
+            }
+        } else {
+            didFinishLoading(server)
+        }
     }
     
     /**
