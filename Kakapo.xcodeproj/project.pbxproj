@@ -82,9 +82,9 @@
 		DE76E1C71D0DC857009721A4 /* SerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B51D0DC857009721A4 /* SerializerTests.swift */; };
 		DE76E1C81D0DC857009721A4 /* SerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B51D0DC857009721A4 /* SerializerTests.swift */; };
 		DE76E1C91D0DC857009721A4 /* SerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B51D0DC857009721A4 /* SerializerTests.swift */; };
-		DE76E1CA1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* URLDecomposerTests.swift */; };
-		DE76E1CB1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* URLDecomposerTests.swift */; };
-		DE76E1CC1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* URLDecomposerTests.swift */; };
+		DE76E1CA1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
+		DE76E1CB1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
+		DE76E1CC1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
 		DE76E1CD1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
 		DE76E1CE1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
 		DE76E1CF1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
@@ -155,7 +155,7 @@
 		DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicyTests.swift; sourceTree = "<group>"; };
 		DE76E1B41D0DC857009721A4 /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		DE76E1B51D0DC857009721A4 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializerTests.swift; sourceTree = "<group>"; };
-		DE76E1B61D0DC857009721A4 /* URLDecomposerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLDecomposerTests.swift; sourceTree = "<group>"; };
+		DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteMatcherTests.swift; sourceTree = "<group>"; };
 		DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTestCase+CustomAssertions.swift"; sourceTree = "<group>"; };
 		DE8202791D20068A00552FEC /* JSONAPIError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIError.swift; sourceTree = "<group>"; };
 		DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIErrorTests.swift; sourceTree = "<group>"; };
@@ -297,7 +297,7 @@
 				DE76E1B41D0DC857009721A4 /* RouterTests.swift */,
 				DE76E1B51D0DC857009721A4 /* SerializerTests.swift */,
 				DE3950A91D216C77008DCF43 /* SerializationTransformerTests.swift */,
-				DE76E1B61D0DC857009721A4 /* URLDecomposerTests.swift */,
+				DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */,
 				DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */,
 			);
 			path = Tests;
@@ -786,7 +786,7 @@
 			files = (
 				DE76E1BC1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC811D16BD9B00FE706A /* JSONAPILinksTests.swift in Sources */,
-				DE76E1CB1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */,
+				DE76E1CB1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1BF1D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
 				DE76E1C81D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C51D0DC857009721A4 /* RouterTests.swift in Sources */,
@@ -822,7 +822,7 @@
 			files = (
 				DE76E1BD1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC821D16BD9C00FE706A /* JSONAPILinksTests.swift in Sources */,
-				DE76E1CC1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */,
+				DE76E1CC1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1C01D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
 				DE76E1C91D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C61D0DC857009721A4 /* RouterTests.swift in Sources */,
@@ -858,7 +858,7 @@
 			files = (
 				DE76E1BB1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC801D16BD9A00FE706A /* JSONAPILinksTests.swift in Sources */,
-				DE76E1CA1D0DC857009721A4 /* URLDecomposerTests.swift in Sources */,
+				DE76E1CA1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1BE1D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
 				DE76E1C71D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C41D0DC857009721A4 /* RouterTests.swift in Sources */,
