@@ -143,6 +143,13 @@ class RouteMatcherTests: QuickSpec {
 //                    expect(result?.components) == ["id" : "1"]
 //                    expect(result?.queryParameters) == [NSURLQueryItem(name: "api_version", value: "v3")]
                 }
+                
+                it("should match any subdomain when the base url doesn't contain a scheme (wildcard baseURL)") {
+                    let result = matchRoute("test.com/",
+                                            path: "/users/:id",
+                                            requestURL: NSURL(string: "http://api.test.com/users/1")!)
+                    expect(result?.components) == ["id" : "1"]
+                }
             }
 
             context("trailing and leading slashes") {
