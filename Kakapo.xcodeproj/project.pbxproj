@@ -35,7 +35,7 @@
 		DE76E18A1D0DC754009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E18B1D0DC754009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
 		DE76E18C1D0DC754009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
-		DE76E18D1D0DC754009721A4 /* URLDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* URLDecomposer.swift */; };
+		DE76E18D1D0DC754009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
 		DE76E18E1D0DC755009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
 		DE76E18F1D0DC755009721A4 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* KakapoDB.swift */; };
 		DE76E1901D0DC755009721A4 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* KakapoServer.swift */; };
@@ -43,7 +43,7 @@
 		DE76E1921D0DC755009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E1931D0DC755009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
 		DE76E1941D0DC755009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
-		DE76E1951D0DC755009721A4 /* URLDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* URLDecomposer.swift */; };
+		DE76E1951D0DC755009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
 		DE76E1961D0DC755009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
 		DE76E1971D0DC755009721A4 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* KakapoDB.swift */; };
 		DE76E1981D0DC755009721A4 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* KakapoServer.swift */; };
@@ -51,7 +51,7 @@
 		DE76E19A1D0DC755009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E19B1D0DC755009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
 		DE76E19C1D0DC755009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
-		DE76E19D1D0DC755009721A4 /* URLDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* URLDecomposer.swift */; };
+		DE76E19D1D0DC755009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
 		DE76E19E1D0DC756009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
 		DE76E19F1D0DC756009721A4 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* KakapoDB.swift */; };
 		DE76E1A01D0DC756009721A4 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* KakapoServer.swift */; };
@@ -59,7 +59,7 @@
 		DE76E1A21D0DC756009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E1A31D0DC756009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
 		DE76E1A41D0DC756009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
-		DE76E1A51D0DC756009721A4 /* URLDecomposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* URLDecomposer.swift */; };
+		DE76E1A51D0DC756009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
 		DE76E1A61D0DC761009721A4 /* CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1111D0DC48A009721A4 /* CustomAssertions.swift */; };
 		DE76E1A71D0DC762009721A4 /* CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1111D0DC48A009721A4 /* CustomAssertions.swift */; };
 		DE76E1A81D0DC762009721A4 /* CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1111D0DC48A009721A4 /* CustomAssertions.swift */; };
@@ -141,7 +141,7 @@
 		DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
 		DE76E1061D0DC395009721A4 /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		DE76E1071D0DC395009721A4 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
-		DE76E1081D0DC395009721A4 /* URLDecomposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLDecomposer.swift; sourceTree = "<group>"; };
+		DE76E1081D0DC395009721A4 /* RouteMatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteMatcher.swift; sourceTree = "<group>"; };
 		DE76E1111D0DC48A009721A4 /* CustomAssertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAssertions.swift; sourceTree = "<group>"; };
 		DE76E1291D0DC5FA009721A4 /* Kakapo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kakapo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE76E1371D0DC640009721A4 /* Kakapo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kakapo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -315,7 +315,7 @@
 				DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */,
 				DE76E1061D0DC395009721A4 /* Router.swift */,
 				DE76E1071D0DC395009721A4 /* Serializer.swift */,
-				DE76E1081D0DC395009721A4 /* URLDecomposer.swift */,
+				DE76E1081D0DC395009721A4 /* RouteMatcher.swift */,
 				DE3950A41D216334008DCF43 /* SerializationTransformer.swift */,
 			);
 			path = Source;
@@ -748,7 +748,7 @@
 			files = (
 				DE76E1981D0DC755009721A4 /* KakapoServer.swift in Sources */,
 				DE76E19A1D0DC755009721A4 /* PropertyPolicy.swift in Sources */,
-				DE76E19D1D0DC755009721A4 /* URLDecomposer.swift in Sources */,
+				DE76E19D1D0DC755009721A4 /* RouteMatcher.swift in Sources */,
 				DE76E1971D0DC755009721A4 /* KakapoDB.swift in Sources */,
 				8BE0FC851D172EC900FE706A /* JSONAPILinks.swift in Sources */,
 				DE76E19C1D0DC755009721A4 /* Serializer.swift in Sources */,
@@ -767,7 +767,7 @@
 			files = (
 				DE76E1901D0DC755009721A4 /* KakapoServer.swift in Sources */,
 				DE76E1921D0DC755009721A4 /* PropertyPolicy.swift in Sources */,
-				DE76E1951D0DC755009721A4 /* URLDecomposer.swift in Sources */,
+				DE76E1951D0DC755009721A4 /* RouteMatcher.swift in Sources */,
 				DE76E18F1D0DC755009721A4 /* KakapoDB.swift in Sources */,
 				8BE0FC861D172EC900FE706A /* JSONAPILinks.swift in Sources */,
 				DE76E1941D0DC755009721A4 /* Serializer.swift in Sources */,
@@ -803,7 +803,7 @@
 			files = (
 				DE76E1881D0DC754009721A4 /* KakapoServer.swift in Sources */,
 				DE76E18A1D0DC754009721A4 /* PropertyPolicy.swift in Sources */,
-				DE76E18D1D0DC754009721A4 /* URLDecomposer.swift in Sources */,
+				DE76E18D1D0DC754009721A4 /* RouteMatcher.swift in Sources */,
 				DE76E1871D0DC754009721A4 /* KakapoDB.swift in Sources */,
 				8BE0FC871D172EC900FE706A /* JSONAPILinks.swift in Sources */,
 				DE76E18C1D0DC754009721A4 /* Serializer.swift in Sources */,
@@ -839,7 +839,7 @@
 			files = (
 				DE76E1A01D0DC756009721A4 /* KakapoServer.swift in Sources */,
 				DE76E1A21D0DC756009721A4 /* PropertyPolicy.swift in Sources */,
-				DE76E1A51D0DC756009721A4 /* URLDecomposer.swift in Sources */,
+				DE76E1A51D0DC756009721A4 /* RouteMatcher.swift in Sources */,
 				DE76E19F1D0DC756009721A4 /* KakapoDB.swift in Sources */,
 				8BE0FC841D172EC900FE706A /* JSONAPILinks.swift in Sources */,
 				DE76E1A41D0DC756009721A4 /* Serializer.swift in Sources */,

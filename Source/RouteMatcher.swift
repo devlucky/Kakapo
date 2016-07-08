@@ -1,5 +1,5 @@
 //
-//  URLDecomposer.swift
+//  RouteMatcher.swift
 //  Kakapo
 //
 //  Created by Joan Romano on 31/03/16.
@@ -9,7 +9,7 @@
 import Foundation
 
 /**
- A tuple holding components and query parameters, check `decomposeURL` for more details
+ A tuple holding components and query parameters, check `matchRoute` for more details
  */
 public typealias URLInfo = (components: [String : String], queryParameters: [NSURLQueryItem])
 
@@ -35,7 +35,7 @@ public typealias URLInfo = (components: [String : String], queryParameters: [NSU
  
  - returns: A URL info object containing `components` and `queryParamaters` or nil if `requestURL`doesn't match the route.
  */
-func decomposeURL(base baseURL: String, path: String, requestURL: NSURL) -> URLInfo? { // TODO: docu and test scheme
+func matchRoute(baseURL: String, path: String, requestURL: NSURL) -> URLInfo? { // TODO: docu and test scheme
     
     // TODO: test when relevantURLLocation is last index
     
@@ -60,12 +60,10 @@ func decomposeURL(base baseURL: String, path: String, requestURL: NSURL) -> URLI
         // [api, :userid] [api, 1234]
         
         // if they are not equal then it must be a key prefixed by ":" otherwise the route is not matched
-        let firstChar: Character = routeComponent.characters.first ?? Character("")
-        
         if routeComponent == requestComponent {
             continue // not a component
         } else {
-            guard firstChar == ":" else {
+            guard let firstChar = routeComponent.characters.first where firstChar == ":" else {
                 return nil // not equal nor a key
             }
         }

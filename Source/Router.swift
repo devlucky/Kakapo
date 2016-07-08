@@ -152,7 +152,7 @@ public final class Router {
             where requestURL.absoluteString.containsString(baseURL) else { return false }
         
         for (key, route) in routes where route.method.rawValue == request.HTTPMethod{
-            if  decomposeURL(base: baseURL, path: key, requestURL: requestURL) != nil {
+            if  matchRoute(baseURL, path: key, requestURL: requestURL) != nil {
                 return true
             }
         }
@@ -170,7 +170,7 @@ public final class Router {
         var serializableObject: Serializable?
         
         for (key, route) in routes {
-            if let info = decomposeURL(base: baseURL, path: key, requestURL: requestURL) {
+            if let info = matchRoute(baseURL, path: key, requestURL: requestURL) {
                 
                 if let dataFromNSURLRequest = server.request.HTTPBody {
                     dataBody = dataFromNSURLRequest

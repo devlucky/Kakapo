@@ -728,7 +728,7 @@ class RouterTests: QuickSpec {
                 expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
             }
             
-            it ("Should not leak any router when disabling or unregistering") {
+            it("should not leak any router when disabling or unregistering") {
                 weak var router1: Router? = Router.register("www.host1.com")
                 weak var router2: Router? = Router.register("www.host2.com")
                 weak var router3: Router? = Router.register("www.host3.com")
