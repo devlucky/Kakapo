@@ -21,10 +21,7 @@ public protocol _Storable {
      An initializer that is used by `KakapoDB` to create objects to be stored in the db
      
      - parameter id: The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to ssume that the conversion will always succeeed.
-     - parameter db: The db that is creating the object, can be used  to generate other `Storable` objects, for example relationsips of the object:
-     
-     * `myRelationship = db.create(MyRelationshipType)`
-     * `myrelationship = db.insert { MyRelationshipType(id: $0, db: db) }` // the relationsip will also recieve db to eventually initialize its relationships.
+     - parameter db: The db that is creating the object, can be used  to generate other `Storable` objects, for example relationsips of the object: `myRelationship = db.create(MyRelationshipType)` or `myrelationship = db.insert { MyRelationshipType(id: $0, db: db) }`. The relationsip will also recieve the `db` instance to eventually initialize its relationships.
      
      - returns: A configured object stored in the db.
      */
