@@ -160,7 +160,7 @@ class RouterTests: QuickSpec {
             context("when the Router has latency") {
                 it("should delay the mocked response") {
                     var responseData: NSData? = nil
-                    router.latency = 2.0
+                    router.latency = 1.1
                     router.get("/users/:id") { request in
                         return ["test": "value"]
                     }
@@ -171,9 +171,29 @@ class RouterTests: QuickSpec {
                     
                     
                     let startTime = CFAbsoluteTimeGetCurrent()
-                    expect(responseData).toNotEventually(beNil(), timeout: 3)
+                    expect(responseData).toNotEventually(beNil(), timeout: 1.5)
                     let endTime = CFAbsoluteTimeGetCurrent()
-                    expect(endTime - startTime) >= 2.0
+                    expect(endTime - startTime) >= 1.1
+                }
+                
+                it("should not affect the latency of other routers") {
+                    router.latency = 2.0
+                    
+                    var responseData: NSData? = nil
+                    let router2 = Router.register("http://www.test2.com")
+                    router2.get("/users/:id") { request in
+                        return ["test": "value"]
+                    }
+                    
+                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test2.com/users/1")!) { (data, response, _) in
+                        responseData = data
+                        }.resume()
+                    
+                    
+                    let startTime = CFAbsoluteTimeGetCurrent()
+                    expect(responseData).toNotEventually(beNil())
+                    let endTime = CFAbsoluteTimeGetCurrent()
+                    expect(endTime - startTime) <= 1.0
                 }
             }
         }
