@@ -286,7 +286,7 @@ class KakapoDBTests: QuickSpec {
                 expect(sut.findAll(UserFactory).count).to(equal(1))
             }
             
-            it("should delete an object with same id and different type but different properties") {
+            it("should delete an object with same id and same type but different properties") {
                 let commentFactory = sut.create(CommentFactory).first!
                 let elementToDelete = CommentFactory(text: "", likes: commentFactory.likes + 1, id: commentFactory.id)
                 expect(commentFactory).toNot(equal(elementToDelete))
