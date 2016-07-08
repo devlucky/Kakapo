@@ -3,3 +3,5 @@ use_frameworks!
 target 'NewsFeed'
 
 pod 'Kakapo', :path => '../../Kakapo.podspec'
+pod 'Fakery', '~> 1.3'
+pod 'SwiftyJSON', '~> 2.3'

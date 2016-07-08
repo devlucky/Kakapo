@@ -33,7 +33,7 @@ public protocol _Storable {
  
  This is the public protocol which will be required in KakapoDB
  */
-public protocol Storable: _Storable, Equatable {}
+public protocol Storable: _Storable {}
 
 enum KakapoDBError: ErrorType {
     case InvalidEntity
@@ -173,7 +173,7 @@ public final class KakapoDB {
      */
     public func delete<T: Storable>(entity: T) throws {
         let deleted: Bool = barrierSync {
-            let index = self.lookup(T).value.indexOf { $0 as? T == entity }
+            let index = self.lookup(T).value.indexOf { $0.id == entity.id }
             guard let indexToDelete = index else { return false }
             self.lookup(T).value.removeAtIndex(indexToDelete)
             

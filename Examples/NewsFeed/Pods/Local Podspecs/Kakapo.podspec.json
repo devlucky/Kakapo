@@ -1,6 +1,6 @@
 {
   "name": "Kakapo",
-  "version": "0.0.1-beta1",
+  "version": "0.0.1-beta2",
   "summary": "Next generation network mocking library.",
   "description": "Next generation network mocking library. WIP",
   "homepage": "https://github.com/devlucky/Kakapo",
@@ -11,7 +11,7 @@
   },
   "source": {
     "git": "https://github.com/devlucky/Kakapo.git",
-    "tag": "0.0.1-beta1"
+    "tag": "0.0.1-beta2"
   },
   "social_media_url": "https://twitter.com/devluckyness",
   "platforms": {

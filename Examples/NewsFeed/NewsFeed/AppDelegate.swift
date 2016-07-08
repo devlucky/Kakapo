@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  NewsFeed
 //
-//  Created by Alex Manzella on 26/06/16.
+//  Created by Alex Manzella on 08/07/16.
 //  Copyright © 2016 devlucky. All rights reserved.
 //
 
@@ -13,9 +13,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        startMockingNetwork()
         return true
     }
 
