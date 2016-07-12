@@ -33,7 +33,7 @@ public protocol _Storable {
  
  This is the public protocol which will be required in KakapoDB
  */
-public protocol Storable: _Storable, Equatable {}
+public protocol Storable: _Storable {}
 
 enum KakapoDBError: ErrorType {
     case InvalidEntity
@@ -167,15 +167,17 @@ public final class KakapoDB {
     /**
      Deletes the given Storable object
      
-     - parameter entity: The Storable object to be deleted
+     - parameter entity: The Storable object to be deleted, the database will delete any object found with same id and type.
      
      - throws: `KakapoDBError.InvalidEntity` if no Storable object with same `id` was found
      */
     public func delete<T: Storable>(entity: T) throws {
         let deleted: Bool = barrierSync {
-            let index = self.lookup(T).value.indexOf { $0 as? T == entity }
-            guard let indexToDelete = index else { return false }
-            self.lookup(T).value.removeAtIndex(indexToDelete)
+            guard let index = self.lookup(T).value.indexOf({ $0.id == entity.id }) else {
+                return false
+            }
+
+            self.lookup(T).value.removeAtIndex(index)
             
             return true
         }
