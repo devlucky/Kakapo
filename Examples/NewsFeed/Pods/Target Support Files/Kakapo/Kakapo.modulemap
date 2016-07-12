@@ -1,0 +1,6 @@
+framework module Kakapo {
+  umbrella header "Kakapo-umbrella.h"
+
+  export *
+  module * { export * }
+}
