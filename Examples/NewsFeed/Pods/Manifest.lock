@@ -1,10 +1,12 @@
 PODS:
+  - Alamofire (3.4.1)
   - Fakery (1.3.0):
     - SwiftyJSON
   - Kakapo (0.0.1-beta2)
   - SwiftyJSON (2.3.2)
 
 DEPENDENCIES:
+  - Alamofire (~> 3.4)
   - Fakery (~> 1.3)
   - Kakapo (from `../../Kakapo.podspec`)
   - SwiftyJSON (~> 2.3)
@@ -14,10 +16,11 @@ EXTERNAL SOURCES:
     :path: "../../Kakapo.podspec"
 
 SPEC CHECKSUMS:
+  Alamofire: 01a82e2f6c0f860ade35534c8dd88be61bdef40c
   Fakery: 8e6f7da2feb311a90a956ab9b9b2ce72106d1787
   Kakapo: 7112e4839d009074155988995e19b26457eb537b
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
 
-PODFILE CHECKSUM: 9e6cd2fd13a4f39f3db04a0dd6625b2da90758f9
+PODFILE CHECKSUM: bbd6dac3dffe6b19902cf25f7d3f4f9ba58fe0b9
 
 COCOAPODS: 1.0.1

@@ -11,7 +11,7 @@ import Foundation
 /**
  A server that conforms to NSURLProtocol in order to intercept outgoing network communication
  */
-final class KakapoServer: NSURLProtocol {
+final public class KakapoServer: NSURLProtocol {
     
     private static var routers: [Router] = []
     
@@ -48,22 +48,22 @@ final class KakapoServer: NSURLProtocol {
         NSURLProtocol.unregisterClass(self)
     }
     
-    override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+    override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
         guard let URL = request.URL else { return false }
         
         return
             routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first != nil ? true : false
     }
     
-    override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+    override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
         return request
     }
     
-    override func startLoading() {
+    override public func startLoading() {
         guard let URL = request.URL else { return }
         
         KakapoServer.routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first?.startLoading(self)
     }
     
-    override func stopLoading() {}
+    override public func stopLoading() {}
 }

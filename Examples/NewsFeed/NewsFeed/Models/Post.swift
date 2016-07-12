@@ -11,14 +11,14 @@ import Kakapo
 import Fakery
 import SwiftyJSON
 
-struct Post: Storable, JSONInitializable {
+struct Post: Serializable, Storable, JSONInitializable, Likeable {
     
     let id: String
     let date: NSTimeInterval
-    let text: String
+    var text: String
     let author: User
-    let likes: [Like]
-    let comments: [Comment]
+    var likes: [Like]
+    var comments: [Comment]
     
     init(id: String, db: KakapoDB) {
         self.id = id
@@ -36,5 +36,14 @@ struct Post: Storable, JSONInitializable {
         author = User(json: json["author"])
         likes = json["likes"].arrayValue.map { Like(json: $0) }
         comments = json["comments"].arrayValue.map { Comment(json: $0) }
+    }
+    
+    init(id: String, text: String, author: User) {
+        self.id = id
+        self.text = text
+        self.author = author
+        date = NSDate().timeIntervalSince1970
+        comments = []
+        likes = []
     }
 }

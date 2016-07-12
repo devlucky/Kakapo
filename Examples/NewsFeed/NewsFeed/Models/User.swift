@@ -11,7 +11,7 @@ import Kakapo
 import Fakery
 import SwiftyJSON
 
-struct User: Storable, JSONInitializable {
+struct User: Serializable, Storable, JSONInitializable {
     
     let id: String
     let firstName: String

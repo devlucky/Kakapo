@@ -11,7 +11,11 @@ import Kakapo
 import Fakery
 import SwiftyJSON
 
-struct Like: Storable, JSONInitializable {
+protocol Likeable: Storable, Serializable {
+    var likes: [Like] { get set}
+}
+
+struct Like: Serializable, Storable, JSONInitializable {
     
     let id: String
     let author: User
@@ -24,5 +28,10 @@ struct Like: Storable, JSONInitializable {
     init(json: JSON) {
         id = json["id"].stringValue
         author = User(json: json["author"])
+    }
+    
+    init(id: String, author: User) {
+        self.id = id
+        self.author = author
     }
 }
