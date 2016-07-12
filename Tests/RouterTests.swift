@@ -10,6 +10,8 @@ import Foundation
 
 import Quick
 import Nimble
+import AFNetworking
+import Alamofire
 
 @testable import Kakapo
 
