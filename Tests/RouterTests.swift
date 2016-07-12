@@ -363,8 +363,41 @@ class RouterTests: QuickSpec {
                 router = Router.register("http://www.test.com")
             }
             
+            context("default behaviors") {
+                
+                let url = NSURL(string: "http://www.test.com/users")!
+                
+                beforeEach{
+                    router.get("/users"){ request in
+                        return ["":""]
+                    }
+                }
+
+                it("should return 200 status code") {
+                    var statusCode: Int? = nil
+                    
+                    NSURLSession.sharedSession().dataTaskWithURL(url) { (_, response, _) in
+                        let response = response as! NSHTTPURLResponse
+                        statusCode = response.statusCode
+                        }.resume()
+                    
+                    expect(statusCode).toEventually(equal(200))
+                }
+                
+                it("should return the default header fields") {
+                    var allHeaders: [String : String]? = nil
+                    
+                    NSURLSession.sharedSession().dataTaskWithURL(url) { (_, response, _) in
+                        let response = response as! NSHTTPURLResponse
+                        allHeaders = response.allHeaderFields as? [String : String]
+                        }.resume()
+                    
+                    expect(allHeaders).toEventually(equal(["Content-Type": "application/json"]))
+                }
+            }
+            
             it("should return the specified object when requesting a registered url") {
-                db.create(UserFactory.self, number: 20)
+                db.create(UserFactory.self, number: 2)
                 
                 var responseDictionary: NSDictionary? = nil
                 
@@ -372,27 +405,12 @@ class RouterTests: QuickSpec {
                     return db.find(UserFactory.self, id: request.components["id"]!)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
+                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
                     responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
                     }.resume()
                 
-                expect(responseDictionary?["firstName"]).toNotEventually(beNil())
-                expect(responseDictionary?["id"] as? String).toEventually(equal("2"))
-            }
-            
-            it("should return 200 status code when no code specified") {
-                var statusCode: Int? = nil
-                
-                router.get("/users"){ request in
-                    return db.findAll(UserFactory)
-                }
-                
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
-                    let response = response as! NSHTTPURLResponse
-                    statusCode = response.statusCode
-                    }.resume()
-                
-                expect(statusCode).toEventually(equal(200))
+                expect(responseDictionary).toNotEventually(beNil())
+                expect(responseDictionary?["id"] as? String).to(equal("1"))
             }
             
             it("should return the specified object and code inside a response object with code when requesting a registered url") {
@@ -833,6 +851,47 @@ class RouterTests: QuickSpec {
                 expect(router2).to(beNil())
                 expect(router3).to(beNil())
                 expect(router4).to(beNil())
+            }
+        }
+        
+        describe("Popular networking libraries compatibility") {
+            var router: Router!
+            var response: [String: String]? = nil
+            let url = NSURL(string: "http://kakapotest.com/users/1")!
+            let configuration: NSURLSessionConfiguration = {
+                let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+                configuration.protocolClasses = [KakapoServer.self]
+                return configuration
+            }()
+            
+            beforeEach{
+                response = nil
+                router = Router.register("http://kakapotest.com")
+                router.get("/users/:id") { request in
+                    return ["fine": "true"]
+                }
+            }
+            
+            it("should intercept AFNetworking requests") {
+                let manager = AFURLSessionManager(sessionConfiguration: configuration)
+                let request = NSURLRequest(URL: url)
+                manager.dataTaskWithRequest(request) { (_, responseObject, _) in
+                    response = responseObject as? [String: String]
+                }.resume()
+                
+                expect(response).toNotEventually(beNil())
+                expect(response).to(equal(["fine": "true"]))
+            }
+            
+            it("should intercept Alamofire requests") {
+                let manager = Manager(configuration: configuration)
+                let request = NSURLRequest(URL: url)
+                manager.request(request).responseJSON { (responseObject) in
+                    response = responseObject.result.value as? [String: String]
+                    }
+                
+                expect(response).toNotEventually(beNil())
+                expect(response).to(equal(["fine": "true"]))
             }
         }
     }

@@ -11,7 +11,7 @@ import Foundation
 /**
  A RouteHandler used when registering different HTTP methods, which can return any Serializable object.
  
- By default, though, the Router will return a 200 status code and no header fields when only returning a Serializable object.
+ By default, though, the Router will return a 200 status code and `["Content-Type": "application/json"]` header fields when only returning a Serializable object.
  In order to customize that behavior, check `ResponseFieldsProvider` to provide custom status code and header fields.
  */
 public typealias RouteHandler = Request -> Serializable?
@@ -158,7 +158,7 @@ public final class Router {
                   client = server.client else { return }
         
         var statusCode = 200
-        var headerFields = [String : String]?()
+        var headerFields: [String : String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
         
         for (key, route) in routes {
