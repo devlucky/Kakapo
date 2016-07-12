@@ -83,6 +83,12 @@ class RouterTests: QuickSpec {
                 router = Router.register("http://www.test.com")
             }
             
+            context("when the Router is initialized") {
+                it("should not have latency") {
+                    expect(router.latency) == 0
+                }
+            }
+            
             it("should call the handler when requesting a registered url") {
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = nil
@@ -149,6 +155,46 @@ class RouterTests: QuickSpec {
                 expect(usersCommentsInfo?.components).toEventually(equal(["id": "1", "comment_id": "2"]))
                 expect(usersCommentsInfo?.queryParameters).toEventually(equal([NSURLQueryItem(name: "page", value: "2"), NSURLQueryItem(name: "author", value: "hector")]))
                 expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
+            }
+            
+            context("when the Router has latency") {
+                it("should delay the mocked response") {
+                    var responseData: NSData? = nil
+                    router.latency = 1.1
+                    router.get("/users/:id") { request in
+                        return ["test": "value"]
+                    }
+                    
+                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                        responseData = data
+                        }.resume()
+                    
+                    
+                    let startTime = CFAbsoluteTimeGetCurrent()
+                    expect(responseData).toNotEventually(beNil(), timeout: 1.5)
+                    let endTime = CFAbsoluteTimeGetCurrent()
+                    expect(endTime - startTime) >= 1.1
+                }
+                
+                it("should not affect the latency of other routers") {
+                    router.latency = 2.0
+                    
+                    var responseData: NSData? = nil
+                    let router2 = Router.register("http://www.test2.com")
+                    router2.get("/users/:id") { request in
+                        return ["test": "value"]
+                    }
+                    
+                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test2.com/users/1")!) { (data, response, _) in
+                        responseData = data
+                        }.resume()
+                    
+                    
+                    let startTime = CFAbsoluteTimeGetCurrent()
+                    expect(responseData).toNotEventually(beNil())
+                    let endTime = CFAbsoluteTimeGetCurrent()
+                    expect(endTime - startTime) <= 1.0
+                }
             }
         }
         
@@ -321,7 +367,7 @@ class RouterTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id"){ request in
-                    return db.find(UserFactory.self, id: Int(request.components["id"]!)!)
+                    return db.find(UserFactory.self, id: request.components["id"]!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -329,7 +375,7 @@ class RouterTests: QuickSpec {
                     }.resume()
                 
                 expect(responseDictionary?["firstName"]).toNotEventually(beNil())
-                expect(responseDictionary?["id"]).toEventually(be(2))
+                expect(responseDictionary?["id"] as? String).toEventually(equal("2"))
             }
             
             it("should return 200 status code when no code specified") {
@@ -354,7 +400,7 @@ class RouterTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id"){ request in
-                    return Response(statusCode: 200, body: db.find(UserFactory.self, id: Int(request.components["id"]!)!))
+                    return Response(statusCode: 200, body: db.find(UserFactory.self, id: request.components["id"]!)!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -364,7 +410,7 @@ class RouterTests: QuickSpec {
                     }.resume()
                 
                 expect(responseDictionary?["firstName"]).toNotEventually(beNil())
-                expect(responseDictionary?["id"]).toEventually(be(2))
+                expect(responseDictionary?["id"] as? String).toEventually(equal("2"))
                 expect(statusCode).toEventually(equal(200))
             }
             
@@ -440,9 +486,9 @@ class RouterTests: QuickSpec {
                 
                 expect(responseArray?.count).toEventually(equal(20))
                 expect(responseArray?.firstObject?["firstName"]).toNotEventually(beNil())
-                expect(responseArray?.firstObject?["id"]).toEventually(equal(0))
-                expect(responseArray?[14]["id"]).toEventually(equal(14))
-                expect(responseArray?.lastObject?["id"]).toEventually(equal(19))
+                expect(responseArray?.firstObject?["id"]).toEventually(equal("0"))
+                expect(responseArray?[14]["id"]).toEventually(equal("14"))
+                expect(responseArray?.lastObject?["id"]).toEventually(equal("19"))
             }
             
             it("should return nil for objects not serializable to JSON") {

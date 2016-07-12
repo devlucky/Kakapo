@@ -51,7 +51,7 @@ extension SerializationTransformer {
 }
 
 /**
- *  A `SerializableTransformer` that transform CamelCase json keys in snake_case keys.
+ *  A `SerializableTransformer` that transform `camelCase` json keys in `snake_case` keys.
  
     Example:
     ```
@@ -65,8 +65,27 @@ extension SerializationTransformer {
  */
 public struct SnakecaseTransformer<Wrapped: Serializable>: SerializationTransformer {
     
+    /// The wrapped `Serializable` object
     public let wrapped: Wrapped
     
+    /**
+     Initialize a `SnakecaseTransformer` wrapping a `Serializable` object to transform its keys during serialization.
+     
+     - parameter wrapped: A wrapped `Serializable` object
+     
+     - returns: A `Serializable` object that will trasform the keys of the wrapped object when serialzied.
+     */
+    public init(_ wrapped: Wrapped) {
+        self.wrapped = wrapped
+    }
+    
+    /**
+     Transform the input string from `camelCase` to `snake_case`
+     
+     - parameter key: A `camelCase` string
+     
+     - returns: The input key transformed to `snake_case`
+     */
     public func transform(key key: String) -> String {
         return key.snakecaseString()
     }

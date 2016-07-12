@@ -50,6 +50,7 @@ public protocol ResponseFieldsProvider: CustomSerializable {
 
 extension ResponseFieldsProvider {
     
+    /// The default implementation just return the serialized body.
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
         return body.serialize(keyTransformer)
     }
@@ -70,6 +71,15 @@ public struct Response: ResponseFieldsProvider {
     /// An optional dictionary holding the response header fields
     public let headerFields: [String : String]?
     
+    /**
+     Initialize `Response` object that wraps another `Serializable` object for the serialization but, implemententing `ResponseFieldsProvider` can affect some parameters of the HTTP response
+     
+     - parameter statusCode:   the status code that the response should provide to the HTTP repsonse
+     - parameter body:         the body that will be serialized
+     - parameter headerFields: the headerFields that the response should provide to the HTTP repsonse
+     
+     - returns: A wrapper `Serializable` object that affect http requests.
+     */
     public init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
         self.statusCode = statusCode
         self.body = body
@@ -94,6 +104,9 @@ public final class Router {
     
     /// The `baseURL` of the Router
     public let baseURL: String
+    
+    /// The desired latency to delay the mocked responses. Default value is 0.
+    public var latency: NSTimeInterval = 0
     
     /**
      Register and return a new Router in the Server
@@ -177,7 +190,14 @@ public final class Router {
             client.URLProtocol(server, didLoadData: data)
         }
         
-        client.URLProtocolDidFinishLoading(server)
+        let didFinishLoading: (NSURLProtocol) -> () = { (server) in
+            client.URLProtocolDidFinishLoading(server)
+        }
+
+        let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
+        dispatch_after(delayTime, dispatch_get_main_queue()) {
+            didFinishLoading(server)
+        }
     }
     
     /**

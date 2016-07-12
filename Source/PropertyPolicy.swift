@@ -16,7 +16,10 @@ import Foundation
  - Some:     Serialize the associated object
  */
 public enum PropertyPolicy<Wrapped>: CustomSerializable {
+    /// Same behavior of `Optional.None`, the property is not included in the JSON
     case None
+    /// `Null` when serialized is `NSNull` that will result as a `null` property in the JSON
     case Null
+    /// Serialize the associated object
     case Some(Wrapped)
 }
