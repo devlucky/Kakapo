@@ -157,7 +157,7 @@ public final class KakapoDB {
     /**
      Deletes the given Storable object
      
-     - parameter entity: The Storable object to be deleted. If an object with the same id and type can be found then will be deleted, even if the objects are not really equal.
+     - parameter entity: The Storable object to be deleted, the database will delete any object found with same id and type.
      
      - throws: `KakapoDBError.InvalidEntity` if no Storable object with same `id` was found
      */
