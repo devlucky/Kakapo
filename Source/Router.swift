@@ -11,7 +11,7 @@ import Foundation
 /**
  A RouteHandler used when registering different HTTP methods, which can return any Serializable object.
  
- By default, though, the Router will return a 200 status code and no header fields when only returning a Serializable object.
+ By default, though, the Router will return a 200 status code and `["Content-Type": "application/json"]` header fields when only returning a Serializable object.
  In order to customize that behavior, check `ResponseFieldsProvider` to provide custom status code and header fields.
  */
 public typealias RouteHandler = Request -> Serializable?
@@ -158,19 +158,14 @@ public final class Router {
                   client = server.client else { return }
         
         var statusCode = 200
-        var headerFields = [String : String]?()
-        var dataBody: NSData?
+        var headerFields: [String : String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
         
         for (key, route) in routes {
             if let info = decomposeURL(key, requestURLComponents: components) {
-                
-                if let dataFromNSURLRequest = server.request.HTTPBody {
-                    dataBody = dataFromNSURLRequest
-                } else if let dataFromProtocol = NSURLProtocol.propertyForKey(RequestHTTPBodyKey, inRequest: server.request) as? NSData {
-                    // Using NSURLProtocol property after swizzling NSURLRequest here
-                    dataBody = dataFromProtocol
-                }
+                // If the request body is nil use `NSURLProtocol` property see swizzling in `NSMutableURLRequest.m`
+                // using a literal string because a bridging header in the podspec will be more problematic.
+                let dataBody = server.request.HTTPBody ?? NSURLProtocol.propertyForKey("kkp_requestHTTPBody", inRequest: server.request) as? NSData
                 
                 serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields))
                 break
