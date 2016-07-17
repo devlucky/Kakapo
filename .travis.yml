@@ -7,9 +7,6 @@ env:
   global:
     - FASTLANE_LANE=ci_commit
 
-before_install:
-  - gem install fastlane -v 1.91.0 --no-rdoc --no-ri --no-document --quiet
-
 matrix:
   include:
     - osx_image: xcode7.3
