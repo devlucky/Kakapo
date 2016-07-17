@@ -8,7 +8,7 @@ env:
     - FASTLANE_LANE=ci_commit
 
 before_install:
-  - gem install fastlane --no-rdoc --no-ri --no-document --quiet
+  - gem install fastlane -v 1.91.0 --no-rdoc --no-ri --no-document --quiet
 
 matrix:
   include:
