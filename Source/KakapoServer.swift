@@ -20,7 +20,7 @@ final class KakapoServer: NSURLProtocol {
      
      - parameter baseURL: The base URL that this Router will use
      
-     - returns: An new initialized Router. Note that two Router objects can hold the same baseURL.
+     - returns: An new initializcaRouter objects can hold the same baseURL.
      */
     class func register(baseURL: String) -> Router {
         NSURLProtocol.registerClass(self)

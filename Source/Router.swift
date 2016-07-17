@@ -111,7 +111,7 @@ public final class Router {
     
     /**
      Register a new Router in the KakapoServer.
-     The baseURL can contain a scheme, and the requsetURL must match the scheme; if it doesn't contain a scheme then the baseURL is a wildcard and will be matched by any subdomain or any scheme:
+     The baseURL can contain a scheme, and the requestURL must match the scheme; if it doesn't contain a scheme then the baseURL is a wildcard and will be matched by any subdomain or any scheme:
      
      - base: `http://kakapo.com`, path: "any", requestURL: "http://kakapo.com/any" ✅
      - base: `http://kakapo.com`, path: "any", requestURL: "https://kakapo.com/any" ❌ because it's **https**

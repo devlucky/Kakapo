@@ -16,17 +16,16 @@ public typealias URLInfo = (components: [String : String], queryParameters: [NSU
 /**
  Match a route and a requestURL. A route is composed by a baseURL and a path, togheter they should match the given requestURL.
  To match a route the baseURL must be contained in the requestURL, the substring of the requestURL following the baseURL then is tested against the path to check if they match.
- A baseURL can contain a scheme, and the requsetURL must match the scheme; if it doesn't contain a scheme then the baseURL is a wildcard and will be matched by any subdomain or any scheme:
+ A baseURL can contain a scheme, and the requestURL must match the scheme; if it doesn't contain a scheme then the baseURL is a wildcard and will be matched by any subdomain or any scheme:
  
  - base: `http://kakapo.com`, path: "any", requestURL: "http://kakapo.com/any" ✅
  - base: `http://kakapo.com`, path: "any", requestURL: "https://kakapo.com/any" ❌ because it's **https**
  - base: `kakapo.com`, path: "any", requestURL: "https://kakapo.com/any" ✅
  - base: `kakapo.com`, path: "any", requestURL: "https://api.kakapo.com/any" ✅
  
- A path can contains wildcard components prefixed with ":" (e.g. /users/:userid) that are used to build the component dictionary, the wildcard is then used as key and the repsective component of the requestURL is used as value.
+ A path can contain wildcard components prefixed with ":" (e.g. /users/:userid) that are used to build the component dictionary, the wildcard is then used as key and the repsective component of the requestURL is used as value.
  Any component that is not a wildcard have to be exactly the same in both the path and the request, otherwise the route won't match.
  
-
  - `/users/:userid` and `/users/1234` ✅ -> `[userid: 1234]`
  - `/comment/:commentid` and `/users/1234` ❌
 
