@@ -566,64 +566,6 @@ class RouterTests: QuickSpec {
                 expect(secondResponseURL?.absoluteString).toEventually(equal("http://www.host2.com/messages/24"))
             }
             
-            it ("Should not handle invalid registrations on routers (leading and trailing slashes should match the absolute request)") {
-                router = Router.register("http://www.test.com/")
-                var components: [String : String]? = nil
-                var responseURL: NSURL? = nil
-                
-                router.get("/users/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    components = request.components
-                    return nil
-                }
-                
-                router.get("users/:id/") { request in
-                    XCTFail("Shouldn't reach here")
-                    components = request.components
-                    return nil
-                }
-                
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (_, response, _) in
-                    responseURL = response?.URL
-                    }.resume()
-                
-                expect(components).toEventually(beNil())
-                expect(responseURL?.host).toEventually(equal("www.test.com"))
-            }
-            
-            it ("Should not handle invalid registrations on routers (leading and trailing slashes should match the absolute request) 2") {
-                router = Router.register("http://www.test.com/foo/bar/")
-                var components: [String : String] = ["foo" : "bar"]
-                var responseURL: NSURL? = nil
-                var isReached: Bool?
-                
-                router.get("/comments/foo/bar") { request in
-                    XCTFail("Shouldn't reach here")
-                    components = request.components
-                    return nil
-                }
-                
-                router.get("comments/foo/bar/") { request in
-                    XCTFail("Shouldn't reach here")
-                    components = request.components
-                    return nil
-                }
-                
-                router.get("comments/foo/bar") { request in
-                    isReached = true
-                    components = request.components
-                    return nil
-                }
-                
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/foo/bar/comments/foo/bar")!) { (_, response, _) in
-                    responseURL = response?.URL
-                    }.resume()
-                
-                expect(isReached).toEventually(beTrue())
-                expect(components).toEventually(equal([:]))
-                expect(responseURL?.host).toEventually(equal("www.test.com"))
-            }
-        
             it("Should manage which Router has to be selected when registering routes with similar baseURL") {
                 var responseURL: NSURL? = nil
                 var components: [String : String]? = nil
@@ -826,7 +768,7 @@ class RouterTests: QuickSpec {
                 expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
             }
             
-            it ("Should not leak any router when disabling or unregistering") {
+            it("should not leak any router when disabling or unregistering") {
                 weak var router1: Router? = Router.register("www.host1.com")
                 weak var router2: Router? = Router.register("www.host2.com")
                 weak var router3: Router? = Router.register("www.host3.com")

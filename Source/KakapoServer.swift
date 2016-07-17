@@ -45,7 +45,7 @@ public final class KakapoServer: NSURLProtocol {
      
      - parameter baseURL: The base URL that this Router will use
      
-     - returns: An new initialized Router. Note that two Router objects can hold the same baseURL.
+     - returns: An new initializcaRouter objects can hold the same baseURL.
      */
     class func register(baseURL: String) -> Router {
         NSURLProtocol.registerClass(self)
@@ -74,10 +74,7 @@ public final class KakapoServer: NSURLProtocol {
     }
     
     override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        guard let URL = request.URL else { return false }
-        
-        return
-            routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first != nil ? true : false
+        return routers.filter { $0.canInitWithRequest(request) }.first != nil
     }
     
     override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
@@ -85,9 +82,7 @@ public final class KakapoServer: NSURLProtocol {
     }
     
     override public func startLoading() {
-        guard let URL = request.URL else { return }
-        
-        KakapoServer.routers.filter { URL.absoluteString.containsString($0.baseURL) && $0.canInitWithRequest(request) }.first?.startLoading(self)
+        KakapoServer.routers.filter { $0.canInitWithRequest(request) }.first!.startLoading(self)
     }
     
     override public func stopLoading() {
