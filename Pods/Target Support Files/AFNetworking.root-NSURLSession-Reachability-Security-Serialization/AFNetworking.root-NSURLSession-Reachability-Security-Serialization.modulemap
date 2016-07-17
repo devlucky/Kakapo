@@ -1,0 +1,6 @@
+framework module AFNetworking {
+  umbrella header "AFNetworking.root-NSURLSession-Reachability-Security-Serialization-umbrella.h"
+
+  export *
+  module * { export * }
+}

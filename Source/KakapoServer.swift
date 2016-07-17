@@ -9,9 +9,34 @@
 import Foundation
 
 /**
- A server that conforms to NSURLProtocol in order to intercept outgoing network communication
+ A server that conforms to NSURLProtocol in order to intercept outgoing network communication.
+ You shouldn't use this class directly but register a `Router` instead. Since frameworks like **AFNetworking** and **Alamofire** require manual registration of the `NSURLProtocol` classes you will need to register this class when needed.
+
+ ### Examples
+ 
+ 1- Configure `NSURLSessionConfiguration` by adding `KakapoServer` to `protocolClasses`:
+ 
+ ```
+ let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+ configuration.protocolClasses = [KakapoServer.self]
+ // NOTE: better to just add if is not nil
+```
+ 
+ 2- Setup the URL Session Manager
+ 
+ #### AFNetworking
+ 
+ ```
+ let manager = AFURLSessionManager(sessionConfiguration: configuration)
+ ```
+ 
+ #### Alamofire
+ 
+ ```
+ let manager = Manager(configuration: configuration)
+ ```
  */
-final class KakapoServer: NSURLProtocol {
+public final class KakapoServer: NSURLProtocol {
     
     private static var routers: [Router] = []
     
@@ -48,17 +73,19 @@ final class KakapoServer: NSURLProtocol {
         NSURLProtocol.unregisterClass(self)
     }
     
-    override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+    override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
         return routers.filter { $0.canInitWithRequest(request) }.first != nil
     }
     
-    override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+    override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
         return request
     }
     
-    override func startLoading() {
+    override public func startLoading() {
         KakapoServer.routers.filter { $0.canInitWithRequest(request) }.first!.startLoading(self)
     }
     
-    override func stopLoading() {}
+    override public func stopLoading() {
+        /* TODO: implement stopLoading for delayed requests https://github.com/devlucky/Kakapo/issues/88 */
+    }
 }
