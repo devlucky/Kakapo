@@ -29,7 +29,7 @@ public protocol _Storable {
 }
 
 /**
- A protocol that supports both `_Storable` and `Equatable` objects, handling an `id` and a generic `init` method, as well as value equality. 
+ A protocol that supports `_Storable` objects, handling an `id` and a generic `init` method.
  
  This is the public protocol which will be required in KakapoDB
  */

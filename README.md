@@ -28,9 +28,20 @@ Kakapo **dynamically mocks server responses**.
 
 ## Introduction
 
-  Kakapo is a dynamic mocking library. It allows you to fully replicate your backend logic and state in a simple manner.
+Kakapo is a dynamic mocking library. It allows you to fully replicate your backend logic and state in a simple manner.
 
-  But is much more than that. With Kakapo, you can easily fully prototype your application based on your backend needs.
+But is much more than that. With Kakapo, you can easily fully prototype your application based on your backend needs.
+
+## Why Kakapo?
+
+A common approach when testing network requests is to stub them with fake network data from local files. This has some well known disadvantages:
+
+- Data which does not reflect the actual behavior from backend
+- Static files with fake responses which need to be updated every time APIs are updated.
+- Mock data is just **dumb** data
+- Lots of boilerplate code and additional files needed to setup stubbed local files
+
+While still this approach may work good, Kakapo will be a game changer in your network tests: giving you complete control when it comes to simulating backend behavior in a easy manner. Moreover, you can even prototype your application before having a real service behind!
 
 ## Features
 
@@ -44,19 +55,11 @@ Kakapo **dynamically mocks server responses**.
   * Out-of-the-box serialization
   * Out-of-the-box JSONAPI support
 
-## Why Kakapo?
-
-Explain here the usual way to statically mock stuff and why kakapo is better
-
 ## Setup
 
 ### Installation
 
 Cocoapods, etc
-
-### Examples
-
-Probably move this to the end, after use
 
 ## Usage
 
@@ -113,7 +116,17 @@ print(serializedUserDictionary["test"]["name"]) // Alex
 
 As you may have noticed, Kakapo uses Routers in order to keep track of the registered endpoints that are to be intercepted.
 
-You can match *any* relative path from the registered base URL that you want, as long as you mark your components with a colon sign.
+You can match *any* relative path from the registered base URL that you want, as long as your components are properly represented. This means that wilcard components will need to be represented with colon:
+
+```Swift
+let router = Router.register("http://www.test.com")
+
+// Will match http://www.test.com/users/28
+router.get("/users/:id") { ... }
+
+// Will match http://www.test.com/users/28/comments/123
+router.get("/users/:id/comments/:comment_id") { ... }
+```
 
 The handler argument also needs to return the Serializable object that will be used once the URL is matched.
 
@@ -127,13 +140,17 @@ router.get("/users/:id") { request in
 router.get("/users/:id/comments/:comment_id") { request in
   return { "comment" : bar }
 }
+```
 
-NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, _, _) in
+After this, everything is ready to test your mocked objects:
+
+```Swift
+session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, _, _) in
   let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
   // responseDictionary == { "user" : foo }
 }.resume()
 
-NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2")!) { (data, _, _) in
+session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2")!) { (data, _, _) in
   let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
   // responseDictionary == { "comment" : bar }
 }.resume()
@@ -143,7 +160,7 @@ Note that previous registrations will also be compatible with same URLs which ha
 
 ```Swift
 // Will also be matched since we previously registered "/users/:id/comments/:comment_id"
-NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2?page=2&author=hector")!) { (data, _, _) in
+session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2?page=2&author=hector")!) { (data, _, _) in
   let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
   // responseDictionary == { "comment" : bar }
 }.resume()
@@ -160,7 +177,7 @@ router.get("/users/:id"){ request in
   return {"foo" : user}
 }
 
-NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (_, _, _) in
+session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (_, _, _) in
 }.resume()
 ```
 
@@ -173,7 +190,7 @@ This lets you mock any behavior you want after a request is made, as if it was a
 In order for them to be used by the Database, your types need to conform to the `Storable` protocol.
 
 ```Swift
-struct User: Storable, Serializable, Equatable {
+struct User: Storable, Serializable {
     let firstName: String
     let lastName: String
     let age: Int
@@ -197,7 +214,7 @@ router.get("/users/:id"){ request in
 }
 ```
 
-But of course, you can could perform any logic that fits your needs:
+But of course, you could perform any logic that fits your needs:
 
 ```Swift
 router.put("/users/:id"){ request in
@@ -230,7 +247,7 @@ router.del("/users/:id"){ request in
 
 Since Kakapo was built with JSONAPI support in mind, a JSONAPISerializer is
 
-For your types to be JSONAPI compliant, they need to conform to JSONAPIEntity
+For your types to be JSONAPI compliant, they need to conform to `JSONAPIEntity` protocol. Let's see an example:
 
 ```Swift
 struct Dog: JSONAPIEntity {
@@ -251,7 +268,7 @@ struct User: JSONAPIEntity {
 }
 ```
 
-Note that `JSONAPIEntity` objects are already `Serializable` and you could just use them together with your Routers. However, to completely follow the JSONAPI structure in your responses, it is encouraged to use a JSONAPISerializer:
+Note that `JSONAPIEntity` objects are already `Serializable` and you could just use them together with your Routers. However, to completely follow the JSONAPI structure in your responses, we highly encourage to use a `JSONAPISerializer` struct:
 
 ```Swift
 let cats = [Cat(id: "33", name: "Stancho"), Cat(id: "44", name: "Hez")]
@@ -263,10 +280,22 @@ router.get("/users/:id"){ request in
 }
 ```
 
-// Not sure if we should talk here about JSONAPILinks and Error
+#### JSONAPILink and JSONAPIError
 
+As promised, Kakapo comes with **full** JSONAPI support oout of the box. This means that you can actually attach [link objects](http://jsonapi.org/format/#document-links) to your serializable objects by using the `JSONAPILink` enum on them:
+
+```Swift
+struct Dog: JSONAPIEntity, JSONAPILinkedEntity {
+  let id: String
+  let name: Strin
+  let links: [String : JSONAPILink]?
+}
+```
+
+Or return [error objects](http://jsonapi.org/format/#errors) using the `JSONAPIError` struct.
+
+## Examples
 
 ## Roadmap
-
 
 ## License
