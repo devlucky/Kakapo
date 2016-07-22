@@ -8,7 +8,7 @@
 
 import Foundation
 
-// A convenince error object that conform to JSON API
+/// A convenince error object that conform to JSON API
 public struct JSONAPIError: ResponseFieldsProvider {
     
     /// An object containing references to the source of the error, optionally including any of the following members
@@ -18,6 +18,19 @@ public struct JSONAPIError: ResponseFieldsProvider {
         
         /// A string indicating which URI query parameter caused the error.
         public let parameter: String?
+        
+        /**
+         Initialize `Source` with the given parameters
+         
+         - parameter pointer:   A JSON `Pointer` ([RFC6901](https://tools.ietf.org/html/rfc6901)) to the associated entity in the request document [e.g. `/data` for a primary data object, or `/data/attributes/title` for a specific attribute].
+         - parameter parameter: A string indicating which URI query parameter caused the error.
+         
+         - returns: An initialized `Source` representing the source of the `JSONAPIError`.
+         */
+        public init(pointer: String?, parameter: String?) {
+            self.pointer = pointer
+            self.parameter = parameter
+        }
     }
     
     /// A builder for JSONAPIError
@@ -61,30 +74,33 @@ public struct JSONAPIError: ResponseFieldsProvider {
 
     // MARK: ResponseFieldsProvider
     
+    /// The status code that will be used to affect the HTTP request status code.
     public var statusCode: Int {
         return builder.status
     }
     
+    /// A `JSONAPIError.Builder` instance contains all the fields.
     public var body: Serializable {
         return builder
     }
     
-    public var headerFields: [String : String]? {
-        return nil
-    }
+    /// The headerFields that will be returned by the HTTP response.
+    public let headerFields: [String : String]?
 
     /**
      Initialize a `JSONAPIError` and build it with `JSONAPIError.Builder`
      
      - parameter statusCode:   The status code of the response, will be used also to provide a statusCode for your request
+     - parameter headerFields: The headerFields that will be returned by the HTTP response.
      - parameter errorBuilder: A builder that can be used to fill the error objects, it contains all you need to provide an error object confiorming to JSON API (**see `JSONAPIError.Builder`**)
      
      - returns: An error that conforms to JSON API specifications and it's ready to be serialized
      */
-    public init(statusCode: Int, errorBuilder: (error: inout Builder) -> ()) {
+    public init(statusCode: Int, headerFields: [String: String]? = nil, errorBuilder: (error: inout Builder) -> ()) {
         var builder = Builder(statusCode: statusCode)
         errorBuilder(error: &builder)
         self.builder = builder
+        self.headerFields = headerFields
     }
     
 }

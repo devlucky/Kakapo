@@ -14,9 +14,18 @@ import Foundation
  This is a base protocol and it's only used internally, for your objects you should check `Storable` instead.
  */
 public protocol _Storable {
-    // TODO: default to String and create a protocol that as an Int id with default implementation. Because String is not always convertible to Int but Int can always be converted to String.
-    var id: Int { get }
-    init(id: Int, db: KakapoDB)
+    /// The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to assume that the conversion will always succeeed.
+    var id: String { get }
+    
+    /**
+     An initializer that is used by `KakapoDB` to create objects to be stored in the db
+     
+     - parameter id: The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to ssume that the conversion will always succeeed.
+     - parameter db: The db that is creating the object, can be used  to generate other `Storable` objects, for example relationsips of the object: `myRelationship = db.create(MyRelationshipType)` or `myrelationship = db.insert { MyRelationshipType(id: $0, db: db) }`. The relationsip will also recieve the `db` instance to eventually initialize its relationships.
+     
+     - returns: A configured object stored in the db.
+     */
+    init(id: String, db: KakapoDB)
 }
 
 /**
@@ -24,7 +33,7 @@ public protocol _Storable {
  
  This is the public protocol which will be required in KakapoDB
  */
-public protocol Storable: _Storable, Equatable {}
+public protocol Storable: _Storable {}
 
 enum KakapoDBError: ErrorType {
     case InvalidEntity
@@ -65,6 +74,7 @@ public final class KakapoDB {
     private var _uuid = -1
     private var store: [String: ArrayBox<_Storable>] = [:]
 
+    /// Initialize a new in-memory database
     public init() {
         // empty but needed to be initialized from other modules.
     }
@@ -118,7 +128,7 @@ public final class KakapoDB {
      
      - returns: The new inserted Storable object
      */
-    public func insert<T: Storable>(handler: (Int) -> T) -> T {
+    public func insert<T: Storable>(handler: (String) -> T) -> T {
         let id = barrierSync {
             return self.uuid()
         }
@@ -157,15 +167,17 @@ public final class KakapoDB {
     /**
      Deletes the given Storable object
      
-     - parameter entity: The Storable object to be deleted
+     - parameter entity: The Storable object to be deleted, the database will delete any object found with same id and type.
      
      - throws: `KakapoDBError.InvalidEntity` if no Storable object with same `id` was found
      */
     public func delete<T: Storable>(entity: T) throws {
         let deleted: Bool = barrierSync {
-            let index = self.lookup(T).value.indexOf { $0 as? T == entity }
-            guard let indexToDelete = index else { return false }
-            self.lookup(T).value.removeAtIndex(indexToDelete)
+            guard let index = self.lookup(T).value.indexOf({ $0.id == entity.id }) else {
+                return false
+            }
+
+            self.lookup(T).value.removeAtIndex(index)
             
             return true
         }
@@ -208,13 +220,13 @@ public final class KakapoDB {
      
      - returns: An optional thay may (or not) contain the found Storable object
      */
-    public func find<T: Storable>(_: T.Type, id: Int) -> T? {
+    public func find<T: Storable>(_: T.Type, id: String) -> T? {
         return filter(T.self) { $0.id == id }.first
     }
     
-    private func uuid() -> Int {
+    private func uuid() -> String {
         _uuid += 1
-        return _uuid
+        return String(_uuid)
     }
     
     private func lookup<T: Storable>(_: T.Type) -> ArrayBox<_Storable> {
