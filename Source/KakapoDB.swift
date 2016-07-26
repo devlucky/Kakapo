@@ -10,10 +10,8 @@ import Foundation
 
 /**
  A base protocol providing basic storage behavior with an `id` and a generic `init` method for all objects that will be inserted. 
- 
- This is a base protocol and it's only used internally, for your objects you should check `Storable` instead.
  */
-public protocol _Storable {
+public protocol Storable {
     /// The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to assume that the conversion will always succeeed.
     var id: String { get }
     
@@ -27,13 +25,6 @@ public protocol _Storable {
      */
     init(id: String, db: KakapoDB)
 }
-
-/**
- A protocol that supports both `_Storable` and `Equatable` objects, handling an `id` and a generic `init` method, as well as value equality. 
- 
- This is the public protocol which will be required in KakapoDB
- */
-public protocol Storable: _Storable {}
 
 enum KakapoDBError: ErrorType {
     case InvalidEntity
@@ -72,7 +63,7 @@ public final class KakapoDB {
     
     private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
     private var _uuid = -1
-    private var store: [String: ArrayBox<_Storable>] = [:]
+    private var store: [String: ArrayBox<Storable>] = [:]
 
     /// Initialize a new in-memory database
     public init() {
@@ -115,7 +106,7 @@ public final class KakapoDB {
         let objects = ids.map { id in T(id: id, db: self) }
         
         barrierAsync {
-            self.lookup(T).value.appendContentsOf(objects.flatMap{ $0 as _Storable })
+            self.lookup(T).value.appendContentsOf(objects.flatMap{ $0 as Storable })
         }
         
         return objects
@@ -229,13 +220,13 @@ public final class KakapoDB {
         return String(_uuid)
     }
     
-    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<_Storable> {
-        var boxedArray: ArrayBox<_Storable>
+    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<Storable> {
+        var boxedArray: ArrayBox<Storable>
         
         if let storedBoxedArray = store[String(T)] {
             boxedArray = storedBoxedArray
         } else {
-            boxedArray = ArrayBox<_Storable>([])
+            boxedArray = ArrayBox<Storable>([])
             store[String(T)] = boxedArray
         }
         
