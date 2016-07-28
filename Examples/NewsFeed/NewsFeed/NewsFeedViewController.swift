@@ -24,6 +24,7 @@ class NewsFeedViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.backgroundColor = UIColor(white: 0.96, alpha: 1)
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 100
+        tableView.allowsSelection = false
         return tableView
     }()
     
