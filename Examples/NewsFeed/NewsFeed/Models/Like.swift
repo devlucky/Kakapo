@@ -12,7 +12,7 @@ import Fakery
 import SwiftyJSON
 
 enum LikeableEntityType: String {
-    case Post = "like"
+    case Post = "post"
     case Comment = "comment"
 }
 

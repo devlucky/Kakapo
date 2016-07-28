@@ -56,4 +56,29 @@ class NetworkManager {
             }
         }
     }
+    
+    func likePost(at index: Int) {
+        let post = posts[index]
+        
+        manager.request(.POST, "https://kakapobook.com/api/entity/post/\(post.id)/like").responseJSON{ [weak self] (response) in
+            guard let data = response.data else { return }
+            
+            let post = Post(json: JSON(data: data))
+            
+            self?.posts[index] = post
+        }
+    }
+    
+    func unlikePost(at index: Int) {
+        let post = posts[index]
+        let like = post.myLike
+        
+        manager.request(.DELETE, "https://kakapobook.com/api/entity/post/\(post.id)/like/\(like!.id)").responseJSON{ [weak self] (response) in
+            guard let data = response.data else { return }
+            
+            let post = Post(json: JSON(data: data))
+            
+            self?.posts[index] = post
+        }
+    }
 }

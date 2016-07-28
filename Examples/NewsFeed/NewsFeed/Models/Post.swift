@@ -47,3 +47,24 @@ struct Post: Serializable, Storable, JSONInitializable, Likeable {
         likes = []
     }
 }
+
+extension Post {
+    
+    var isLikedByMe: Bool {
+        return likes.indexOf { (like) in
+            return like.author.id == loggedInUser.id
+        } != nil
+    }
+    
+    var myLike: Like? {
+        guard let index = likes.indexOf ({ (like) in
+            return like.author.id == loggedInUser.id
+        }) else {
+            return nil
+        }
+        
+        return likes[index]
+    }
+    
+    
+}
