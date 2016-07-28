@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DE3872CA1D49FB2E00D271D5 /* PostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3872C91D49FB2E00D271D5 /* PostTableViewCell.swift */; };
 		DE49241E1D303DD700604142 /* NetworkMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE49241D1D303DD700604142 /* NetworkMock.swift */; };
 		DE7F505F1D203F0D00A88192 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7F505E1D203F0D00A88192 /* Post.swift */; };
 		DE7F50611D203F4900A88192 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7F50601D203F4900A88192 /* User.swift */; };
@@ -14,7 +15,7 @@
 		DE7F50651D20401A00A88192 /* Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7F50641D20401A00A88192 /* Like.swift */; };
 		DE7F50691D20443300A88192 /* ModelUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7F50681D20443300A88192 /* ModelUtils.swift */; };
 		DE8202981D203E4800552FEC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202971D203E4800552FEC /* AppDelegate.swift */; };
-		DE82029A1D203E4800552FEC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202991D203E4800552FEC /* ViewController.swift */; };
+		DE82029A1D203E4800552FEC /* NewsFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202991D203E4800552FEC /* NewsFeedViewController.swift */; };
 		DE82029D1D203E4800552FEC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE82029B1D203E4800552FEC /* Main.storyboard */; };
 		DE82029F1D203E4800552FEC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE82029E1D203E4800552FEC /* Assets.xcassets */; };
 		DE8202A21D203E4800552FEC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE8202A01D203E4800552FEC /* LaunchScreen.storyboard */; };
@@ -35,6 +36,7 @@
 /* Begin PBXFileReference section */
 		0B1ABCB608CB587C10FA5B14 /* Pods-NewsFeed.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewsFeed.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NewsFeed/Pods-NewsFeed.debug.xcconfig"; sourceTree = "<group>"; };
 		8AB7534ED470E2C471B06E13 /* Pods-NewsFeed.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewsFeed.release.xcconfig"; path = "Pods/Target Support Files/Pods-NewsFeed/Pods-NewsFeed.release.xcconfig"; sourceTree = "<group>"; };
+		DE3872C91D49FB2E00D271D5 /* PostTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostTableViewCell.swift; sourceTree = "<group>"; };
 		DE49241D1D303DD700604142 /* NetworkMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkMock.swift; sourceTree = "<group>"; };
 		DE7F505E1D203F0D00A88192 /* Post.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		DE7F50601D203F4900A88192 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -43,7 +45,7 @@
 		DE7F50681D20443300A88192 /* ModelUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelUtils.swift; sourceTree = "<group>"; };
 		DE8202941D203E4800552FEC /* NewsFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewsFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE8202971D203E4800552FEC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		DE8202991D203E4800552FEC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		DE8202991D203E4800552FEC /* NewsFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsFeedViewController.swift; sourceTree = "<group>"; };
 		DE82029C1D203E4800552FEC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DE82029E1D203E4800552FEC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DE8202A11D203E4800552FEC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -136,7 +138,8 @@
 				DE49241C1D303D8A00604142 /* Network */,
 				DE7F505D1D203EF600A88192 /* Models */,
 				DE8202971D203E4800552FEC /* AppDelegate.swift */,
-				DE8202991D203E4800552FEC /* ViewController.swift */,
+				DE8202991D203E4800552FEC /* NewsFeedViewController.swift */,
+				DE3872C91D49FB2E00D271D5 /* PostTableViewCell.swift */,
 				DE82029B1D203E4800552FEC /* Main.storyboard */,
 				DE82029E1D203E4800552FEC /* Assets.xcassets */,
 				DE8202A01D203E4800552FEC /* LaunchScreen.storyboard */,
@@ -310,10 +313,11 @@
 				DE7F50631D203FD000A88192 /* Comment.swift in Sources */,
 				DE7F50611D203F4900A88192 /* User.swift in Sources */,
 				DE7F505F1D203F0D00A88192 /* Post.swift in Sources */,
-				DE82029A1D203E4800552FEC /* ViewController.swift in Sources */,
+				DE82029A1D203E4800552FEC /* NewsFeedViewController.swift in Sources */,
 				DE7F50691D20443300A88192 /* ModelUtils.swift in Sources */,
 				DE7F50651D20401A00A88192 /* Like.swift in Sources */,
 				DE8202981D203E4800552FEC /* AppDelegate.swift in Sources */,
+				DE3872CA1D49FB2E00D271D5 /* PostTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
