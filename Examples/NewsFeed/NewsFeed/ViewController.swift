@@ -20,16 +20,14 @@ class ViewController: UIViewController {
             let configuration: NSURLSessionConfiguration = {
                 let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
                 configuration.protocolClasses = [KakapoServer.self]
-                configuration.HTTPAdditionalHeaders = ["session-configuration-header": "foo"]
-                
                 return configuration
             }()
             
             return Manager(configuration: configuration)
             }()
         
-        manager.request(.GET, "https://kakapobook.com/api/newsfeed").response { (response) in
-            print(response.0)
+        manager.request(.GET, "https://kakapobook.com/api/users/\(loggedInUser.id)/newsfeed").responseJSON { (response) in
+            
         }
         
 //        NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "https://kakapobook.com/api/newsfeed")!) { (data, resp, error) in
