@@ -7,22 +7,11 @@
 //
 
 import UIKit
-import Alamofire
-import SwiftyJSON
 import SnapKit
-import Kakapo
 
 class NewsFeedViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    lazy var manager: Manager = {
-        let configuration: NSURLSessionConfiguration = {
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            configuration.protocolClasses = [KakapoServer.self]
-            return configuration
-        }()
-        
-        return Manager(configuration: configuration)
-    }()
+    let networkManager: NetworkManager = NetworkManager()
     
     var posts: [Post] = [] {
         didSet {
@@ -41,6 +30,9 @@ class NewsFeedViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        title = "NewsFeed"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(composePost))
+        
         tableView.registerClass(PostTableViewCell.self, forCellReuseIdentifier: String(PostTableViewCell))
         tableView.delegate = self
         tableView.dataSource = self
@@ -50,17 +42,17 @@ class NewsFeedViewController: UIViewController, UITableViewDelegate, UITableView
             make.edges.equalTo(view)
         }
         
-        requestNewsFeed()
+        networkManager.postsDidChange.add { [weak self] (posts) in
+            self?.posts = posts
+        }
+        
+        networkManager.requestNewsFeed()
     }
     
-    private func requestNewsFeed() {
-        manager.request(.GET, "https://kakapobook.com/api/users/\(loggedInUser.id)/newsfeed").responseJSON { [weak self] (response) in
-            guard let data = response.data else { return }
-            let json = JSON(data: data)
-            self?.posts = json.arrayValue.map { (post) -> Post in
-                return Post(json: post)
-            }
-        }
+    @objc private func composePost() {
+        let vc = ComposeViewController(networkManager: networkManager)
+        let navigationController = UINavigationController(rootViewController: vc)
+        presentViewController(navigationController, animated: true, completion: nil)
     }
     
     // MARK: UITableViewDataSource

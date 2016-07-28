@@ -124,7 +124,7 @@ private func mockNetwork() {
     }
     
     router.post("post") { (request) -> Serializable? in
-        let body = JSON(request.HTTPBody!)
+        let body = JSON.parse(NSString(data: request.HTTPBody!, encoding: NSUTF8StringEncoding) as! String)
         return db.insert { (id) -> Post in
             return Post(id: id, text: body["text"].string!, author: loggedInUser)
         }
