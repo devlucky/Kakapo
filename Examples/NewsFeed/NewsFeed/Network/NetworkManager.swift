@@ -57,6 +57,16 @@ class NetworkManager {
         }
     }
     
+    func toggleLikeForPost(at index: Int) {
+        let post = posts[index]
+        
+        if post.isLikedByMe {
+            unlikePost(at: index)
+        } else {
+            likePost(at: index)
+        }
+    }
+    
     func likePost(at index: Int) {
         let post = posts[index]
         

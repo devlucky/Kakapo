@@ -65,13 +65,7 @@ class NewsFeedViewController: UIViewController, UITableViewDelegate, UITableView
         let cell = tableView.dequeueReusableCellWithIdentifier(String(PostTableViewCell), forIndexPath: indexPath) as! PostTableViewCell
         let post = posts[indexPath.row]
         cell.configure(with: post) { [weak self] in
-            guard let strongSelf = self else { return }
-            
-            if post.isLikedByMe {
-                strongSelf.networkManager.unlikePost(at: indexPath.row)
-            } else {
-                strongSelf.networkManager.likePost(at: indexPath.row)
-            }
+            self?.networkManager.toggleLikeForPost(at: indexPath.row)
         }
         
         return cell
