@@ -29,8 +29,7 @@ class ViewController: UIViewController {
             }()
         
         manager.request(.GET, "https://kakapobook.com/api/newsfeed").response { (response) in
-            print(response)
-            
+            print(response.0)
         }
         
 //        NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "https://kakapobook.com/api/newsfeed")!) { (data, resp, error) in

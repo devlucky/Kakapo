@@ -11,6 +11,11 @@ import Kakapo
 import Fakery
 import SwiftyJSON
 
+enum LikeableEntityType: String {
+    case Post = "like"
+    case Comment = "comment"
+}
+
 protocol Likeable: Storable, Serializable {
     var likes: [Like] { get set}
 }
