@@ -71,7 +71,6 @@ class PostTableViewCell: UITableViewCell {
         
         let margin = 10
         let biggerMargin = 20
-
         
         avatarImage.snp_makeConstraints { (make) in
             make.leading.top.equalTo(margin)
@@ -86,12 +85,13 @@ class PostTableViewCell: UITableViewCell {
         
         postLabel.snp_makeConstraints { (make) in
             make.top.equalTo(avatarImage.snp_bottom).offset(margin)
-            make.leading.trailing.equalTo(authorLabel)
+            make.leading.equalTo(avatarImage.snp_centerX)
+            make.trailing.equalTo(authorLabel)
         }
         
         likeButton.snp_makeConstraints { (make) in
             make.top.equalTo(postLabel.snp_bottom).offset(biggerMargin)
-            make.leading.equalTo(self).offset(margin)
+            make.leading.equalTo(postLabel)
             make.bottom.equalTo(self).inset(margin)
         }
         
