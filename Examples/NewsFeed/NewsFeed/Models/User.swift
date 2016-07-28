@@ -22,7 +22,7 @@ struct User: Serializable, Storable, JSONInitializable {
         self.id = id
         firstName = sharedFaker.name.firstName()
         lastName = sharedFaker.name.lastName()
-        avatar = sharedFaker.internet.image()
+        avatar = "https://robohash.org/\(arc4random())"
     }
     
     init(json: JSON) {

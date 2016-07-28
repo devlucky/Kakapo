@@ -7,9 +7,12 @@
 //
 
 import UIKit
+import Haneke
 
 class PostTableViewCell: UITableViewCell {
-
+    
+    private static let AvatarPlaceholder = UIImage(named: "avatar_placeholder")
+    private static let AvatarSize = 35
     private let authorLabel = UILabel()
     private let postLabel = UILabel()
     private let avatarImage = UIImageView()
@@ -28,7 +31,15 @@ class PostTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        avatarImage.hnk_cancelSetImage()
+    }
+    
     func configure(with post: Post, likeHandler: () -> ()) {
+        if let url = NSURL(string: post.author.avatar) {
+            avatarImage.hnk_setImageFromURL(url, placeholder: PostTableViewCell.AvatarPlaceholder, format: Format<UIImage>(name: ""))
+        }
         authorLabel.text = "\(post.author.firstName) \(post.author.lastName)"
         postLabel.text = post.text
         likeCountLabel.text = "\(post.likes.count)"
@@ -42,6 +53,11 @@ class PostTableViewCell: UITableViewCell {
         likeButton.addTarget(self, action: #selector(likeButtonPressed), forControlEvents: .TouchUpInside)
         backgroundColor = UIColor.whiteColor()
         postLabel.numberOfLines = 0
+        avatarImage.clipsToBounds = true
+        avatarImage.contentMode = .ScaleAspectFill
+        avatarImage.layer.borderColor = UIColor.lightGrayColor().CGColor
+        avatarImage.layer.borderWidth = 0.5
+        avatarImage.layer.cornerRadius = CGFloat(PostTableViewCell.AvatarSize / 2)
     }
     
     private func layoutUI() {
@@ -50,14 +66,20 @@ class PostTableViewCell: UITableViewCell {
         }
         
         let margin = 10
-
+        
+        avatarImage.snp_makeConstraints { (make) in
+            make.leading.top.equalTo(margin)
+            make.width.height.equalTo(PostTableViewCell.AvatarSize)
+        }
+        
         authorLabel.snp_makeConstraints { (make) in
-            make.top.leading.equalTo(self).offset(margin)
+            make.leading.equalTo(avatarImage.snp_trailing).offset(margin)
+            make.centerY.equalTo(avatarImage)
             make.trailing.equalTo(self).inset(margin)
         }
         
         postLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(authorLabel.snp_bottom).offset(margin)
+            make.top.equalTo(avatarImage.snp_bottom).offset(margin)
             make.leading.trailing.equalTo(authorLabel)
         }
         
