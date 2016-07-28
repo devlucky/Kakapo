@@ -51,6 +51,7 @@ class PostTableViewCell: UITableViewCell {
     }
     
     private func styleUI() {
+        authorLabel.font = UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)
         commentButton.setImage(UIImage(named: "comment")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
         commentButton.tintColor = .grayColor()
         likeButton.setImage(UIImage(named: "thumbUp")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
