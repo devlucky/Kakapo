@@ -11,7 +11,7 @@ import Foundation
 /**
  A RouteHandler used when registering different HTTP methods, which can return any Serializable object.
  
- By default, though, the Router will return a 200 status code and no header fields when only returning a Serializable object.
+ By default, though, the Router will return a 200 status code and `["Content-Type": "application/json"]` header fields when only returning a Serializable object.
  In order to customize that behavior, check `ResponseFieldsProvider` to provide custom status code and header fields.
  */
 public typealias RouteHandler = Request -> Serializable?
@@ -108,9 +108,21 @@ public final class Router {
     /// The desired latency to delay the mocked responses. Default value is 0.
     public var latency: NSTimeInterval = 0
     
+    
     /**
-     Register and return a new Router in the Server
+     Register a new Router in the KakapoServer.
+     The baseURL can contain a scheme, and the requestURL must match the scheme; if it doesn't contain a scheme then the baseURL is a wildcard and will be matched by any subdomain or any scheme:
      
+     - base: `http://kakapo.com`, path: "any", requestURL: "http://kakapo.com/any" ✅
+     - base: `http://kakapo.com`, path: "any", requestURL: "https://kakapo.com/any" ❌ because it's **https**
+     - base: `kakapo.com`, path: "any", requestURL: "https://kakapo.com/any" ✅
+     - base: `kakapo.com`, path: "any", requestURL: "https://api.kakapo.com/any" ✅
+     
+     It can also contains additional components but not wildcards:
+     
+     - base: `http://kakapo.com/api`, path: "any", requestURL: "http://kakapo.com/api/any" ✅
+     - base: `http://kakapo.com/api/:apiversion`, path: "any", requestURL: "https://kakapo.com/api/v3/any" ❌ wildcard must be in the path used when registering a route.
+
      - parameter baseURL: The base URL that this Router will use
      
      - returns: An new initialized Router. Note that two Router objects can hold the same baseURL.
@@ -139,12 +151,20 @@ public final class Router {
         self.baseURL = baseURL
     }
     
+    /**
+     Immediately return false if the request's URL doesn't contain the `baseURL` otherwise true if a route matches the request
+     
+     - parameter request: A URL request
+     
+     - returns: true if a route matches the request
+     */
     func canInitWithRequest(request: NSURLRequest) -> Bool {
-        guard let requestURL = request.URL,
-                  components = requestURL.componentsFromBaseURL(baseURL) else { return false }
+        // TODO: test
+        guard let requestURL = request.URL
+            where requestURL.absoluteString.containsString(baseURL) else { return false }
         
-        for (key, route) in routes where route.method.rawValue == request.HTTPMethod {
-            if  decomposeURL(key, requestURLComponents: components) != nil {
+        for (key, route) in routes where route.method.rawValue == request.HTTPMethod{
+            if  matchRoute(baseURL, path: key, requestURL: requestURL) != nil {
                 return true
             }
         }
@@ -154,23 +174,17 @@ public final class Router {
     
     func startLoading(server: NSURLProtocol) {
         guard let requestURL = server.request.URL,
-                  components = requestURL.componentsFromBaseURL(baseURL),
                   client = server.client else { return }
         
         var statusCode = 200
-        var headerFields = [String : String]?()
-        var dataBody: NSData?
+        var headerFields: [String : String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
         
         for (key, route) in routes {
-            if let info = decomposeURL(key, requestURLComponents: components) {
-                
-                if let dataFromNSURLRequest = server.request.HTTPBody {
-                    dataBody = dataFromNSURLRequest
-                } else if let dataFromProtocol = NSURLProtocol.propertyForKey(RequestHTTPBodyKey, inRequest: server.request) as? NSData {
-                    // Using NSURLProtocol property after swizzling NSURLRequest here
-                    dataBody = dataFromProtocol
-                }
+            if let info = matchRoute(baseURL, path: key, requestURL: requestURL) {
+                // If the request body is nil use `NSURLProtocol` property see swizzling in `NSMutableURLRequest.m`
+                // using a literal string because a bridging header in the podspec will be more problematic.
+                let dataBody = server.request.HTTPBody ?? NSURLProtocol.propertyForKey("kkp_requestHTTPBody", inRequest: server.request) as? NSData
                 
                 serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields))
                 break
@@ -193,63 +207,99 @@ public final class Router {
         let didFinishLoading: (NSURLProtocol) -> () = { (server) in
             client.URLProtocolDidFinishLoading(server)
         }
-        
-        if latency > 0 {
-            let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
-            dispatch_after(delayTime, dispatch_get_main_queue()) {
-                didFinishLoading(server)
-            }
-        } else {
+
+        let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
+        dispatch_after(delayTime, dispatch_get_main_queue()) {
             didFinishLoading(server)
         }
     }
     
     /**
-     Registers a GET request in a given relative path
+     Registers a GET request with the given path.
      
-     - parameter relativePath: A relative URL path to be registered
-     - parameter handler: A `RouteHandler` handler that will be used when intercepting the `path` with the `baseURL` for a GET request
+     The path is used togheter with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retreive the components of the request:
+     
+     - "/users/:userid" and "/users/1234" will produce [userid: 1234]
+     
+     Other than wildcards the components must be matched by the request.
+     The path should not contain paths that are already contained in the baseURL:
+     
+     - base: "http://kakapo.com/api" -> path "/users/1234" ✅
+     - base: "http://kakapo.com/api" -> path "api/users/1234" ❌
+     
+     Trailing and leading slashes are not important for the route matching.
+     
+     - parameter path: The path used to match URL requests.
+     - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func get(relativePath: String, handler: RouteHandler) {
-        routes[relativePath] = (.GET, handler)
+    public func get(path: String, handler: RouteHandler) {
+        routes[path] = (.GET, handler)
     }
     
     /**
-     Registers a POST request in a given relative path
+     Registers a POST request with the given path
      
-     - parameter relativePath: A relative URL path to be registered
-     - parameter handler: A `RouteHandler` handler that will be used when intercepting the `path` with the `baseURL` for a POST request
+     The path is used togheter with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retreive the components of the request:
+     
+     - "/users/:userid" and "/users/1234" will produce [userid: 1234]
+     
+     Other than wildcards the components must be matched by the request.
+     The path should not contain paths that are already contained in the baseURL:
+     
+     - base: "http://kakapo.com/api" -> path "/users/1234" ✅
+     - base: "http://kakapo.com/api" -> path "api/users/1234" ❌
+     
+     Trailing and leading slashes are not important for the route matching.
+     
+     - parameter path: The path used to match URL requests.
+     - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func post(relativePath: String, handler: RouteHandler) {
-        routes[relativePath] = (.POST, handler)
+    public func post(path: String, handler: RouteHandler) {
+        routes[path] = (.POST, handler)
     }
     
     /**
-     Registers a DEL request in a given relative path
+     Registers a DEL request with the given path
      
-     - parameter relativePath: A relative URL path to be registered
-     - parameter handler: A `RouteHandler` handler that will be used when intercepting the `path` with the `baseURL` for a DEL request
+     The path is used togheter with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retreive the components of the request:
+     
+     - "/users/:userid" and "/users/1234" will produce [userid: 1234]
+     
+     Other than wildcards the components must be matched by the request.
+     The path should not contain paths that are already contained in the baseURL:
+     
+     - base: "http://kakapo.com/api" -> path "/users/1234" ✅
+     - base: "http://kakapo.com/api" -> path "api/users/1234" ❌
+     
+     Trailing and leading slashes are not important for the route matching.
+     
+     - parameter path: The path used to match URL requests.
+     - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func del(relativePath: String, handler: RouteHandler) {
-        routes[relativePath] = (.DELETE, handler)
+    public func del(path: String, handler: RouteHandler) {
+        routes[path] = (.DELETE, handler)
     }
     
     /**
-     Registers a PUT request in a given relative path
+     Registers a PUT request with the given path
      
-     - parameter relativePath: A relative URL path to be registered
-     - parameter handler: A `RouteHandler` handler that will be used when intercepting the `path` with the `baseURL` for a PUT request
+     The path is used togheter with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retreive the components of the request:
+     
+     - "/users/:userid" and "/users/1234" will produce [userid: 1234]
+     
+     Other than wildcards the components must be matched by the request.
+     The path should not contain paths that are already contained in the baseURL:
+     
+     - base: "http://kakapo.com/api" -> path "/users/1234" ✅
+     - base: "http://kakapo.com/api" -> path "api/users/1234" ❌
+     
+     Trailing and leading slashes are not important for the route matching.
+     
+     - parameter path: The path used to match URL requests.
+     - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func put(relativePath: String, handler: RouteHandler) {
-        routes[relativePath] = (.PUT, handler)
-    }
-    
-}
-
-private extension NSURL {
-    
-    func componentsFromBaseURL(baseURL: String) -> NSURLComponents? {
-        return NSURLComponents(string: absoluteString.stringByReplacingOccurrencesOfString(baseURL, withString: ""))
+    public func put(path: String, handler: RouteHandler) {
+        routes[path] = (.PUT, handler)
     }
     
 }
