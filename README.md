@@ -376,7 +376,7 @@ session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, 
 
 ### Newsfeed
 
-Make sure you check the [demo app](https://github.com/devlucky/Kakapo/tree/feature/READMEDocumentation/Examples/NewsFeed) we created using Kakapo: a prototyped newsfeed app which lets the user create new posts and like/unlike them.
+Make sure you check the [demo app](https://github.com/devlucky/Kakapo/tree/master/Examples/NewsFeed) we created using Kakapo: a prototyped newsfeed app which lets the user create new posts and like/unlike them.
 
 ![](https://raw.githubusercontent.com/devlucky/Kakapo/master/Examples/NewsFeed/newsfeed.png)
 
