@@ -150,12 +150,12 @@ After this, everything is ready to test your mocked objects; you can perform you
 
 ```Swift
 session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, _, _) in
-  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves)
   // responseDictionary == { "user" : foo }
 }.resume()
 
 session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2")!) { (data, _, _) in
-  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves)
   // responseDictionary == { "comment" : bar }
 }.resume()
 ```
@@ -165,7 +165,7 @@ Note that previous registrations will also be compatible with same URLs which ha
 ```Swift
 // Will also be matched since we previously registered "/users/:id/comments/:comment_id"
 session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2?page=2&author=hector")!) { (data, _, _) in
-  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves)
   // responseDictionary == { "comment" : bar }
 }.resume()
 ```
