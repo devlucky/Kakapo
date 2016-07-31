@@ -29,14 +29,14 @@ public protocol CustomSerializable: Serializable {
     func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject?
 }
 
-extension Serializable {
+public extension Serializable {
     func serialize(keyTransformer: KeyTransformer? = nil) -> AnyObject? {
         if let object = self as? CustomSerializable {
             return object.customSerialize(keyTransformer)
         }
         return Kakapo.serialize(self, keyTransformer: keyTransformer)
     }
-    
+
     func toData() -> NSData? {
         guard let object = serialize() else { return nil }
         
