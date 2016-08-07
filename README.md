@@ -41,6 +41,13 @@ A common approach when testing network requests is to stub them with fake networ
 
 While still this approach may work good, Kakapo will be a game changer in your network tests: it will give you complete control when it comes to simulate backend behaviors. Moreover, is not just unit testing since you can even take a step further and prototype your application before having a real service behind!
 
+
+> 7 billion people on Earth
+>
+> Fewer than 150 Kakapo
+>
+> Time is critical [donate to Kakapo recovery](http://kakaporecovery.org.nz/adopt-a-kakapo/)
+
 ## Features
 
   * Dynamic mocking
@@ -63,11 +70,14 @@ pod 'Kakapo'
 
 ## Usage
 
+> NOTE: The project also contains a [README.playground](https://github.com/devlucky/Kakapo/tree/master/README.playground).
+> Check it out to see some examples of the key features of Kakapo.
+
 Kakapo is made with an easy-to-use design in mind. To quickly get started, you can create a `Router` that intercepts network requests like this:
 
 ```Swift
 let router = Router.register("http://www.test.com")
-router.get("/users"){ request in
+router.get("/users") { request in
   return ["id" : 2, "name": "Kakapo"]
 }
 ```
@@ -78,7 +88,7 @@ You might be wondering where the dynamic part is; here is when the different mod
 let db = KakapoDB()
 db.create(User.self, number: 20)
 
-router.get("/users"){ request in
+router.get("/users") { request in
   return db.findAll(User.self)
 }
 ```
