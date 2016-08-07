@@ -30,6 +30,13 @@ public protocol CustomSerializable: Serializable {
 }
 
 public extension Serializable {
+    /**
+     Serialize a `Serializable` object. The output, unless nil, is convertible to `Data` / JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
+     
+     - parameter keyTransformer: A closure that given a key transforms it into another key. Usually this optional closure is provided by `SerializationTransformer` when a `Serializable` object is wrapped into a transformer.
+     
+     - returns: The serialized object
+     */
     func serialize(keyTransformer: KeyTransformer? = nil) -> AnyObject? {
         if let object = self as? CustomSerializable {
             return object.customSerialize(keyTransformer)
@@ -37,6 +44,11 @@ public extension Serializable {
         return Kakapo.serialize(self, keyTransformer: keyTransformer)
     }
 
+    /**
+     Serialize a `Serializable` object and convert the serialzied object to `Data`. Unless it is nil the return value is representing a JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
+     
+     - returns: The serialized object as `Data`
+     */
     func toData() -> NSData? {
         guard let object = serialize() else { return nil }
         

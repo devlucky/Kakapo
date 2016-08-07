@@ -73,18 +73,28 @@ public final class KakapoServer: NSURLProtocol {
         NSURLProtocol.unregisterClass(self)
     }
     
+    /**
+     KakapoServer checks if the given request matches any of the registered routes and determines if the request should be intercepted
+     
+     - parameter request: A request
+     
+     - returns: true if any of the registered route match the request URL
+     */
     override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
         return routers.filter { $0.canInitWithRequest(request) }.first != nil
     }
     
+    /// Just returns the given request without changes
     override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
         return request
     }
     
+    /// Start loading the matched requested, the route handler will be called and the returned object will be serialized.
     override public func startLoading() {
         KakapoServer.routers.filter { $0.canInitWithRequest(request) }.first!.startLoading(self)
     }
     
+    /// Not implemented yet, does nothing ATM. https://github.com/devlucky/Kakapo/issues/88
     override public func stopLoading() {
         /* TODO: implement stopLoading for delayed requests https://github.com/devlucky/Kakapo/issues/88 */
     }
