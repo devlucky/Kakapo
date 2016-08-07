@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name             = "Kakapo"
-  s.version          = "0.0.1-beta2"
-  s.summary          = "Dynamically Mock server behaviors and APIs, prototype without backend."
+  s.version          = "0.0.1"
+  s.summary          = "Dynamically Mock server behaviors and responses."
 
   s.description      = <<-DESC 
-  							Dynamically Mock server behaviors and APIs, prototype without backend.
+  							Dynamically Mock server behaviors and responses.
                        DESC
 
   s.homepage         = "https://github.com/devlucky/Kakapo"
