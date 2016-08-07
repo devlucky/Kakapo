@@ -39,7 +39,8 @@ A common approach when testing network requests is to stub them with fake networ
 - Lot of files have to be generated and included in the project.
 - Are just static responses that can only be used for unit tests since they don't reflect backend behaviors and state.
 
-While still this approach may work good, Kakapo will be a game changer in your network tests: it will give you complete control when it comes to simulate backend behaviors. Moreover, is not just unit testing since you can even take a step further and prototype your application before having a real service behind!
+While still this approach may work good, Kakapo will be a game changer in your network tests: it will give you complete control when it comes to simulate backend behaviors. Moreover, is not just unit testing since you can even take a step further and prototype your application before having a real service behind!  
+With Kakapo you can just create Swift structs/classes/enums that are automatically serialized to JSON.
 
 
 > 7 billion people on Earth
