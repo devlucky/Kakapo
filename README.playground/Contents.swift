@@ -70,3 +70,51 @@ router.get("zoo/:animal") { (request) -> Serializable? in
 
 //: request **GET** `https://kakapo.com/api/v1/parrot`
 //: will return `{"name": "Kakapo"}`
+
+//: ## KakapoDB
+let db = KakapoDB()
+
+struct Author: Storable, Serializable {
+    let id: String
+    let name: String
+    
+    init(id: String, db: KakapoDB) {
+        self.id = id
+        self.name = String(arc4random()) // use Fakery!
+    }
+}
+
+struct Article: Storable, Serializable {
+    let id: String
+    let text: String
+    let author: Author
+    
+    init(id: String, db: KakapoDB) {
+        self.id = id
+        self.text = String(arc4random()) // use Fakery!
+        author = db.insert { (id) -> Author in
+            return Author(id: id, db: db) // id must always come from db
+        }
+    }
+}
+
+//: Create 10 random article
+let articles = db.create(Article.self, number: 10)
+//: Get all articles
+router.get("articles") { (request) -> Serializable? in
+    return db.findAll(Article)
+}
+
+//: Get all articles from the given author
+router.get("articles/:author_id") { (request) -> Serializable? in
+    return db.filter(Article.self) { (article) -> Bool in
+        return article.author.id == request.components["author_id"]
+    }
+}
+
+//: Create an article
+router.post("article") { (request) -> Serializable? in
+    return db.insert { (id) -> Article in
+        return Article(id: id, db: db)
+    }
+}
