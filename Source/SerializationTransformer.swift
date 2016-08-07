@@ -37,7 +37,7 @@ public protocol SerializationTransformer: CustomSerializable {
 extension SerializationTransformer {
     
     /**
-     `SerializationTransformer`by default serialize it's object using the given keyTransformer (if any) and it's own key transformer.
+     `SerializationTransformer` by default serialize it's object using the given keyTransformer (if any) and it's own key transformer.
      Its own keyTransformer must always be used before the one provided by the callers, so UppercaseTransformer(LowercaseTransformer(object)) would result in uppercase keys.
      
      - returns: The serialized wrapped object with transformed keys.

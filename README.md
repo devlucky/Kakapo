@@ -8,55 +8,58 @@
 [![License](https://img.shields.io/cocoapods/l/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
 [![Platform](https://img.shields.io/cocoapods/p/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
 
-> Next generation mocking library in Swift
-
-Kakapo **dynamically mocks server responses**.
+> Dynamically Mock server behaviors and responses.
 
 ## Contents
 - [Why Kakapo?](#why-kakapo)
 - [Features](#features)
-- [Setup/Installation](#setup/installation)
+- [Installation](#installation)
 - [Usage](#usage)
   - [Serializable protocol](#serializable-protocol)
-  - [Router: registering and intercepting methods](#router---registering-and-intercepting-methods)
+  - [Router: Register and Intercept](#router---register-and-intercept)  
+    - [Third-party network libraries](#third-party-libraries)
   - [Leverage the database - Dynamic mocking](#leverage-the-database---dynamic-mocking)
   - [CustomSerializable](#customserializable)
   - [JSONAPI](#jsonapi)
   - [Expanding Null values with Property Policy](#expanding-null-values-with-property-policy)
   - [Key customization - Serialization Transformer](#key-customization---serialization-transformer)
   - [Full responses on ResponseFieldsProvider](#full-responses-on-responsefieldsprovider)
-- [Examples](#examples)
 - [Roadmap](#roadmap)
+- [Examples](#examples)
 - [Authors](#authors)
 
-Kakapo is a dynamic mocking library. It allows you to fully replicate your backend logic and state in a simple manner.
-
-But is much more than that. With Kakapo, you can easily fully prototype your application based on your backend needs.
+Kakapo is a dynamic mocking library. It allows you to replicate your backend APIs and logic.  
+With Kakapo you can easily prototype your application based on your API specifications.
 
 ## Why Kakapo?
 
-A common approach when testing network requests is to stub them with fake network data from local files. This has some well known disadvantages:
+A common approach when testing network requests is to stub them with fake network responses from local files or recorded requests. This has some disadvantages:
 
-- Data which does not reflect the actual behavior from backend.
-- Static files with fake responses which need to be updated every time APIs are updated.
-- Mock data which is just **dumb** data.
-- Boilerplate code and additional files needed to setup stubbed local files.
+- All files needs to be updated when the API are updated.
+- Lot of files have to be generated and included in the project.
+- Are just static responses that can only be used for unit tests since they don't reflect backend behaviors and state.
 
-While still this approach may work good, Kakapo will be a game changer in your network tests: it will give you complete control when it comes to simulating backend behavior completely. Moreover, you can even take a step further and prototype your application before having a real service behind!
+While still this approach may work good, Kakapo will be a game changer in your network tests: it will give you complete control when it comes to simulate backend behaviors. Moreover, is not just unit testing since you can even take a step further and prototype your application before having a real service behind!
+
+
+> 7 billion people on Earth
+>
+> Fewer than 150 Kakapo
+>
+> Time is critical [donate to Kakapo recovery](http://kakaporecovery.org.nz/adopt-a-kakapo/)
 
 ## Features
 
-  * Dynamic mocking and prototyping
-  * Swift 2.3 compatible
-  * Thread-safe
-  * Compatible with macOS/iOS/watchOS/tvOS
-  * Protocol oriented
-  * Unit tested (with Quick and Nimble)
+  * Dynamic mocking
+  * Prototyping
+  * Swift 2.2 compatible
+  * Compatible with [![Platform](https://img.shields.io/cocoapods/p/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
+  * Protocol oriented and pluggable
   * Fully customizable by defining custom serialization and custom responses
   * Out-of-the-box serialization
-  * Out-of-the-box JSONAPI support
+  * [JSONAPI](http://jsonapi.org) support
 
-## Setup/Installation
+## Installation
 
 Using [CocoaPods](http://cocoapods.org/):
 
@@ -67,12 +70,15 @@ pod 'Kakapo'
 
 ## Usage
 
-Kakapo is made with an easy-to-use design in mind. To quickly get started, you can create a simple Router that intercepts GET requests like this:
+> NOTE: The project also contains a [README.playground](https://github.com/devlucky/Kakapo/tree/master/README.playground).
+> Check it out to see some examples of the key features of Kakapo.
+
+Kakapo is made with an easy-to-use design in mind. To quickly get started, you can create a `Router` that intercepts network requests like this:
 
 ```Swift
 let router = Router.register("http://www.test.com")
-router.get("/users"){ request in
-  return ["id" : 2]
+router.get("/users") { request in
+  return ["id" : 2, "name": "Kakapo"]
 }
 ```
 
@@ -82,18 +88,18 @@ You might be wondering where the dynamic part is; here is when the different mod
 let db = KakapoDB()
 db.create(User.self, number: 20)
 
-router.get("/users"){ request in
+router.get("/users") { request in
   return db.findAll(User.self)
 }
 ```
 
-Now, we've created 20 random `User` objects and mocked our request to return them. Yes, it's *that easy*.
+Now, we've created 20 random `User` objects and mocked our request to return them.  
 
-Let's get a closer look to the different modules:
+Let's get a closer look to the different features:
 
 ### Serializable protocol
 
-Kakapo uses the `Serializable` protocol in order to serialize objects in JSON format. *Any type* can be serialized as long as it conforms to this protocol:
+Kakapo uses the `Serializable` protocol in order to serialize objects to JSON. *Any type* can be serialized as long as it conforms to this protocol:
 
 ```Swift
 struct User: Serializable {
@@ -105,22 +111,19 @@ let serializedUser = user.serialize()
 print(serializedUser["name"]) // Alex
 ```
 
-Also, foundation classes are supported out-of-the-box: This means that `Array`, `Dictionary` or `Optional` have custom extensions and can also be serialized:
+Also, standard library types are supported : This means that `Array`, `Dictionary` or `Optional` can be serialized:
 
 ```Swift
 let serializedUserArray = [user].serialize()
-print(serializedUserArray.first["name"]) // Alex
+// -> [["name": "Alex"]]
 let serializedUserDictionary = ["test": user].serialize()
-print(serializedUserDictionary["test"]["name"]) // Alex
+// -> ["test": ["name": "Alex"]]
 ```
 
-`Routers` use this protocol internally to return a JSON representation of your mocked objects.
+### Router - Register and Intercept
 
-### Router - registering and intercepting methods
-
-As you may have noticed, Kakapo uses Routers in order to keep track of the registered endpoints that are to be intercepted.
-
-You can match *any* relative path from the registered base URL that you want, as long as your components are properly represented. This means that wildcard components will need to be represented with colon:
+Kakapo uses `Router`s in order to keep track of the registered endpoints that have to be intercepted.  
+You can match *any* relative path from the registered base URL, as long as the components are matching the request's components. You can use wildcard components:
 
 ```Swift
 let router = Router.register("http://www.test.com")
@@ -132,157 +135,121 @@ router.get("/users/:id") { ... }
 router.get("/users/:id/comments/:comment_id") { ... }
 ```
 
-The handler argument also needs to return the Serializable object that will be used once the URL is matched.
+The handler will have to return a `Serializable` object that will define the response once the URL of a request is matched.
+When a `Router` intercepts a request, it  automatically serialize the `Serializable` object returned by the handler and converts it to `Data`.
 
 ```Swift
-let router = Router.register("http://www.test.com")
-
 router.get("/users/:id") { request in
-  return ["user" : foo]
-}
-
-router.get("/users/:id/comments/:comment_id") { request in
-  return ["comment" : bar]
+  return ["id": request.components["id"]!, "name": "Joan"]
 }
 ```
 
-After this, everything is ready to test your mocked objects; you can perform your normal requests as always:
+Now everything is ready to test your mocked API; you can perform your request as you usually would do:
 
 ```Swift
 session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, _, _) in
-  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves)
-  // responseDictionary == { "user" : foo }
-}.resume()
-
-session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2")!) { (data, _, _) in
-  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves)
-  // responseDictionary == { "comment" : bar }
+  // handle response
 }.resume()
 ```
 
-Note that previous registrations will also be compatible with same URLs which have query parameters:
+> Note: query parameters are not affecting the route match
+> `http://www.test.com/users/1?foo=bar` would also be matched 
 
-```Swift
-// Will also be matched since we previously registered "/users/:id/comments/:comment_id"
-session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2?page=2&author=hector")!) { (data, _, _) in
-  let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves)
-  // responseDictionary == { "comment" : bar }
-}.resume()
-```
-
-Remember that, instead of a plain dictionary, you can return whatever object you want as long as it is Serializable:
+In the previous example the handler was returning a simple `Dictionary`, while this works because it is `Serializable` you can also create your own entities that conform to `Serializable`:
 
 ```Swift
 struct User: Storable, Serializable {
     let firstName: String
     let lastName: String
-    let age: Int
+    let id: String
 }
 
 router.get("/users/:id") { request in
-  return User(firstName: "Alex", lastName: "Culone", age: 28)
+  return User(firstName: "Joan", lastName: "Romano", id: request.components["id"]!)
 }
 ```
 
-When registering paths, the RouteHandler passes a Request object that fully represents your request. Thus, you can make use of them in order to pass specific objects.
+When a request is matched the RouteHandler receives a `Request` object that represents your request including components, query parmaters, HTTPBody and HTTPHeaders. The `Request` object can be usefull when building dynamic repsonses.
 
-This may be useful, for instance, when you want to get a specific user based on a given id URL component:
+#### Third-Party Libraries
 
-```Swift
-router.get("/users/:id"){ request in
-  let userId = request.components["id"] // userId = 2
-  let user = findUserWithId(userId)
-  return ["foo" : user]
-}
+Third-Party libraries that use the Foundation networking APIs are also supported but you might need to set a proper `NSURLSessionConfiguration`. For example to setup `Alamofire`:
 
-session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (_, _, _) in
-}.resume()
+```swift
+ let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+ configuration.protocolClasses = [KakapoServer.self]
+ let manager = Manager(configuration: configuration)
 ```
 
 ### Leverage the database - Dynamic mocking
 
-But Kakapo gets even more powerful when using your Routers together with the Database. This way, you can define own types and insert, remove, update or find them.
+Kakapo gets even more powerful when using your Routers together with the Database. You can create, insert, remove, update or find objects.
 
-This lets you mock any behavior you want after a request is made, as if it was a real backend. In other words, this brings you **dynamic** mocking.
+This lets you mock the APIs behaviors, as if you were using a real backend. This is the **dynamic** side of Kakapo.
 
-In order for them to be used by the Database, your types need to conform to the `Storable` protocol.
+To create entities that can be used with the databsse, your types need to conform to the `Storable` protocol.
 
 ```Swift
-struct User: Storable, Serializable {
-    let firstName: String
-    let lastName: String
-    let age: Int
-    let id: Int
+struct Articles: Storable, Serializable {
+    let id: String
+    let text: String
 
-    init(id: Int, db: KakapoDB) {
-        self.init(firstName: randomString(), lastName: randomString(), age: random(), id: id)
+    init(id: String, db: KakapoDB) {
+        self.id = id
+        self.text = randomString() // you might use some faker library like Fakery!
     }
 }
 ```
 
-An example usage could be returning an User after a get request with that user's id:
+An example usage could be to retreive a specific `Article`:
 
 ```Swift
 let db = KakapoDB()
-db.create(User.self, number: 20)
+db.create(Article.self, number: 20)
 
-router.get("/users/:id"){ request in
-  let userId = request.components["id"]
-  return db.find(User.self, id: userId)
+router.get("/articles/:id") { request in
+  let articleId = request.components["id"]
+  return db.find(Article.self, id: articleId)
 }
 ```
 
 But, of course, you could perform any logic which fits your needs:
 
 ```Swift
-router.put("/users/:id"){ request in
-  let insertedUser = db.insert { (id) -> User in
-    return User(firstName: "Alex", lastName: "Manzella", age: 28, id: id)
+router.post("/article/:id") { request in
+  return db.insert { (id) -> User in
+    return Article(text: "text from body", id: id)
   }
-
-  return insertedUser
 }
 
-router.post("/users/:id"){ request in
-  let userId = request.components["id"]
-  let userToUpdate = db.find(User.self, id: userId)
-  // Update user...
-  db.update(userToUpdate)
+router.del("/article/:id") { request in
+  let articleId = request.components["id"]
+  let article = db.find(Article.self, id: articleId)
+  db.delete(article)
 
-  return userToUpdate
-}
-
-router.del("/users/:id"){ request in
-  let userId = request.components["id"]
-  let userToDelete = db.find(User.self, id: userId)
-  db.delete(userToDelete)
-
-  return [:]
+  return ["status": "success"]
 }
 ```
 
 ### CustomSerializable
 
-In [Serializable](#serializable-protocol) we described how your classes can be serialized. The serialization mechanism, by default, will basically mirror your object's properties and recursively serialize them into JSON.
+In [Serializable](#serializable-protocol) we described how your classes can be serialized. The serialization, by default, `Mirror` (using swift's reflection) an entity recursively serialize its properties.
 
-Whenever a different behavior is needed, you can instead conform to CustomSerializable in order to provide your custom serialization. The serialization mechanism will check whether your object is CustomSerializable before proceeding with normal serialization.
+Whenever a different behavior is needed, you can instead conform to `CustomSerializable` to provide your custom serialization.
 
-For instance, Array uses CustomSerializable to return an Array with its serialized objects inside. Dictionary, on the other hand, is serialized by creating a Dictionary with the same keys and serialized values.
+For instance, `Array` uses `CustomSerializable` to return an `Array` containing its serialized elements. `Dictionary`, similarly, is serialized by creating a `Dictionary` with the same keys and serialized values.
 
-Besides foundation classes, Kakapo makes use of CustomSerializable in order to bring full JSONAPI serialization.
+For other examples of `CustomSerializable` and how to use it to create more complex serializations take a look at the `JSONAPISerializer` implementation.
 
 ### JSONAPI
 
-Since Kakapo was built with JSONAPI support in mind, a JSONAPISerializer is therefore provided to mock APIs with this concrete specification.
+Kakapo was built with JSONAPI support in mind, `JSONAPISerializer` is able to serialize your entity into JSON conforming to [jsonapi.org](http://jsonapi.org).
 
-For your types to be JSONAPI compliant, they need to conform to `JSONAPIEntity` protocol, a CustomSerializable subprotocol. Let's see an example:
+Your entities, to be serialized conforming to JSONAPI, need to conform to `JSONAPIEntity` protocol.  
+
+Let's see an example:
 
 ```Swift
-struct Dog: JSONAPIEntity {
-    let id: String
-    let name: String
-}
-
 struct Cat: JSONAPIEntity {
     let id: String
     let name: String
@@ -291,26 +258,23 @@ struct Cat: JSONAPIEntity {
 struct User: JSONAPIEntity {
     let id: String
     let name: String
-    let dog: Dog
     let cats: [Cat]
 }
 ```
 
-Note that `JSONAPIEntity` objects are already `Serializable` and you could just use them together with your Routers. However, to completely follow the JSONAPI structure in your responses, we highly encourage to use a `JSONAPISerializer` struct:
+Note that `JSONAPIEntity` objects are already `Serializable` and you could just use them together with your Routers. However, to completely follow the JSONAPI structure in your responses, you should wrap them into a `JSONAPISerializer` struct:
 
 ```Swift
-let cats = [Cat(id: "33", name: "Stancho"), Cat(id: "44", name: "Hez")]
-let dog = Dog(id: "22", name: "Joan", cat: cats[0])
-let user = User(id: "11", name: "Alex", dog: dog, cats: cats)
-
 router.get("/users/:id"){ request in
+  let cats = [Cat(id: "33", name: "Joan"), Cat(id: "44", name: "Hez")]
+  let user = User(id: "11", name: "Alex", cats: cats)
   return JSONAPISerializer(user)
 }
 ```
 
 ### Expanding Null values with Property Policy
 
-When serializing to JSON, you may want to represent a property value as `null`. For this, you can use the PropertyPolicy enum to represent your properties:
+When serializing to JSON, you may want to represent a property value as `null`. For this, you can use the `PropertyPolicy` enum. It is similar to `Optional` except it provides an additional case `.Null`:
 
 ```Swift
 public enum PropertyPolicy<Wrapped>: CustomSerializable {
@@ -320,32 +284,25 @@ public enum PropertyPolicy<Wrapped>: CustomSerializable {
 }
 ```
 
-PropertyPolicy is an enum similar to Optional but with an additional case `.Null`. It's only purpose is to be serialized in 3 different ways to cover all possible behaviors of an Optional property.
+It's only purpose is to be serialized in 3 different ways to cover all possible behaviors of an Optional property.
+`PropertyPolicy` works exaclty as `Optional` properties:
+- `.None` -> property not included in the serialization
+- `.Some(wrapped)` -> serialize `wrapped`
 
-When dealing with PropertyPolicy properties, the serializer will serialize as nil when `.None`, `NSNull` when `.Null` or serialize the object for `.Some`:
+The additional case `.Null` instead, is serialized as `null` when converted to json.
 
 ```Swift
-private struct Test: Serializable {
-    let value: PropertyPolicy<Int>
-}
-
-let serialized = Test(value: PropertyPolicy<Int>.None).serialize()
-print(serialized["value"]) // nil
-
-let serialized = Test(value: PropertyPolicy<Int>.Null).serialize()
-print(serialized["value"]) // NSNull
-
-let serialized = Test(value: PropertyPolicy<Int>.Some(1)).serialize()
-print(serialized["value"]) // 1
+PropertyPolicy<Int>.None.serialize() // nil
+PropertyPolicy<Int>.Null.serialize() // NSNull
+PropertyPolicy<Int>.Some(1).serialize() // 1
 ```
 
 ### Key customization - Serialization Transformer
 
-One thing to consider when serializing objects is key naming: that is, the serialization mechanism will use by default the property names for the keys in order to build the JSON objects.
+The keys of the JSON generated by the serialization are directly reflecting the property names of your entities. However you might need different behaviors. For example many APIs use `snake_case` keys but almost everyone use `camelCase` properties in Swift.  
+To transform the keys you can use `SerializationTransformer`. Objects conforming to this protocol are able to transform the keys of a wrapped object at serialization time.  
 
-To modify this behavior, you can use the SerializationTransformer, a CustomSerializable subprotocol, in order to wrap your Serializable objects adding your custom key transformation.
-
-For a concrete implementation, check SnakecaseTransformer: a struct that implements SerializationTransformer to convert keys into snake case:
+For a concrete implementation, check `SnakecaseTransformer`: a struct that implements SerializationTransformer to convert keys into snake case:
 
 ```Swift
 let user = User(userName: "Alex")
@@ -353,11 +310,11 @@ let serialized = SnakecaseTransformer(user).serialize()
 print(serialized) // [ "user_name" : "Alex" ]
 ```
 
-### Full responses on ResponseFieldsProvider
+### Customize responses with ResponseFieldsProvider
 
-Furthermore, if your responses need to specify status code (which will be 200 by default) and/or header fields, you can take advantage of ResponseFieldsProvider, another CustomSerializable subprotocol, to customize your responses.
+If your responses need to specify status code (which will be 200 by default) and/or header fields, you can take advantage of `ResponseFieldsProvider` to customize your responses.
 
-Kakapo provides a default ResponseFieldsProvider implementation in the Response struct, which you can use to embed your Serializable objects into its body:
+Kakapo provides a default `ResponseFieldsProvider` implementation in the Response struct, which you can use to wrap your Serializable objects:
 
 ```Swift
 router.get("/users/:id"){ request in
@@ -372,6 +329,16 @@ session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, 
     }.resume()
 ```
 
+Otherwise your `Serializable` object can directly implement the protocol, take a look at `JSONAPIError` to see another example.
+
+## Roadmap
+
+Kakapo is ready to use, is not meant to be shipped to the app store but you can also do it! In fact you might see it in action in some Apple stores since it was used to mock some features of Runtastic's demo app; however it's at its early stage and we would love to ear your thoughts. We encourage you to open an issue if you have any questions,  feedbacks or you want to propose new features.
+
+- Full JSON API support [#67](https://github.com/devlucky/Kakapo/issues/67)
+- Reverse and Recursive relationships [#16](https://github.com/devlucky/Kakapo/issues/16)
+- Custom Serializers for common json specifications
+
 ## Examples
 
 ### Newsfeed
@@ -379,10 +346,6 @@ session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, 
 Make sure you check the [demo app](https://github.com/devlucky/Kakapo/tree/master/Examples/NewsFeed) we created using Kakapo: a prototyped newsfeed app which lets the user create new posts and like/unlike them.
 
 ![](https://raw.githubusercontent.com/devlucky/Kakapo/master/Examples/NewsFeed/newsfeed.png)
-
-## Roadmap
-
-Add missing parts on full JSONAPI support.
 
 ## Authors
 

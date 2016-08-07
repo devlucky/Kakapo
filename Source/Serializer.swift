@@ -29,14 +29,14 @@ public protocol CustomSerializable: Serializable {
     func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject?
 }
 
-extension Serializable {
+public extension Serializable {
     func serialize(keyTransformer: KeyTransformer? = nil) -> AnyObject? {
         if let object = self as? CustomSerializable {
             return object.customSerialize(keyTransformer)
         }
         return Kakapo.serialize(self, keyTransformer: keyTransformer)
     }
-    
+
     func toData() -> NSData? {
         guard let object = serialize() else { return nil }
         
@@ -48,15 +48,11 @@ extension Serializable {
 }
 
 extension Array: CustomSerializable {
-    /// `Array` is serialized by creating an Array of its objects serialized
+    /// `Array` is serialized by returning an `Array` containing its serialized elements
     public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
-        var array = [AnyObject]()
-        for obj in self {
-            if let serialized = serializeObject(obj, keyTransformer: keyTransformer) {
-                array.append(serialized)
-            }
+        return flatMap { (element) -> AnyObject? in
+            return serializeObject(element, keyTransformer: keyTransformer)
         }
-        return array
     }
 }
 
