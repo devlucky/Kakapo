@@ -23,7 +23,7 @@
   - [JSONAPI](#jsonapi)
   - [Expanding Null values with Property Policy](#expanding-null-values-with-property-policy)
   - [Key customization - Serialization Transformer](#key-customization---serialization-transformer)
-  - [Full responses on ResponseFieldsProvider](full-responses-on-responsefieldsprovider)
+  - [Full responses on ResponseFieldsProvider](#full-responses-on-responsefieldsprovider)
 - [Roadmap](#roadmap)
 - [Examples](#examples)
 - [Authors](#authors)
@@ -333,9 +333,9 @@ Kakapo is ready to use, is not meant to be shipped to the app store but you can 
 
 ### Newsfeed
 
-Make sure you check the [demo app](https://github.com/devlucky/Kakapo/tree/feature/READMEDocumentation/Examples/NewsFeed) we created using Kakapo: a prototyped newsfeed app which lets the user create new posts and like/unlike them.
+Make sure you check the [demo app](https://github.com/devlucky/Kakapo/tree/master/Examples/NewsFeed) we created using Kakapo: a prototyped newsfeed app which lets the user create new posts and like/unlike them.
 
-![](https://raw.githubusercontent.com/devlucky/Kakapo/feature/READMEDocumentation/Examples/NewsFeed/newsfeed.png)
+![](https://raw.githubusercontent.com/devlucky/Kakapo/master/Examples/NewsFeed/newsfeed.png)
 
 ## Authors
 
