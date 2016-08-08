@@ -45,7 +45,7 @@ With Kakapo you can just create Swift structs/classes/enums that are automatical
 
 > 7 billion people on Earth
 >
-> Less than than 150 Kakapo
+> Less than 150 Kakapo
 >
 > Time is critical [donate to Kakapo recovery](http://kakaporecovery.org.nz/adopt-a-kakapo/)
 
