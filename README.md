@@ -221,7 +221,7 @@ router.get("/articles/:id") { request in
 }
 ```
 
-But, of course, you could perform any logic which fits your needs:
+Of course you can perform any logic which fits your needs:
 
 ```Swift
 router.post("/article/:id") { request in
