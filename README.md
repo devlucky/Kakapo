@@ -69,6 +69,12 @@ use_frameworks!
 pod 'Kakapo'
 ```
 
+Using [Carthage](https://github.com/Carthage/Carthage):
+
+```
+github "devlucky/Kakapo"
+```
+
 ## Usage
 
 > NOTE: The project also contains a [README.playground](https://github.com/devlucky/Kakapo/tree/master/README.playground).
