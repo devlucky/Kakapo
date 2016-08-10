@@ -16,8 +16,9 @@ has_app_changes = !git.modified_files.grep(/Source/).empty?
 has_test_changes = !git.modified_files.grep(/Tests/).empty?
 
 if has_app_changes && !has_test_changes
-  warn "Tests were not updated"
+  warn("Tests were not updated", sticky: false)
 end
 
-#prose.lint_files
-#prose.check_spelling
+# markdown_files = (git.added_files + git.modified_files).select{ |file| file.end_with? "md" }
+# prose.lint_files markdown_files
+# prose.check_spelling markdown_files

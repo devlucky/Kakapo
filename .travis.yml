@@ -9,7 +9,8 @@ env:
 
 before_install:
   - gem uninstall json -v 2.0.1 # workaround for Fastlane conflict https://github.com/travis-ci/travis-ci/issues/6325
-  - gem install danger danger-prose --no-ri --no-doc
+  - gem update fastlane
+  - gem install danger --no-ri --no-doc
 
 before_script:
   - danger
