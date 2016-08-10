@@ -15,7 +15,7 @@ private struct Test<T>: Serializable {
     let value: PropertyPolicy<T>
 }
 
-private struct User: Serializable {
+private struct Person: Serializable {
     let name: String
 }
 
@@ -43,7 +43,7 @@ class IgnorableNilPropertySpec: QuickSpec {
             }
             
             it("recursively serialize the object if needed") {
-                let serialized = Test(value: PropertyPolicy.Some(User(name: "Alex"))).serialize() as! [String: AnyObject]
+                let serialized = Test(value: PropertyPolicy.Some(Person(name: "Alex"))).serialize() as! [String: AnyObject]
                 expect(serialized.count).to(be(1))
                 let value = serialized["value"] as? [String: AnyObject]
                 expect(value?["name"] as? String).to(equal("Alex"))

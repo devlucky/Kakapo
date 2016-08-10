@@ -10,7 +10,7 @@ import Quick
 import Nimble
 @testable import Kakapo
 
-struct UserFactory: Storable, Serializable, Equatable {
+struct User: Storable, Serializable {
     let id: String
     let firstName: String
     let lastName: String
@@ -28,11 +28,7 @@ struct UserFactory: Storable, Serializable, Equatable {
     }
 }
 
-func ==(lhs: UserFactory, rhs: UserFactory) -> Bool {
-    return lhs.firstName == rhs.firstName && lhs.lastName == rhs.lastName && lhs.age == rhs.age && lhs.id == rhs.id
-}
-
-struct CommentFactory: Storable {
+struct Comment: Storable {
     let id: String
     let text: String
     let likes: Int
@@ -46,12 +42,6 @@ struct CommentFactory: Storable {
         self.likes = likes % 200
         self.id = id
     }
-}
-
-extension CommentFactory: Equatable {}
-
-func ==(lhs: CommentFactory, rhs: CommentFactory) -> Bool {
-    return lhs.text == rhs.text && lhs.likes == rhs.likes && lhs.id == rhs.id
 }
 
 class KakapoDBTests: QuickSpec {
@@ -68,19 +58,19 @@ class KakapoDBTests: QuickSpec {
             it("should create a large number of elements") {
                 let queue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT)
                 dispatch_apply(1000, queue, { i in
-                    sut.create(UserFactory)
+                    sut.create(User)
                 })
                 
                 dispatch_apply(5000, queue, { i in
-                    sut.create(CommentFactory)
+                    sut.create(Comment)
                 })
                 
-                let userObjects = sut.findAll(UserFactory)
-                let user = sut.find(UserFactory.self, id: "1")
+                let userObjects = sut.findAll(User)
+                let user = sut.find(User.self, id: "1")
                 
-                let commentObjects = sut.findAll(CommentFactory)
-                let aComment = sut.find(CommentFactory.self, id: "1000")
-                let anotherComment = sut.find(CommentFactory.self, id: "1002")
+                let commentObjects = sut.findAll(Comment)
+                let aComment = sut.find(Comment.self, id: "1000")
+                let anotherComment = sut.find(Comment.self, id: "1002")
                 
                 expect(user).toNot(beNil())
                 expect(user?.firstName).toNot(beNil())
@@ -101,11 +91,11 @@ class KakapoDBTests: QuickSpec {
             it("should create a large number of elements respecting the previous ones") {
                 let queue = dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT)
                 dispatch_apply(1000, queue, { i in
-                    sut.create(UserFactory)
+                    sut.create(User)
                 })
                 
-                let createdObjects = sut.create(UserFactory.self, number: 20000)
-                let totalObjects = sut.findAll(UserFactory)
+                let createdObjects = sut.create(User.self, number: 20000)
+                let totalObjects = sut.findAll(User)
                 
                 expect(createdObjects.count) == 20000
                 expect(totalObjects.count) == 21000
@@ -113,13 +103,13 @@ class KakapoDBTests: QuickSpec {
             
             it("should insert a large number of elements") {
                 dispatch_apply(1000, dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT), { _ in
-                    sut.insert{ (id) -> (UserFactory) in
-                        return UserFactory(firstName: "Name " + id, lastName: "Last Name " + id, age: 10, id: id)
+                    sut.insert{ (id) -> (User) in
+                        return User(firstName: "Name " + id, lastName: "Last Name " + id, age: 10, id: id)
                     }
                 })
                 
-                let userObjects = sut.findAll(UserFactory)
-                let user = sut.find(UserFactory.self, id: "1")
+                let userObjects = sut.findAll(User)
+                let user = sut.find(User.self, id: "1")
                 
                 expect(user).toNot(beNil())
                 expect(user?.firstName).to(contain("Name 1"))
@@ -132,8 +122,8 @@ class KakapoDBTests: QuickSpec {
         
         describe("Finding and Filtering") {
             it("should return the expected object with a given id after inserting multiple objects") {
-                sut.create(UserFactory.self, number: 3)
-                let user = sut.find(UserFactory.self, id: "1")
+                sut.create(User.self, number: 3)
+                let user = sut.find(User.self, id: "1")
                 
                 expect(user).toNot(beNil())
                 expect(user?.firstName).toNot(beNil())
@@ -141,11 +131,11 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("should return the expected object with a given id after inserting different object types") {
-                sut.create(UserFactory.self, number: 3)
-                sut.create(CommentFactory.self, number: 2)
-                let user = sut.find(UserFactory.self, id: "1")
-                let wrongComment = sut.find(CommentFactory.self, id: "2")
-                let comment = sut.find(CommentFactory.self, id: "3")
+                sut.create(User.self, number: 3)
+                sut.create(Comment.self, number: 2)
+                let user = sut.find(User.self, id: "1")
+                let wrongComment = sut.find(Comment.self, id: "2")
+                let comment = sut.find(Comment.self, id: "3")
                 
                 expect(user).toNot(beNil())
                 expect(wrongComment).to(beNil())
@@ -153,34 +143,34 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("shoud return the expected object after inserting it") {
-                sut.insert { (id) -> UserFactory in
-                    return UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                sut.insert { (id) -> User in
+                    return User(firstName: "Hector", lastName: "Zarco", age:25, id: id)
                 }
                 
-                let user = sut.find(UserFactory.self, id: "0")
+                let user = sut.find(User.self, id: "0")
                 expect(user?.firstName).to(match("Hector"))
                 expect(user?.lastName).to(match("Zarco"))
                 expect(user?.id) == "0"
             }
             
             it("should fail a precondition when inserting invalid id") {
-                sut.insert { (id) -> UserFactory in
-                    return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: id)
+                sut.insert { (id) -> User in
+                    return User(firstName: "Joan", lastName: "Romano", age:25, id: id)
                 }
 
                 self.expectPrecondition("Tried to insert an invalid id") {
-                    sut.insert { (id) -> UserFactory in
-                        return UserFactory(firstName: "Joan", lastName: "Romano", age:25, id: String(Int(id)! - 1))
+                    sut.insert { (id) -> User in
+                        return User(firstName: "Joan", lastName: "Romano", age:25, id: String(Int(id)! - 1))
                     }
                 }
             }
 
             it("should return the expected filtered element with valid id") {
-                sut.insert { (id) -> UserFactory in
-                    UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                sut.insert { (id) -> User in
+                    User(firstName: "Hector", lastName: "Zarco", age:25, id: id)
                 }
                 
-                let userArray = sut.filter(UserFactory.self) { (item) -> Bool in
+                let userArray = sut.filter(User.self) { (item) -> Bool in
                     return item.id == "0"
                 }
                 
@@ -191,12 +181,12 @@ class KakapoDBTests: QuickSpec {
             }
 
             it("should return no objects for some inexisting filtering") {
-                sut.create(UserFactory.self, number: 2)
-                sut.insert { (id) -> UserFactory in
-                    return UserFactory(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                sut.create(User.self, number: 2)
+                sut.insert { (id) -> User in
+                    return User(firstName: "Hector", lastName: "Zarco", age:25, id: id)
                 }
                 
-                let userArray = sut.filter(UserFactory.self, includeElement: { (item) -> Bool in
+                let userArray = sut.filter(User.self, includeElement: { (item) -> Bool in
                     return item.lastName == "Manzella"
                 })
                 
@@ -206,10 +196,10 @@ class KakapoDBTests: QuickSpec {
         
         describe("Update") {
             it("should update a previously inserted object") {
-                sut.create(UserFactory.self, number: 3)
-                let elementToUpdate = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: "2")
+                sut.create(User.self, number: 3)
+                let elementToUpdate = User(firstName: "Joan", lastName: "Romano", age: 28, id: "2")
                 try! sut.update(elementToUpdate)
-                let updatedUserInDb = sut.find(UserFactory.self, id: "2")
+                let updatedUserInDb = sut.find(User.self, id: "2")
                 
                 expect(updatedUserInDb?.firstName).to(equal("Joan"))
                 expect(updatedUserInDb?.lastName).to(equal("Romano"))
@@ -217,35 +207,35 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("should not update an object that was never inserted") {
-                sut.create(UserFactory.self, number: 2)
-                let elementToUpdate = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: "45")
+                sut.create(User.self, number: 2)
+                let elementToUpdate = User(firstName: "Joan", lastName: "Romano", age: 28, id: "45")
                 expect{ try sut.update(elementToUpdate) }.to(throwError(errorType: KakapoDBError.self))
-                let updatedUserInDb = sut.find(UserFactory.self, id: "45")
+                let updatedUserInDb = sut.find(User.self, id: "45")
                 expect(updatedUserInDb).to(beNil())
             }
             
             it("should not update different kind of objects from different databases with same id") {
                 let anotherDB = KakapoDB()
-                sut.create(UserFactory.self, number: 2)
-                anotherDB.create(CommentFactory.self, number: 2)
-                expect{ try sut.update(anotherDB.find(CommentFactory.self, id: "0")!) }.to(throwError(errorType: KakapoDBError.self))
-                let updatedCommentInDb = sut.find(CommentFactory.self, id: "0")
+                sut.create(User.self, number: 2)
+                anotherDB.create(Comment.self, number: 2)
+                expect{ try sut.update(anotherDB.find(Comment.self, id: "0")!) }.to(throwError(errorType: KakapoDBError.self))
+                let updatedCommentInDb = sut.find(Comment.self, id: "0")
                 expect(updatedCommentInDb).to(beNil())
             }
             
             it("should update same kind of objects from different databases with same id") {
                 let anotherDB = KakapoDB()
                 var theId: String!
-                let factory = sut.create(CommentFactory).first!
+                let factory = sut.create(Comment).first!
                 let likes = factory.likes
                 
-                anotherDB.insert { (id) -> CommentFactory in
+                anotherDB.insert { (id) -> Comment in
                     theId = id
-                    return CommentFactory(text: "a comment", likes: likes + 1, id: id)
+                    return Comment(text: "a comment", likes: likes + 1, id: id)
                 }
                 
-                try! sut.update(anotherDB.find(CommentFactory.self, id: theId)!)
-                let updatedComment = sut.find(CommentFactory.self, id: theId)
+                try! sut.update(anotherDB.find(Comment.self, id: theId)!)
+                let updatedComment = sut.find(Comment.self, id: theId)
                 
                 expect(updatedComment?.text).to(equal("a comment"))
                 expect(updatedComment?.likes).to(equal(likes + 1))
@@ -254,108 +244,107 @@ class KakapoDBTests: QuickSpec {
         
         describe("Deletion") {
             it("should delete a previously inserted object") {
-                sut.create(UserFactory.self, number: 5)
-                let elementToDelete = sut.find(UserFactory.self, id: "2")!
+                sut.create(User.self, number: 5)
+                let elementToDelete = sut.find(User.self, id: "2")!
                 try! sut.delete(elementToDelete)
-                let usersArray = sut.findAll(UserFactory)
+                let usersArray = sut.findAll(User)
                 
                 expect(usersArray.count).to(equal(4))
             }
             
             it("should delete a previously inserted object with same data representation") {
                 var theId: String!
-                sut.insert { (id) -> UserFactory in
+                sut.insert { (id) -> User in
                     theId = id
-                    return UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                    return User(firstName: "Joan", lastName: "Romano", age: 28, id: id)
                 }
                 
-                let elementToDelete = UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: theId)
+                let elementToDelete = User(firstName: "Joan", lastName: "Romano", age: 28, id: theId)
                 try! sut.delete(elementToDelete)
-                let usersArray = sut.findAll(UserFactory)
+                let usersArray = sut.findAll(User)
                 
                 expect(usersArray.count).to(equal(0))
             }
             
             it("should not delete an object with same id but different type") {
-                let userFactory = sut.create(UserFactory).first!
-                let elementToDelete = CommentFactory(text: "", likes: 0, id: userFactory.id)
+                let user = sut.create(User).first!
+                let elementToDelete = Comment(text: "", likes: 0, id: user.id)
                 expect{ try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
-                expect(sut.findAll(UserFactory).count).to(equal(1))
+                expect(sut.findAll(User).count).to(equal(1))
             }
             
             it("should delete an object with same id and same type but different properties") {
-                let commentFactory = sut.create(CommentFactory).first!
-                let elementToDelete = CommentFactory(text: "", likes: commentFactory.likes + 1, id: commentFactory.id)
-                expect(commentFactory).toNot(equal(elementToDelete))
+                let comment = sut.create(Comment).first!
+                let elementToDelete = Comment(text: "", likes: comment.likes + 1, id: comment.id)
                 expect{ try sut.delete(elementToDelete) }.toNot(throwError(errorType: KakapoDBError.self))
-                expect(sut.findAll(UserFactory).count).to(equal(0))
+                expect(sut.findAll(User).count).to(equal(0))
             }
             
             it("should not delete a non previously inserted object") {
-                sut.create(UserFactory.self)
-                let elementToDelete = UserFactory(id: "44", db: sut)
+                sut.create(User.self)
+                let elementToDelete = User(id: "44", db: sut)
                 expect{ try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
-                expect(sut.findAll(UserFactory).count).to(equal(1))
+                expect(sut.findAll(User).count).to(equal(1))
             }
             
             it("should not delete objects from different databases with same id") {
                 let anotherDB = KakapoDB()
-                sut.create(UserFactory.self, number: 2)
-                anotherDB.create(CommentFactory.self, number: 2)
-                expect{ try sut.delete(anotherDB.find(CommentFactory.self, id: "1")!) }.to(throwError(errorType: KakapoDBError.self))
-                expect(sut.findAll(UserFactory).count).to(equal(2))
+                sut.create(User.self, number: 2)
+                anotherDB.create(Comment.self, number: 2)
+                expect{ try sut.delete(anotherDB.find(Comment.self, id: "1")!) }.to(throwError(errorType: KakapoDBError.self))
+                expect(sut.findAll(User).count).to(equal(2))
             }
             
             it("should delete objects from different databases with same id and data representation") {
                 let anotherDB = KakapoDB()
                 var theId: String!
-                sut.insert { (id) -> UserFactory in
+                sut.insert { (id) -> User in
                     theId = id
-                    return UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                    return User(firstName: "Joan", lastName: "Romano", age: 28, id: id)
                 }
                 
-                sut.create(UserFactory.self, number: 44)
+                sut.create(User.self, number: 44)
                 
-                anotherDB.insert { (id) -> UserFactory in
-                    return UserFactory(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                anotherDB.insert { (id) -> User in
+                    return User(firstName: "Joan", lastName: "Romano", age: 28, id: id)
                 }
                 
-                let elementToDelete = anotherDB.find(UserFactory.self, id: theId)!
+                let elementToDelete = anotherDB.find(User.self, id: theId)!
                 try! sut.delete(elementToDelete)
-                let usersArray = sut.findAll(UserFactory)
+                let usersArray = sut.findAll(User)
                 
                 expect(usersArray.count).to(equal(44))
             }
             
             it("should have no items after deleting all") {
                 let sut = KakapoDB()
-                sut.create(UserFactory.self, number: 2000)
-                for entity in sut.findAll(UserFactory) {
+                sut.create(User.self, number: 2000)
+                for entity in sut.findAll(User) {
                     try! sut.delete(entity)
                 }
                 
-                expect(sut.findAll(UserFactory).count).to(equal(0))
+                expect(sut.findAll(User).count).to(equal(0))
             }
             
             it("should be able to concurrently delete objects") {
-                let users = sut.create(UserFactory.self, number: 100)
+                let users = sut.create(User.self, number: 100)
                 
                 dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
                     try! sut.delete(users[i])
                 }
                 
-                expect(sut.findAll(UserFactory).count).to(equal(0))
+                expect(sut.findAll(User).count).to(equal(0))
             }
             
             it("should be able to concurrently update and delete objects") {
-                let users = sut.create(UserFactory.self, number: 100)
+                let users = sut.create(User.self, number: 100)
                 
                 dispatch_apply(100, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { i in
                     try! sut.update(users[i])
                     try! sut.delete(users[i])
                 }
                 
-                expect(sut.findAll(UserFactory).count).to(equal(0))
+                expect(sut.findAll(User).count).to(equal(0))
             }
         }
         
@@ -363,38 +352,38 @@ class KakapoDBTests: QuickSpec {
             let queue = dispatch_queue_create("com.kakapodb.testDeadlock", DISPATCH_QUEUE_SERIAL)
             
             beforeEach {
-                sut.insert { id -> UserFactory in
-                   return UserFactory(id: id, db: sut)
+                sut.insert { id -> User in
+                   return User(id: id, db: sut)
                 }
             }
             
             it("should not deadlock when writing into database during a writing operation") {
-                let user = sut.insert { (id) -> UserFactory in
-                    sut.insert { (id) -> UserFactory in
-                        return UserFactory(id: id, db: sut)
+                let user = sut.insert { (id) -> User in
+                    sut.insert { (id) -> User in
+                        return User(id: id, db: sut)
                     }
                     
-                    return UserFactory(id: id, db: sut)
+                    return User(id: id, db: sut)
                 }
                 
                 expect(user).toEventuallyNot(beNil())
             }
             
             it("should not deadlock when synchronously writing from another queue into database during a writing operation") {
-                let user = sut.insert { (id) -> UserFactory in
+                let user = sut.insert { (id) -> User in
                     dispatch_sync(queue) {
-                        sut.insert { (id) -> UserFactory in
-                            return UserFactory(id: id, db: sut)
+                        sut.insert { (id) -> User in
+                            return User(id: id, db: sut)
                         }
                     }
-                    return UserFactory(id: id, db: sut)
+                    return User(id: id, db: sut)
                 }
                 expect(user).toEventuallyNot(beNil())
             }
             
             it("should not deadlock when writing into database during a reading operation") {
-                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    sut.create(UserFactory)
+                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                    sut.create(User)
                     return true
                 })
                 
@@ -402,9 +391,9 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("should not deadlock when synchronously writing from another queue into database during a reading operation") {
-                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
+                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
                     dispatch_sync(queue) {
-                        sut.create(UserFactory)
+                        sut.create(User)
                     }
                     return true
                 })
@@ -413,8 +402,8 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("should not deadlock when reading the database during a read operation") {
-                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    sut.findAll(UserFactory)
+                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                    sut.findAll(User)
                     return true
                 })
                 
@@ -422,9 +411,9 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("should not deadlock when synchronously reading the database from another queue during a reading operation") {
-                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
+                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
                     dispatch_sync(queue) {
-                        sut.findAll(UserFactory)
+                        sut.findAll(User)
                     }
                     return true
                 })
@@ -433,66 +422,66 @@ class KakapoDBTests: QuickSpec {
             }
             
             it("should not deadlock when reading the database during a write operation") {
-                let user = sut.insert { (id) -> UserFactory in
-                    sut.findAll(UserFactory)
-                    return UserFactory(id: id, db: sut)
+                let user = sut.insert { (id) -> User in
+                    sut.findAll(User)
+                    return User(id: id, db: sut)
                 }
                 expect(user).toEventuallyNot(beNil())
             }
             
             it("should not deadlock when synchronously reading the database from another queue during a write operation") {
-                let user = sut.insert { (id) -> UserFactory in
+                let user = sut.insert { (id) -> User in
                     dispatch_sync(queue) {
-                        sut.findAll(UserFactory)
+                        sut.findAll(User)
                     }
-                    return UserFactory(id: id, db: sut)
+                    return User(id: id, db: sut)
                 }
                 expect(user).toEventuallyNot(beNil())
             }
             
             it("should not deadlock when synchronously updating the database from another queue during a write operation") {
-                let user = sut.insert { (id) -> UserFactory in
+                let user = sut.insert { (id) -> User in
                     dispatch_sync(queue) {
-                        try! sut.update(UserFactory(id: "0", db: sut))
+                        try! sut.update(User(id: "0", db: sut))
                     }
-                    return UserFactory(id: id, db: sut)
+                    return User(id: id, db: sut)
                 }
                 expect(user).toEventuallyNot(beNil())
             }
             
             it("should not deadlock when synchronously deleting the database from another queue during a write operation") {
-                let user = sut.insert { (id) -> UserFactory in
+                let user = sut.insert { (id) -> User in
                     dispatch_sync(queue) {
-                        try! sut.delete(sut.find(UserFactory.self, id: "0")!)
+                        try! sut.delete(sut.find(User.self, id: "0")!)
                     }
-                    return UserFactory(id: id, db: sut)
+                    return User(id: id, db: sut)
                 }
                 
-                let users = sut.findAll(UserFactory)
+                let users = sut.findAll(User)
                 
                 expect(user).toEventuallyNot(beNil())
                 expect(users.count).toEventually(equal(1))
             }
             
             it("should not deadlock when deleting into database during a reading operation") {
-                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    try! sut.delete(sut.find(UserFactory.self, id: "0")!)
+                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                    try! sut.delete(sut.find(User.self, id: "0")!)
                     return true
                 })
                 
-                let users = sut.findAll(UserFactory)
+                let users = sut.findAll(User)
                 
                 expect(result).toEventuallyNot(beNil())
                 expect(users.count).toEventually(equal(0))
             }
             
             it("should not deadlock when updating into database during a reading operation") {
-                let result = sut.filter(UserFactory.self, includeElement: { (_) -> Bool in
-                    try! sut.update(UserFactory(firstName: "Alex", lastName: "Manzella", age: 30, id: "0"))
+                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                    try! sut.update(User(firstName: "Alex", lastName: "Manzella", age: 30, id: "0"))
                     return true
                 })
                 
-                let user = sut.findAll(UserFactory).first!
+                let user = sut.findAll(User).first!
                 
                 expect(result).toEventuallyNot(beNil())
                 expect(user.firstName).toEventually(equal("Alex"))
@@ -509,7 +498,7 @@ class KakapoDBPerformaceTests: XCTestCase {
         let sut = KakapoDB()
         measureBlock {
             dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { _ in
-                sut.create(UserFactory)
+                sut.create(User)
             }
         }
     }
@@ -518,8 +507,8 @@ class KakapoDBPerformaceTests: XCTestCase {
         let sut = KakapoDB()
         measureBlock {
             dispatch_apply(1000, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { _ in
-                sut.insert { (id) -> UserFactory in
-                    return UserFactory(id: id, db: sut)
+                sut.insert { (id) -> User in
+                    return User(id: id, db: sut)
                 }
             }
         }
@@ -527,9 +516,9 @@ class KakapoDBPerformaceTests: XCTestCase {
     
     func testMultipleDeletionsPerformance() {
         let sut = KakapoDB()
-        sut.create(UserFactory.self, number: 2000)
+        sut.create(User.self, number: 2000)
         measureBlock {
-            for entity in sut.findAll(UserFactory) {
+            for entity in sut.findAll(User) {
                 try! sut.delete(entity)
             }
         }
