@@ -7,6 +7,7 @@
 [![codebeat badge](https://codebeat.co/badges/69a42ece-740c-4a29-b25a-598deaf61fca)](https://codebeat.co/projects/github-com-devlucky-kakapo)
 [![License](https://img.shields.io/cocoapods/l/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
 [![Platform](https://img.shields.io/cocoapods/p/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 > Dynamically Mock server behaviors and responses.
 
