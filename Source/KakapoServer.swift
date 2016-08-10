@@ -83,7 +83,7 @@ public final class KakapoServer: NSURLProtocol {
      - returns: true if any of the registered route match the request URL
      */
     override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        return routers.filter { $0.canInitWithRequest(request) }.first != nil
+        return routers.indexOf({ $0.canInitWithRequest(request) }) != nil
     }
     
     /// Just returns the given request without changes
@@ -92,18 +92,16 @@ public final class KakapoServer: NSURLProtocol {
     }
     
     /// Start loading the matched requested, the route handler will be called and the returned object will be serialized.
-    override public func startLoading() {        
-        guard let router = KakapoServer.routers.filter({ $0.canInitWithRequest(request) }).first else {
-            return
+    override public func startLoading() {
+        if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
+            KakapoServer.routers[routerIndex].startLoading(self)
         }
-        router.startLoading(self)
     }
     
     /// Stops the loading of the matched request.
     override public func stopLoading() {
-        guard let router = KakapoServer.routers.filter({ $0.canInitWithRequest(request) }).first else {
-            return
+        if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
+            KakapoServer.routers[routerIndex].stopLoading(self)
         }
-        router.stopLoading(self)
     }
 }
