@@ -257,7 +257,7 @@ public extension JSONAPIEntity {
     
     // MARK: JSONAPIEntity
 
-    /// returns the lowercased class name as string by default
+    /// returns the lower-cased class name as string by default
     static var type: String {
         return String(self).lowercaseString
     }
@@ -332,7 +332,7 @@ public extension JSONAPIEntity {
         return data
     }
     
-    /// returns the `included` relationsips field conforming to JSON API
+    /// returns the `included` relationships field conforming to JSON API
     public func includedRelationships(includeChildren: Bool, keyTransformer: KeyTransformer?) -> [AnyObject]? {
         let mirror = Mirror(reflecting: self)
         let includedRelationships = mirror.children.flatMap { (label, value) -> [AnyObject] in

@@ -73,7 +73,7 @@ public struct SnakecaseTransformer<Wrapped: Serializable>: SerializationTransfor
      
      - parameter wrapped: A wrapped `Serializable` object
      
-     - returns: A `Serializable` object that will trasform the keys of the wrapped object when serialzied.
+     - returns: A `Serializable` object that will transform the keys of the wrapped object when serialized.
      */
     public init(_ wrapped: Wrapped) {
         self.wrapped = wrapped
@@ -102,10 +102,10 @@ private extension String {
         
         for (idx, c) in charactersView.reverse().enumerate() {
             let char = String(c)
-            let lowercased = char.lowercaseString
-            let isUppercase = char != lowercased
+            let lowerCased = char.lowercaseString
+            let isUppercase = char != lowerCased
             
-            string.insert(Character(lowercased), atIndex: startIndex)
+            string.insert(Character(lowerCased), atIndex: startIndex)
             
             if isUppercase && idx != endIndex {
                 string.insert("_", atIndex: startIndex)

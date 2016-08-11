@@ -14,7 +14,7 @@ import Foundation
 public typealias URLInfo = (components: [String : String], queryParameters: [NSURLQueryItem])
 
 /**
- Match a route and a requestURL. A route is composed by a baseURL and a path, togheter they should match the given requestURL.
+ Match a route and a requestURL. A route is composed by a baseURL and a path, together they should match the given requestURL.
  To match a route the baseURL must be contained in the requestURL, the substring of the requestURL following the baseURL then is tested against the path to check if they match.
  A baseURL can contain a scheme, and the requestURL must match the scheme; if it doesn't contain a scheme then the baseURL is a wildcard and will be matched by any subdomain or any scheme:
  
@@ -23,7 +23,7 @@ public typealias URLInfo = (components: [String : String], queryParameters: [NSU
  - base: `kakapo.com`, path: "any", requestURL: "https://kakapo.com/any" ✅
  - base: `kakapo.com`, path: "any", requestURL: "https://api.kakapo.com/any" ✅
  
- A path can contain wildcard components prefixed with ":" (e.g. /users/:userid) that are used to build the component dictionary, the wildcard is then used as key and the repsective component of the requestURL is used as value.
+ A path can contain wildcard components prefixed with ":" (e.g. /users/:userid) that are used to build the component dictionary, the wildcard is then used as key and the respective component of the requestURL is used as value.
  Any component that is not a wildcard have to be exactly the same in both the path and the request, otherwise the route won't match.
  
  - `/users/:userid` and `/users/1234` ✅ -> `[userid: 1234]`
@@ -35,7 +35,7 @@ public typealias URLInfo = (components: [String : String], queryParameters: [NSU
  - parameter path:       The path of the request, can contain wildcards components prefixed with ":" (e.g. /users/:id/)
  - parameter requestURL: The URL of the request (e.g. https://kakapo.com/api/users/1234)
  
- - returns: A URL info object containing `components` and `queryParamaters` or nil if `requestURL`doesn't match the route.
+ - returns: A URL info object containing `components` and `queryParameters` or nil if `requestURL`doesn't match the route.
  */
 func matchRoute(baseURL: String, path: String, requestURL: NSURL) -> URLInfo? {
     
@@ -91,7 +91,7 @@ private extension String {
     }
     
     /**
-     Retrun the substring From/To a given string or nil if the string is not contained.
+     Return the substring From/To a given string or nil if the string is not contained.
      - **From**: return the substring following the given string (e.g. `kakapo.com/users`, `kakapo.com` -> `/users`)
      - **To**: return the substring preceding the given string (e.g. `kakapo.com/users?a=b`, `?` -> `kakapo.com/users`)
      */
