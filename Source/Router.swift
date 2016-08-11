@@ -215,14 +215,7 @@ public final class Router {
         dispatch_after(delayTime, dispatch_get_main_queue()) {
             [weak self] in
             // before reporting "finished", check if request has been canceled in the meantime
-            guard let strongSelf = self else {
-                return
-            }
-            if let canceledRequestIndex = strongSelf.canceledRequests.indexOf(requestURL) {
-                // remove request URL from the list of "canceled requests" and DO NOT send notification(s)
-                strongSelf.canceledRequests.removeAtIndex(canceledRequestIndex)
-            }
-            else {
+            if self?.cancelRequest(requestURL) == false {
                 didFinishLoading(server)
             }
         }
@@ -237,7 +230,7 @@ public final class Router {
             canceledRequests.append(requestURL)
         }
     }
-    
+
     /**
      Registers a GET request with the given path.
      
@@ -324,6 +317,23 @@ public final class Router {
      */
     public func put(path: String, handler: RouteHandler) {
         routes[path] = (.PUT, handler)
+    }
+
+    /**
+     Determines, if the `requestURL` has been marked as "should be canceled" or not.
+
+     - return: `true` if the `requestURL` should be canceled, otherwise `false`
+     */
+    private func cancelRequest(requestURL: NSURL) -> Bool {
+        var requestUrlCanceled = false
+
+        if let canceledRequestIndex = canceledRequests.indexOf(requestURL) {
+            // remove request URL from the list of "canceled requests" and DO NOT send notification(s)
+            canceledRequests.removeAtIndex(canceledRequestIndex)
+            requestUrlCanceled = true
+        }
+
+        return requestUrlCanceled
     }
     
 }

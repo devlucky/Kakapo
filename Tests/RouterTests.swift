@@ -119,19 +119,6 @@ class RouterTests: QuickSpec {
                 let urlProtocol = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: nil)
                 router.stopLoading(urlProtocol)
             }
-
-            it("should remember a request in the 'cancel request list', when request is stopped") {
-
-                let requestURL = NSURL(string: "http://www.test.com/users/1")!
-
-                // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
-                // trigger the request). In order to check the request cancelation.
-                let urlRequest = NSURLRequest(URL: requestURL)
-                let urlProtocol = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: nil)
-                router.stopLoading(urlProtocol)
-
-                expect(router.canceledRequests.count) == 1
-            }
         }
 
         describe("Registering urls") {
