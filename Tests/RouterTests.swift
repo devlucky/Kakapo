@@ -453,12 +453,12 @@ class RouterTests: QuickSpec {
             }
             
             it("should return the specified object when requesting a registered url") {
-                db.create(UserFactory.self, number: 2)
+                db.create(User.self, number: 2)
                 
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id"){ request in
-                    return db.find(UserFactory.self, id: request.components["id"]!)
+                    return db.find(User.self, id: request.components["id"]!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
@@ -470,13 +470,13 @@ class RouterTests: QuickSpec {
             }
             
             it("should return the specified object and code inside a response object with code when requesting a registered url") {
-                db.create(UserFactory.self, number: 20)
+                db.create(User.self, number: 20)
                 
                 var statusCode: Int? = nil
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id"){ request in
-                    return Response(statusCode: 200, body: db.find(UserFactory.self, id: request.components["id"]!)!)
+                    return Response(statusCode: 200, body: db.find(User.self, id: request.components["id"]!)!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -548,12 +548,12 @@ class RouterTests: QuickSpec {
             }
             
             it("should return the specified array of objects when requesting a registered url") {
-                db.create(UserFactory.self, number: 20)
+                db.create(User.self, number: 20)
                 
                 var responseArray: NSArray? = nil
                 
                 router.get("/users"){ request in
-                    return db.findAll(UserFactory)
+                    return db.findAll(User)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in

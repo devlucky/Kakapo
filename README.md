@@ -7,6 +7,7 @@
 [![codebeat badge](https://codebeat.co/badges/69a42ece-740c-4a29-b25a-598deaf61fca)](https://codebeat.co/projects/github-com-devlucky-kakapo)
 [![License](https://img.shields.io/cocoapods/l/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
 [![Platform](https://img.shields.io/cocoapods/p/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 > Dynamically Mock server behaviors and responses.
 
@@ -67,6 +68,12 @@ Using [CocoaPods](http://cocoapods.org/):
 ```ruby
 use_frameworks!
 pod 'Kakapo'
+```
+
+Using [Carthage](https://github.com/Carthage/Carthage):
+
+```
+github "devlucky/Kakapo"
 ```
 
 ## Usage
@@ -191,7 +198,7 @@ This lets you mock the APIs behaviors as if you were using a real backend. This 
 To create entities that can be used with the database, your types need to conform to the `Storable` protocol.
 
 ```Swift
-struct Articles: Storable, Serializable {
+struct Article: Storable, Serializable {
     let id: String
     let text: String
 
@@ -214,7 +221,7 @@ router.get("/articles/:id") { request in
 }
 ```
 
-But, of course, you could perform any logic which fits your needs:
+Of course you can perform any logic which fits your needs:
 
 ```Swift
 router.post("/article/:id") { request in
