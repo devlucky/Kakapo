@@ -198,7 +198,7 @@ This lets you mock the APIs behaviors as if you were using a real backend. This 
 To create entities that can be used with the database, your types need to conform to the `Storable` protocol.
 
 ```Swift
-struct Articles: Storable, Serializable {
+struct Article: Storable, Serializable {
     let id: String
     let text: String
 
