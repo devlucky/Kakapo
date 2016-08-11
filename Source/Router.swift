@@ -102,12 +102,12 @@ public final class Router {
     }
     
     private var routes: [String : Route] = [:]
-    private var canceledRequests: [NSURLProtocol] = []
-    
+    private var canceledRequests: [NSURL] = []
+
     /// The `baseURL` of the Router
     public let baseURL: String
     
-    /// The desired latency to delay the mocked responses. Default value is 0.
+    /// The desired latency (in seconds) to delay the mocked responses. Default value is 0.
     public var latency: NSTimeInterval = 0
     
     
@@ -218,9 +218,9 @@ public final class Router {
             guard let strongSelf = self else {
                 return
             }
-            if let serverIndex = strongSelf.canceledRequests.indexOf(server) {
-                // remove server from the list of "canceled requests" and DO NOT send notification(s)
-                strongSelf.canceledRequests.removeAtIndex(serverIndex)
+            if let canceledRequestIndex = strongSelf.canceledRequests.indexOf(requestURL) {
+                // remove request URL from the list of "canceled requests" and DO NOT send notification(s)
+                strongSelf.canceledRequests.removeAtIndex(canceledRequestIndex)
             }
             else {
                 didFinishLoading(server)
@@ -229,8 +229,12 @@ public final class Router {
     }
 
     func stopLoading(server: NSURLProtocol) {
-        if canceledRequests.contains(server) == false {
-            canceledRequests.append(server)
+        guard let requestURL = server.request.URL else {
+            return
+        }
+        // if request URL not in the list of "to be canceled" requests -> enqueue it
+        if canceledRequests.contains(requestURL) == false {
+            canceledRequests.append(requestURL)
         }
     }
     

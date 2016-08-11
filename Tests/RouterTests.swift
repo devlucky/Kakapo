@@ -23,7 +23,9 @@ import Alamofire
  Thus, we use this test server to intercept real network calls in tests as a fallback for `KakapoServer`.
  */
 private final class RouterTestServer: NSURLProtocol {
-    
+
+    private var canceledRequests: [NSURL] = []
+
     class func register() {
         NSURLProtocol.registerClass(self)
     }
@@ -43,12 +45,25 @@ private final class RouterTestServer: NSURLProtocol {
     override func startLoading() {
         guard let requestURL = request.URL,
                   client = client else { return }
-        
-        client.URLProtocol(self, didReceiveResponse: NSHTTPURLResponse(URL: requestURL, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: nil)!, cacheStoragePolicy: .AllowedInMemoryOnly)
-        client.URLProtocolDidFinishLoading(self)
+
+        if let canceledRequestIndex = canceledRequests.indexOf(requestURL) {
+            canceledRequests.removeAtIndex(canceledRequestIndex)
+        }
+        else {
+            client.URLProtocol(self, didReceiveResponse: NSHTTPURLResponse(URL: requestURL, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: nil)!, cacheStoragePolicy: .AllowedInMemoryOnly)
+            client.URLProtocolDidFinishLoading(self)
+        }
     }
 
-    override func stopLoading() {}
+    override func stopLoading() {
+        guard let requestURL = request.URL else {
+            return
+        }
+        // if request URL not in the list of "to be canceled" requests -> enqueue it
+        if canceledRequests.contains(requestURL) == false {
+            canceledRequests.append(requestURL)
+        }
+    }
 }
 
 struct CustomResponse: ResponseFieldsProvider {
@@ -77,7 +92,48 @@ class RouterTests: QuickSpec {
             RouterTestServer.disable()
             Router.disableAll()
         }
-        
+
+        describe("Stop request loading") {
+            var router: Router!
+
+            beforeEach {
+                router = Router.register("http://www.test.com")
+                router.latency = 5 // very high latency to allow us to stop the request before execution
+            }
+
+            it("should not start a request, when the request loading is stopped") {
+
+                router.get("/users/:id") { request in
+                    XCTFail("Request should get stopped before and should not get executed")
+                    return nil
+                }
+
+                let requestURL = NSURL(string: "http://www.test.com/users/1")!
+                NSURLSession.sharedSession().dataTaskWithURL(requestURL) { (data, response, _) in
+                    // intentionally empty ... nothing to do here really
+                }
+
+                // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
+                // trigger the request). In order to check the request cancelation.
+                let urlRequest = NSURLRequest(URL: requestURL)
+                let urlProtocol = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: nil)
+                router.stopLoading(urlProtocol)
+            }
+
+            it("should remember a request in the 'cancel request list', when request is stopped") {
+
+                let requestURL = NSURL(string: "http://www.test.com/users/1")!
+
+                // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
+                // trigger the request). In order to check the request cancelation.
+                let urlRequest = NSURLRequest(URL: requestURL)
+                let urlProtocol = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: nil)
+                router.stopLoading(urlProtocol)
+
+                expect(router.canceledRequests.count) == 1
+            }
+        }
+
         describe("Registering urls") {
             var router: Router!
             
@@ -529,7 +585,7 @@ class RouterTests: QuickSpec {
         describe("Multiple Routers") {
             var router: Router!
             
-            it("Should handle multiple Routers that register differents urls") {
+            it("Should handle multiple Routers that register different URLs") {
                 router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
@@ -634,7 +690,7 @@ class RouterTests: QuickSpec {
                 expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2"))
             }
             
-            it("Should properly handle multiple registered and unregistered Routers that register differents urls") {
+            it("Should properly handle multiple registered and unregistered Routers that register different URLs") {
                 router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
@@ -768,7 +824,7 @@ class RouterTests: QuickSpec {
                 expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
             }
             
-            it("should not leak any router when disabling or unregistering") {
+            it("should not leak any router when router gets disabled or unregistered") {
                 weak var router1: Router? = Router.register("www.host1.com")
                 weak var router2: Router? = Router.register("www.host2.com")
                 weak var router3: Router? = Router.register("www.host3.com")
