@@ -39,7 +39,12 @@ import Foundation
  ```
  */
 public final class KakapoServer: NSURLProtocol {
-    
+
+    /**
+     The overall list of `Router` objects, which is know to all `KakapoServer` instances.
+     Visibility is on the `KakapoServer` class level, because `NSURLProtocol` just allows us to register
+     class elements (no instances are possible).
+     */
     private static var routers: [Router] = []
     
     /**
@@ -76,7 +81,12 @@ public final class KakapoServer: NSURLProtocol {
     }
     
     /**
-     KakapoServer checks if the given request matches any of the registered routes and determines if the request should be intercepted
+     `KakapoServer` checks if the given request matches any of the registered routes
+     and determines if the request should be intercepted.
+
+     Note: If this method returns `true`, then the OS will create a new `KakapoServer` instance for the `request`
+           via the `init(request:cachedResponse:client:)` initializer. So, this `request` is the same, which
+           we'll have access to later on in the `startLoading()` and `stopLoading()` methods.
      
      - parameter request: A request
      
