@@ -45,7 +45,16 @@ public final class KakapoServer: NSURLProtocol {
      Visibility is on the `KakapoServer` class level, because `NSURLProtocol` just allows us to register
      class elements (no instances are possible).
      */
-    private static var routers: [Router] = []
+    public static var routers: [Router] = []
+
+    /**
+     `true`, if the `request` of the `KakapoServer` instance has been cancelled, otherwise `false`.
+
+     Default: `false`
+
+     Note: calls to `stopLoading()` will set this value to `true`
+     */
+    public private(set) var requestCancelled:Bool = false
     
     /**
      Register and return a new Router in the Server
@@ -103,15 +112,15 @@ public final class KakapoServer: NSURLProtocol {
     
     /// Start loading the matched requested, the route handler will be called and the returned object will be serialized.
     override public func startLoading() {
-        if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
-            KakapoServer.routers[routerIndex].startLoading(self)
+        if requestCancelled == false {
+            if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
+                KakapoServer.routers[routerIndex].startLoading(self)
+            }
         }
     }
     
     /// Stops the loading of the matched request.
     override public func stopLoading() {
-        if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
-            KakapoServer.routers[routerIndex].stopLoading(self)
-        }
+        requestCancelled = true
     }
 }

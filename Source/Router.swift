@@ -102,20 +102,12 @@ public final class Router {
     }
     
     private var routes: [String : Route] = [:]
-    private var canceledRequests: [NSURL] = []
 
     /// The `baseURL` of the Router
     public let baseURL: String
     
     /// The desired latency (in seconds) to delay the mocked responses. Default value is 0.
     public var latency: NSTimeInterval = 0
-
-    /// The number of requests, which are currently marked for 'cancellation' on the receiver
-    public var numberOfCancelledRequests: Int {
-        get {
-            return canceledRequests.count
-        }
-    }
 
     /**
      Register a new Router in the `KakapoServer`.
@@ -181,7 +173,7 @@ public final class Router {
         return false
     }
     
-    func startLoading(server: NSURLProtocol) {
+    func startLoading(server: KakapoServer) {
         guard let requestURL = server.request.URL,
                   client = server.client else { return }
         
@@ -194,8 +186,9 @@ public final class Router {
                 // If the request body is nil use `NSURLProtocol` property see swizzling in `NSMutableURLRequest.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.HTTPBody ?? NSURLProtocol.propertyForKey("kkp_requestHTTPBody", inRequest: server.request) as? NSData
-                
-                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields))
+
+                let request = Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields)
+                serializableObject = route.handler(request)
                 break
             }
         }
@@ -219,24 +212,10 @@ public final class Router {
 
         let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
         dispatch_after(delayTime, dispatch_get_main_queue()) {
-            [weak self] in
             // before reporting "finished", check if request has been canceled in the meantime
-            if self?.cancelRequest(requestURL) == false {
+            if server.requestCancelled == false {
                 didFinishLoading(server)
             }
-        }
-    }
-
-    /**
-     Tells the receiver to stop loading the `request` of the `server`
-     */
-    func stopLoading(server: NSURLProtocol) {
-        guard let requestURL = server.request.URL else {
-            return
-        }
-        // if request URL not in the list of "to be canceled" requests -> enqueue it
-        if canceledRequests.contains(requestURL) == false {
-            canceledRequests.append(requestURL)
         }
     }
 
@@ -328,21 +307,4 @@ public final class Router {
         routes[path] = (.PUT, handler)
     }
 
-    /**
-     Determines, if the `requestURL` has been marked as "should be canceled" or not.
-
-     - return: `true` if the `requestURL` should be canceled, otherwise `false`
-     */
-    private func cancelRequest(requestURL: NSURL) -> Bool {
-        var requestUrlCanceled = false
-
-        if let canceledRequestIndex = canceledRequests.indexOf(requestURL) {
-            // remove request URL from the list of "canceled requests" and DO NOT send notification(s)
-            canceledRequests.removeAtIndex(canceledRequestIndex)
-            requestUrlCanceled = true
-        }
-
-        return requestUrlCanceled
-    }
-    
 }

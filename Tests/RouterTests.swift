@@ -52,44 +52,14 @@ private final class RouterTestServer: NSURLProtocol {
 }
 
 private final class ProtocolClientTest: NSObject, NSURLProtocolClient {
-
-    private let shouldFail_URLProtocolDidFinishLoading: Bool
-    
-    var didCall_URLProtocolDidFinishLoading: Bool = false
-    
-    init(shouldFail_URLProtocolDidFinishLoading: Bool) {
-        self.shouldFail_URLProtocolDidFinishLoading = shouldFail_URLProtocolDidFinishLoading
-        super.init()
-    }
-
-    @objc func URLProtocol(`protocol`: NSURLProtocol, wasRedirectedToRequest request: NSURLRequest, redirectResponse: NSURLResponse) {
-        // intentionally left empty
-    }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, cachedResponseIsValid cachedResponse: NSCachedURLResponse) {
-        // intentionally left empty
-    }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didReceiveResponse response: NSURLResponse, cacheStoragePolicy policy: NSURLCacheStoragePolicy) {
-        // intentionally left empty
-    }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didLoadData data: NSData) {
-        // intentionally left empty
-    }
-    @objc func URLProtocolDidFinishLoading(`protocol`: NSURLProtocol) {
-        if shouldFail_URLProtocolDidFinishLoading {
-            XCTFail("Protocol client should never get 'URLProtocolDidFinishLoading' called.")
-        }
-        
-        didCall_URLProtocolDidFinishLoading = true
-    }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didFailWithError error: NSError) {
-        // intentionally left empty
-    }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didReceiveAuthenticationChallenge challenge: NSURLAuthenticationChallenge) {
-        // intentionally left empty
-    }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didCancelAuthenticationChallenge challenge: NSURLAuthenticationChallenge) {
-        // intentionally left empty
-    }
+    @objc func URLProtocol(`protocol`: NSURLProtocol, wasRedirectedToRequest request: NSURLRequest, redirectResponse: NSURLResponse) { /* intentionally left empty */ }
+    @objc func URLProtocol(`protocol`: NSURLProtocol, cachedResponseIsValid cachedResponse: NSCachedURLResponse) { /* intentionally left empty */ }
+    @objc func URLProtocol(`protocol`: NSURLProtocol, didReceiveResponse response: NSURLResponse, cacheStoragePolicy policy: NSURLCacheStoragePolicy) { /* intentionally left empty */ }
+    @objc func URLProtocol(`protocol`: NSURLProtocol, didLoadData data: NSData) { /* intentionally left empty */ }
+    @objc func URLProtocolDidFinishLoading(`protocol`: NSURLProtocol) { /* intentionally left empty */ }
+    @objc func URLProtocol(`protocol`: NSURLProtocol, didFailWithError error: NSError) { /* intentionally left empty */ }
+    @objc func URLProtocol(`protocol`: NSURLProtocol, didReceiveAuthenticationChallenge challenge: NSURLAuthenticationChallenge) { /* intentionally left empty */ }
+    @objc func URLProtocol(`protocol`: NSURLProtocol, didCancelAuthenticationChallenge challenge: NSURLAuthenticationChallenge) { /* intentionally left empty */ }
 }
 
 struct CustomResponse: ResponseFieldsProvider {
@@ -121,7 +91,7 @@ class RouterTests: QuickSpec {
 
         describe("Describe Cancelling requests") {
             var router: Router!
-            let baseURL = "http://www.funky-cancel-request-top-level-domain.com"
+            let baseURL = "http://www.funky-cancel-request.com"
             let latency = NSTimeInterval(2)
 
             beforeEach {
@@ -129,85 +99,81 @@ class RouterTests: QuickSpec {
                 router.latency = latency // very high latency to allow us to stop the request before execution
             }
 
-            it("should not start a request when request gets cancelled") {
-                var responseURL: NSURL? = nil
-
-                router.get("/feed/:id") { request in
-                    XCTFail("Request should get stopped before and should not get executed")
-                    return nil
-                }
-
-                let requestURL = NSURL(string: "\(baseURL)/feed/1")!
-                let dataTask = NSURLSession.sharedSession().dataTaskWithURL(requestURL) { (data, response, _) in
-                    responseURL = response?.URL
-                }
-
-                dataTask.cancel() // immediately stop the request loading
-
-                expect(responseURL).toEventually(beNil())
-            }
-
-            it("should send notifications when loading has finished") {
+            it("should mark a request as cancelled") {
+                var responseError: NSError? = nil
 
                 router.get("/foobar/:id") { request in
+                    XCTFail("Request should get cancelled before execution")
                     return nil
                 }
 
                 let requestURL = NSURL(string: "\(baseURL)/foobar/1")!
 
-                // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
-                // trigger the request). In order to check the request cancelation.
-                let urlRequest = NSURLRequest(URL: requestURL)
-                let client = ProtocolClientTest(shouldFail_URLProtocolDidFinishLoading: false)
-                let protocolHandler = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: client)
+                let dataTask = NSURLSession.sharedSession().dataTaskWithURL(requestURL) { (data, response, error) in
+                    responseError = error
+                }
 
-                router.startLoading(protocolHandler)
+                dataTask.cancel()
 
-                expect(client.didCall_URLProtocolDidFinishLoading).toEventually(beTruthy(), timeout: (latency + 1))
+                expect(responseError).toEventually(beTruthy(), timeout: (latency + 1))
+                expect(responseError?.localizedDescription).toEventually(equal("cancelled"), timeout: (latency + 1))
             }
 
-            it("should NOT send notifications when loading has been cancelled") {
+            it("should not confused multiple request with identical URL") {
+                var responseError_A: NSError? = nil
+                var responseError_B: NSError? = nil
+                let canceledRequestID = "999"
 
-                router.get("/fancy-stuff/:id") { request in
+                router.get("/cash/:id") { request in
+                    let paramID = request.components["id"]
+                    if paramID == canceledRequestID {
+                        XCTFail("Cancelled request should not get executed")
+                    }
                     return nil
                 }
 
-                let requestURL = NSURL(string: "\(baseURL)/fancy-stuff/1")!
+                let requestURL_A = NSURL(string: "\(baseURL)/cash/333")!
+                let requestURL_B = NSURL(string: "\(baseURL)/cash/\(canceledRequestID)")!
 
-                // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
-                // trigger the request). In order to check the request cancelation.
-                let urlRequest = NSURLRequest(URL: requestURL)
-                let client = ProtocolClientTest(shouldFail_URLProtocolDidFinishLoading: true)
-                let protocolHandler = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: client)
+                let dataTask_A = NSURLSession.sharedSession().dataTaskWithURL(requestURL_A) { (data, response, error) in
+                    responseError_A = error
+                }
+                let dataTask_B = NSURLSession.sharedSession().dataTaskWithURL(requestURL_B) { (data, response, error) in
+                    responseError_B = error
+                }
+                dataTask_A.resume()
+                dataTask_B.cancel()
 
-                expect(router.numberOfCancelledRequests).to(equal(0))
-                router.stopLoading(protocolHandler) // tell the router to stop the request (before it has been started)
-                expect(router.numberOfCancelledRequests).to(equal(1))
-                router.startLoading(protocolHandler)
+                // expect task A to succeed
+                expect(responseError_A).toEventually(beNil(), timeout: (latency + 1))
 
-                expect(router.numberOfCancelledRequests).toEventually(equal(0), timeout: (latency + 1))
+                // expect task B to get cancelled
+                expect(responseError_B).toEventually(beTruthy(), timeout: (latency + 1))
+                expect(responseError_B?.localizedDescription).toEventually(equal("cancelled"), timeout: (latency + 1))
             }
 
-            it("should increase number of cancelled requests") {
-                let requestURL = NSURL(string: "\(baseURL)/moon/1")!
+            it("should send notifications when loading has finished") {
 
-                // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
-                // trigger the request). In order to check the request cancelation.
+                router.get("/epic-fail/:id") { request in
+                    XCTFail("Expected that request, which has been marked as 'cancelled', not to be executed")
+                    return nil
+                }
+
+                let requestURL = NSURL(string: "\(baseURL)/epic-fail/1")!
+
+                /*
+                Note: we need to manually create a KakapoServer instance here to test the stopping logic, because
+                      usually the KakapoServer instances are automatically created by the operating system.
+                      And there's no way for us to access these automatically created instances from the Router.
+                      Therefore we simulate the "stopLoading" and "startLoading" mechanism manually.
+                */
                 let urlRequest = NSURLRequest(URL: requestURL)
-                let client = ProtocolClientTest(shouldFail_URLProtocolDidFinishLoading: true)
-                let protocolHandler = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: client)
+                let client = ProtocolClientTest()
+                let server = KakapoServer(request: urlRequest, cachedResponse: nil, client: client)
 
-                expect(router.numberOfCancelledRequests).to(equal(0))
-                router.stopLoading(protocolHandler)
-                expect(router.numberOfCancelledRequests).to(equal(1))
-            }
-
-            it("should do nothing when no URL is provided") {
-                let requestURL = NSURL(string: "\(baseURL)/alpha/1")!
-                let urlRequest = NSMutableURLRequest(URL: requestURL)
-                urlRequest.URL = nil
-                let protocolHandler = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: nil)
-                router.stopLoading(protocolHandler)
+                server.stopLoading()
+                expect(server.requestCancelled).to(beTrue())
+                server.startLoading() // this should not trigger the "/epic-fail/:id" router request (see XCTFail above)
             }
         }
 
