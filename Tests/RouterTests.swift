@@ -142,7 +142,6 @@ class RouterTests: QuickSpec {
                     responseURL = response?.URL
                 }
 
-                dataTask.resume()
                 dataTask.cancel() // immediately stop the request loading
 
                 expect(responseURL).toEventually(beNil())
