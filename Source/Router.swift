@@ -109,8 +109,14 @@ public final class Router {
     
     /// The desired latency (in seconds) to delay the mocked responses. Default value is 0.
     public var latency: NSTimeInterval = 0
-    
-    
+
+    /// The number of requests, which are currently marked for 'cancellation' on the receiver
+    public var numberOfCancelledRequests: Int {
+        get {
+            return canceledRequests.count
+        }
+    }
+
     /**
      Register a new Router in the `KakapoServer`.
      The `baseURL` can contain a scheme, and the requestURL must match the scheme; if it doesn't contain a scheme then
@@ -221,6 +227,9 @@ public final class Router {
         }
     }
 
+    /**
+     Tells the receiver to stop loading the `request` of the `server`
+     */
     func stopLoading(server: NSURLProtocol) {
         guard let requestURL = server.request.URL else {
             return

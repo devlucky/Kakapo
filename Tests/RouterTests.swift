@@ -56,7 +56,7 @@ private final class ProtocolClientTest: NSObject, NSURLProtocolClient {
     private let shouldFail_URLProtocolDidFinishLoading: Bool
     
     var didCall_URLProtocolDidFinishLoading: Bool = false
-
+    
     init(shouldFail_URLProtocolDidFinishLoading: Bool) {
         self.shouldFail_URLProtocolDidFinishLoading = shouldFail_URLProtocolDidFinishLoading
         super.init()
@@ -129,7 +129,7 @@ class RouterTests: QuickSpec {
                 router.latency = latency // very high latency to allow us to stop the request before execution
             }
 
-            it("should not start a request, when request gets cancelled") {
+            it("should not start a request when request gets cancelled") {
                 var responseURL: NSURL? = nil
 
                 router.get("/feed/:id") { request in
@@ -148,7 +148,7 @@ class RouterTests: QuickSpec {
                 expect(responseURL).toEventually(beNil())
             }
 
-            it("should send notification(s) when loading has finished") {
+            it("should send notifications when loading has finished") {
 
                 router.get("/foobar/:id") { request in
                     return nil
@@ -158,7 +158,7 @@ class RouterTests: QuickSpec {
 
                 // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
                 // trigger the request). In order to check the request cancelation.
-                let urlRequest = NSMutableURLRequest(URL: requestURL)
+                let urlRequest = NSURLRequest(URL: requestURL)
                 let client = ProtocolClientTest(shouldFail_URLProtocolDidFinishLoading: false)
                 let protocolHandler = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: client)
 
@@ -167,7 +167,7 @@ class RouterTests: QuickSpec {
                 expect(client.didCall_URLProtocolDidFinishLoading).toEventually(beTruthy(), timeout: (latency + 1))
             }
 
-            it("should NOT send notification(s) when loading has been cancelled") {
+            it("should NOT send notifications when loading has been cancelled") {
 
                 router.get("/fancy-stuff/:id") { request in
                     return nil
@@ -177,14 +177,38 @@ class RouterTests: QuickSpec {
 
                 // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
                 // trigger the request). In order to check the request cancelation.
-                let urlRequest = NSMutableURLRequest(URL: requestURL)
+                let urlRequest = NSURLRequest(URL: requestURL)
                 let client = ProtocolClientTest(shouldFail_URLProtocolDidFinishLoading: true)
                 let protocolHandler = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: client)
 
+                expect(router.numberOfCancelledRequests).to(equal(0))
+                router.stopLoading(protocolHandler) // tell the router to stop the request (before it has been started)
+                expect(router.numberOfCancelledRequests).to(equal(1))
                 router.startLoading(protocolHandler)
-                router.stopLoading(protocolHandler)
 
-                expect(client.didCall_URLProtocolDidFinishLoading).toEventually(beFalsy(), timeout: (latency + 1))
+                expect(router.numberOfCancelledRequests).toEventually(equal(0), timeout: (latency + 1))
+            }
+
+            it("should increase number of cancelled requests") {
+                let requestURL = NSURL(string: "\(baseURL)/moon/1")!
+
+                // We create a "dummy" NSURLProtocol object here, which is using the same URL (that we used to
+                // trigger the request). In order to check the request cancelation.
+                let urlRequest = NSURLRequest(URL: requestURL)
+                let client = ProtocolClientTest(shouldFail_URLProtocolDidFinishLoading: true)
+                let protocolHandler = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: client)
+
+                expect(router.numberOfCancelledRequests).to(equal(0))
+                router.stopLoading(protocolHandler)
+                expect(router.numberOfCancelledRequests).to(equal(1))
+            }
+
+            it("should do nothing when no URL is provided") {
+                let requestURL = NSURL(string: "\(baseURL)/alpha/1")!
+                let urlRequest = NSMutableURLRequest(URL: requestURL)
+                urlRequest.URL = nil
+                let protocolHandler = NSURLProtocol(request: urlRequest, cachedResponse: nil, client: nil)
+                router.stopLoading(protocolHandler)
             }
         }
 
