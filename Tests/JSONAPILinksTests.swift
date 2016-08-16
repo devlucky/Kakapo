@@ -188,6 +188,12 @@ class JSONAPILinksSpec: QuickSpec {
                 let links = object["relationships"]["dog"]["links"]
                 expect(links.count) == 0
             }
+            
+            it("should not have links or relationshipsLinks attributes since they are links, not attributes") {
+                let object = json(user)
+                expect(object["attributes"]["links"]).to(beEmpty())
+                expect(object["attributes"]["relationshipsLinks"]).to(beEmpty())
+            }
         }
     }
 }
