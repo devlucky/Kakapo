@@ -317,6 +317,13 @@ class JSONAPISpec: QuickSpec {
                 expect(included).to(beNil())
             }
             
+            it("should not include if an array of entities don't have relationships") {
+                let object = json(JSONAPISerializer(cats))
+                let included = object["included"].array
+                
+                expect(included).to(beNil())
+            }
+            
             it("should include single relationships and arrays of relationships") {
                 let object = json(JSONAPISerializer(user))
                 let included = object["included"].arrayValue

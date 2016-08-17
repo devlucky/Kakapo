@@ -161,7 +161,8 @@ extension Array: JSONAPISerializable {
     /// return the result of recursively forwarding the function to its elements if the associatedtype is JSONAPISerializable, otherwise returns nil
     public func includedRelationships(includeChildren: Bool, keyTransformer: KeyTransformer?) -> [AnyObject]? {
         guard Element.self is JSONAPISerializable.Type else { return nil }
-        return flatMap { ($0 as? JSONAPISerializable)?.includedRelationships(includeChildren, keyTransformer: keyTransformer) }.flatMap { $0 }
+        let includedRelationships = flatMap { ($0 as? JSONAPISerializable)?.includedRelationships(includeChildren, keyTransformer: keyTransformer) }.flatMap { $0 }
+        return includedRelationships.count > 0 ? includedRelationships : nil
     }
     
     private func unifiedIncludedRelationships() -> [AnyObject] {
