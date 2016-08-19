@@ -40,12 +40,7 @@ import Foundation
  */
 public final class KakapoServer: NSURLProtocol {
 
-    /**
-     The overall list of `Router` objects, which is know to all `KakapoServer` instances.
-     Visibility is on the `KakapoServer` class level, because `NSURLProtocol` just allows us to register
-     class elements (no instances are possible).
-     */
-    public static var routers: [Router] = []
+    private static var routers: [Router] = []
 
     /**
      `true`, if the `request` of the `KakapoServer` instance has been cancelled, otherwise `false`.
@@ -54,7 +49,7 @@ public final class KakapoServer: NSURLProtocol {
 
      Note: calls to `stopLoading()` will set this value to `true`
      */
-    public private(set) var requestCancelled:Bool = false
+    private(set) var requestCancelled:Bool = false
     
     /**
      Register and return a new Router in the Server
@@ -112,10 +107,12 @@ public final class KakapoServer: NSURLProtocol {
     
     /// Start loading the matched requested, the route handler will be called and the returned object will be serialized.
     override public func startLoading() {
-        if requestCancelled == false {
-            if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
-                KakapoServer.routers[routerIndex].startLoading(self)
-            }
+        if requestCancelled {
+            return
+        }
+
+        if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
+            KakapoServer.routers[routerIndex].startLoading(self)
         }
     }
     
