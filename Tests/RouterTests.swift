@@ -119,7 +119,7 @@ class RouterTests: QuickSpec {
                 expect(responseError?.localizedDescription).toEventually(equal("cancelled"), timeout: (latency + 1))
             }
 
-            it("should not confused multiple request with identical URL") {
+            it("should not confuse multiple request with identical URL") {
                 var responseError_A: NSError? = nil
                 var responseError_B: NSError? = nil
                 let canceledRequestID = "999"
