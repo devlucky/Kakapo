@@ -120,8 +120,8 @@ class RouterTests: QuickSpec {
             }
 
             it("should not confuse multiple request with identical URL") {
-                var responseError_A: NSError? = nil
-                var responseError_B: NSError? = nil
+                var responseError_A: NSError?
+                var responseError_B: NSError?
                 let canceledRequestID = "999"
 
                 router.get("/cash/:id") { request in
