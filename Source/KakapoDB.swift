@@ -19,7 +19,7 @@ public protocol Storable {
      An initializer that is used by `KakapoDB` to create objects to be stored in the db
      
      - parameter id: The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to ssume that the conversion will always succeeed.
-     - parameter db: The db that is creating the object, can be used  to generate other `Storable` objects, for example relationsips of the object: `myRelationship = db.create(MyRelationshipType)` or `myrelationship = db.insert { MyRelationshipType(id: $0, db: db) }`. The relationsip will also recieve the `db` instance to eventually initialize its relationships.
+     - parameter db: The db that is creating the object, can be used  to generate other `Storable` objects, for example relationships of the object: `myRelationship = db.create(MyRelationshipType)` or `myrelationship = db.insert { MyRelationshipType(id: $0, db: db) }`. The relationsip will also recieve the `db` instance to eventually initialize its relationships.
      
      - returns: A configured object stored in the db.
      */
@@ -93,7 +93,7 @@ public final class KakapoDB {
     /**
      Creates and inserts Storable objects based on their default initializer
      
-     - parameter (unamed): The Storable Type to be created
+     - parameter (unnamed): The Storable Type to be created
      - parameter number: The number of elements to create, defaults to 1
      
      - returns: An array containing the new inserted Storable objects
@@ -181,7 +181,7 @@ public final class KakapoDB {
     /**
      Find all the objects in the store of a given Storable Type
      
-     - parameter (unamed): The Storable Type to be found
+     - parameter (unnamed): The Storable Type to be found
      
      - returns: An array containing the found Storable objects
      */
@@ -194,7 +194,7 @@ public final class KakapoDB {
     /**
      Filter all the objects in the store of a given Storable Type that satisfy the a given handler
      
-     - parameter (unamed): The Storable Type to be filtered
+     - parameter (unnamed): The Storable Type to be filtered
      - parameter includeElement: The predicate to satisfy the filtering
      
      - returns: An array containing the filtered Storable objects
@@ -206,10 +206,10 @@ public final class KakapoDB {
     /**
      Find the object in the store by a given id
      
-     - parameter (unamed): The Storable Type to be filtered
+     - parameter (unnamed): The Storable Type to be filtered
      - parameter id: The id to search for
      
-     - returns: An optional thay may (or not) contain the found Storable object
+     - returns: An optional, which may (or may not) contain the found Storable object
      */
     public func find<T: Storable>(_: T.Type, id: String) -> T? {
         return filter(T.self) { $0.id == id }.first

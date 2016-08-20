@@ -82,7 +82,7 @@ public enum JSONAPILink: CustomSerializable {
  }
  ```
  
- Appart from their own entity links, and in order to provide extra links for relationships, `User` must specify them for each relationship key:
+ Apart from their own entity links, and in order to provide extra links for relationships, `User` must specify them for each relationship key:
  
  ```swift
  let cats = [Cat(id: "33", name: "Stancho", links: nil),
@@ -111,7 +111,7 @@ public enum JSONAPILink: CustomSerializable {
 public protocol JSONAPILinkedEntity {
     /// The related links, must use link-names as keys and links as values.
     var links: [String : JSONAPILink]? { get }
-    /// The relationships links, an object containing relationsips can specify top level links for every relationship type. The object must provide a Dictionary where keys are the relationships types and values are dictionaries with link-names as keys and link as values.
+    /// The relationships links, an object containing relationships can specify top level links for every relationship type. The object must provide a Dictionary where keys are the relationships types and values are dictionaries with link-names as keys and link as values.
     var relationshipsLinks: [String : [String : JSONAPILink]]? { get }
 }
 

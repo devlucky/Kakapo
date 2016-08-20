@@ -45,7 +45,7 @@ public extension Serializable {
     }
 
     /**
-     Serialize a `Serializable` object and convert the serialzied object to `Data`. Unless it is nil the return value is representing a JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
+     Serialize a `Serializable` object and convert the serialized object to `Data`. Unless it is nil the return value is representing a JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
      
      - returns: The serialized object as `Data`
      */
@@ -126,7 +126,7 @@ private func serializeObject(value: Any, keyTransformer: KeyTransformer?) -> Any
  - parameter object: A Serializable object, not a `CustomSerializable`
  - parameter keyTransformer: The keyTransformer to be used, if not nil, to transform the keys of the json
  
- - returns: A serialized object that may be convered to JSON, usually Array or Dictionary
+ - returns: A serialized object that may be converted to JSON, usually Array or Dictionary
  */
 private func serialize(object: Serializable, keyTransformer: KeyTransformer?) -> AnyObject {
     assert(!(object is CustomSerializable))

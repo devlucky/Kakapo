@@ -35,7 +35,8 @@ public struct Request {
 
 /**
  A protocol to adopt when a `Serializable object needs to also provide response status code and/or headerFields
- For example you may use `Response` to wrap your `Serializable` object to just achieve the result or directly implement the protocol. For examply `JSONAPISerializer` implement the protocol in order to be able to provide custom status code in the response.
+ For example you may use `Response` to wrap your `Serializable` object to just achieve the result or directly implement the protocol.
+ For example `JSONAPISerializer` implement the protocol in order to be able to provide custom status code in the response.
  */
 public protocol ResponseFieldsProvider: CustomSerializable {
     /// The response status code
@@ -59,7 +60,7 @@ extension ResponseFieldsProvider {
 /**
  A ResponseFieldsProvider implementation which can be used in `RouteHandlers` to provide valid responses that can return different status code than the default (200) or headerFields.
  
- The struct provides, appart from a Serializable `body` object, a status code and header fields. 
+ The struct provides, apart from a Serializable `body` object, a status code and header fields.
  */
 public struct Response: ResponseFieldsProvider {
     /// The response status code
@@ -72,11 +73,11 @@ public struct Response: ResponseFieldsProvider {
     public let headerFields: [String : String]?
     
     /**
-     Initialize `Response` object that wraps another `Serializable` object for the serialization but, implemententing `ResponseFieldsProvider` can affect some parameters of the HTTP response
+     Initialize `Response` object that wraps another `Serializable` object for the serialization but, implementing `ResponseFieldsProvider` can affect some parameters of the HTTP response
      
-     - parameter statusCode:   the status code that the response should provide to the HTTP repsonse
+     - parameter statusCode:   the status code that the response should provide to the HTTP response
      - parameter body:         the body that will be serialized
-     - parameter headerFields: the headerFields that the response should provide to the HTTP repsonse
+     - parameter headerFields: the headerFields that the response should provide to the HTTP response
      
      - returns: A wrapper `Serializable` object that affect http requests.
      */
@@ -101,17 +102,17 @@ public final class Router {
     }
     
     private var routes: [String : Route] = [:]
-    
+
     /// The `baseURL` of the Router
     public let baseURL: String
     
-    /// The desired latency to delay the mocked responses. Default value is 0.
+    /// The desired latency (in seconds) to delay the mocked responses. Default value is 0.
     public var latency: NSTimeInterval = 0
-    
-    
+
     /**
-     Register a new Router in the KakapoServer.
-     The baseURL can contain a scheme, and the requestURL must match the scheme; if it doesn't contain a scheme then the baseURL is a wildcard and will be matched by any subdomain or any scheme:
+     Register a new Router in the `KakapoServer`.
+     The `baseURL` can contain a scheme, and the requestURL must match the scheme; if it doesn't contain a scheme then
+     the `baseURL` is a wildcard and will be matched by any subdomain or any scheme:
      
      - base: `http://kakapo.com`, path: "any", requestURL: "http://kakapo.com/any" ✅
      - base: `http://kakapo.com`, path: "any", requestURL: "https://kakapo.com/any" ❌ because it's **https**
@@ -172,7 +173,7 @@ public final class Router {
         return false
     }
     
-    func startLoading(server: NSURLProtocol) {
+    func startLoading(server: KakapoServer) {
         guard let requestURL = server.request.URL,
                   client = server.client else { return }
         
@@ -185,8 +186,9 @@ public final class Router {
                 // If the request body is nil use `NSURLProtocol` property see swizzling in `NSMutableURLRequest.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.HTTPBody ?? NSURLProtocol.propertyForKey("kkp_requestHTTPBody", inRequest: server.request) as? NSData
-                
-                serializableObject = route.handler(Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields))
+
+                let request = Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields)
+                serializableObject = route.handler(request)
                 break
             }
         }
@@ -210,14 +212,17 @@ public final class Router {
 
         let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
         dispatch_after(delayTime, dispatch_get_main_queue()) {
-            didFinishLoading(server)
+            // before reporting "finished", check if request has been canceled in the meantime
+            if server.requestCancelled == false {
+                didFinishLoading(server)
+            }
         }
     }
-    
+
     /**
      Registers a GET request with the given path.
      
-     The path is used togheter with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retreive the components of the request:
+     The path is used together with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retrieve the components of the request:
      
      - "/users/:userid" and "/users/1234" will produce [userid: 1234]
      
@@ -239,7 +244,7 @@ public final class Router {
     /**
      Registers a POST request with the given path
      
-     The path is used togheter with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retreive the components of the request:
+     The path is used together with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retrieve the components of the request:
      
      - "/users/:userid" and "/users/1234" will produce [userid: 1234]
      
@@ -261,7 +266,7 @@ public final class Router {
     /**
      Registers a DEL request with the given path
      
-     The path is used togheter with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retreive the components of the request:
+     The path is used together with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retrieve the components of the request:
      
      - "/users/:userid" and "/users/1234" will produce [userid: 1234]
      
@@ -283,7 +288,7 @@ public final class Router {
     /**
      Registers a PUT request with the given path
      
-     The path is used togheter with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retreive the components of the request:
+     The path is used together with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retrieve the components of the request:
      
      - "/users/:userid" and "/users/1234" will produce [userid: 1234]
      
@@ -301,5 +306,5 @@ public final class Router {
     public func put(path: String, handler: RouteHandler) {
         routes[path] = (.PUT, handler)
     }
-    
+
 }
