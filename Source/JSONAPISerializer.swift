@@ -295,7 +295,7 @@ public extension JSONAPIEntity {
             data["links"] = entityLinks.serialize(keyTransformer)
         }
         
-        let excludedKeys: Set<String> = ["id", "links", "topLinks"]
+        let excludedKeys: Set<String> = ["id", "links", "relationshipsLinks"]
         
         for child in mirror.children {
             if let label = child.label {
