@@ -61,7 +61,7 @@ class SerializationTransformerSpec: QuickSpec {
     struct Snake: Serializable {
         let theSnakeCamelFriend: String
     }
-    
+        
     override func spec() {
         
         let user = User(name: "Alex")
@@ -77,14 +77,16 @@ class SerializationTransformerSpec: QuickSpec {
             
             it("should apply transformations in the right order") {
                 do {
-                    let serialized = LowercaseFirstCharacterTransformer(wrapped: UppercaseTransformer(wrapped: friend)).serialize() as! [String: AnyObject]
+                    let wrapped = UppercaseTransformer(wrapped: friend)
+                    let serialized = LowercaseFirstCharacterTransformer(wrapped: wrapped).serialize() as! [String: AnyObject]
                     let friends = serialized["fRIENDS"] as? [AnyObject]
                     let first = friends?.first as? [String: AnyObject]
                     expect(first?.keys.first).to(equal("nAME"))
                 }
                 
                 do {
-                    let serialized = UppercaseTransformer(wrapped: LowercaseFirstCharacterTransformer(wrapped: friend)).serialize() as! [String: AnyObject]
+                    let wrapped = LowercaseFirstCharacterTransformer(wrapped: friend)
+                    let serialized = UppercaseTransformer(wrapped: wrapped).serialize() as! [String: AnyObject]
                     let friends = serialized["FRIENDS"] as? [AnyObject]
                     let first = friends?.first as? [String: AnyObject]
                     expect(first?.keys.first).to(equal("NAME"))

@@ -103,7 +103,7 @@ class KakapoDBTests: QuickSpec {
             
             it("should insert a large number of elements") {
                 dispatch_apply(1000, dispatch_queue_create("queue", DISPATCH_QUEUE_CONCURRENT), { _ in
-                    sut.insert{ (id) -> (User) in
+                    sut.insert { (id) -> (User) in
                         return User(firstName: "Name " + id, lastName: "Last Name " + id, age: 10, id: id)
                     }
                 })
@@ -209,7 +209,7 @@ class KakapoDBTests: QuickSpec {
             it("should not update an object that was never inserted") {
                 sut.create(User.self, number: 2)
                 let elementToUpdate = User(firstName: "Joan", lastName: "Romano", age: 28, id: "45")
-                expect{ try sut.update(elementToUpdate) }.to(throwError(errorType: KakapoDBError.self))
+                expect { try sut.update(elementToUpdate) }.to(throwError(errorType: KakapoDBError.self))
                 let updatedUserInDb = sut.find(User.self, id: "45")
                 expect(updatedUserInDb).to(beNil())
             }
@@ -218,7 +218,7 @@ class KakapoDBTests: QuickSpec {
                 let anotherDB = KakapoDB()
                 sut.create(User.self, number: 2)
                 anotherDB.create(Comment.self, number: 2)
-                expect{ try sut.update(anotherDB.find(Comment.self, id: "0")!) }.to(throwError(errorType: KakapoDBError.self))
+                expect { try sut.update(anotherDB.find(Comment.self, id: "0")!) }.to(throwError(errorType: KakapoDBError.self))
                 let updatedCommentInDb = sut.find(Comment.self, id: "0")
                 expect(updatedCommentInDb).to(beNil())
             }
@@ -269,21 +269,21 @@ class KakapoDBTests: QuickSpec {
             it("should not delete an object with same id but different type") {
                 let user = sut.create(User).first!
                 let elementToDelete = Comment(text: "", likes: 0, id: user.id)
-                expect{ try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
+                expect { try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
                 expect(sut.findAll(User).count).to(equal(1))
             }
             
             it("should delete an object with same id and same type but different properties") {
                 let comment = sut.create(Comment).first!
                 let elementToDelete = Comment(text: "", likes: comment.likes + 1, id: comment.id)
-                expect{ try sut.delete(elementToDelete) }.toNot(throwError(errorType: KakapoDBError.self))
+                expect { try sut.delete(elementToDelete) }.toNot(throwError(errorType: KakapoDBError.self))
                 expect(sut.findAll(User).count).to(equal(0))
             }
             
             it("should not delete a non previously inserted object") {
                 sut.create(User.self)
                 let elementToDelete = User(id: "44", db: sut)
-                expect{ try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
+                expect { try sut.delete(elementToDelete) }.to(throwError(errorType: KakapoDBError.self))
                 expect(sut.findAll(User).count).to(equal(1))
             }
             
@@ -291,7 +291,7 @@ class KakapoDBTests: QuickSpec {
                 let anotherDB = KakapoDB()
                 sut.create(User.self, number: 2)
                 anotherDB.create(Comment.self, number: 2)
-                expect{ try sut.delete(anotherDB.find(Comment.self, id: "1")!) }.to(throwError(errorType: KakapoDBError.self))
+                expect { try sut.delete(anotherDB.find(Comment.self, id: "1")!) }.to(throwError(errorType: KakapoDBError.self))
                 expect(sut.findAll(User).count).to(equal(2))
             }
             

@@ -96,7 +96,7 @@ private extension String {
      - **To**: return the substring preceding the given string (e.g. `kakapo.com/users?a=b`, `?` -> `kakapo.com/users`)
      */
     func substring(mode: SplitMode, string: String) -> String? {
-        guard string.characters.count > 0 else {
+        guard !string.characters.isEmpty else {
             return self
         }
         

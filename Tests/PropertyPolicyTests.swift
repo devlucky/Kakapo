@@ -19,7 +19,8 @@ private struct Person: Serializable {
     let name: String
 }
 
-class IgnorableNilPropertySpec: QuickSpec {
+class IgnorableNilPropertySpec: QuickSpec {    
+
     override func spec() {
         
         describe("Property policy serialization") {

@@ -10,7 +10,8 @@
 /// 1. Drop `ProgrammerAssertions.swift` to the target of your app or framework under test. Just besides your source code.
 /// 2. Drop `XCTestCase+ProgrammerAssertions.swift` to your test target. Just besides your test cases.
 /// 3. Use `assert`, `assertionFailure`, `precondition`, `preconditionFailure` and `fatalError` normally as you always do.
-/// 4. Unit test them with the new methods `expectAssert`, `expectAssertionFailure`, `expectPrecondition`, `expectPreconditionFailure` and `expectFatalError`.
+/// 4. Unit test them with the new methods:
+///    `expectAssert`, `expectAssertionFailure`, `expectPrecondition`, `expectPreconditionFailure` and `expectFatalError`.
 ///
 /// This file is the unit test assertions.
 /// For a complete project example see <https://github.com/mohamede1945/AssertionsTestingExample>
@@ -161,6 +162,7 @@ public extension XCTestCase {
     
     // MARK:- Private Methods
     
+    // swiftlint:disable function_parameter_count
     private func expectAssertionReturnFunction(
         functionName: String,
         file: StaticString,
@@ -189,6 +191,7 @@ public extension XCTestCase {
         expect(message).toEventually(equal(expectedMessage))
     }
     
+    // swiftlint:disable function_parameter_count
     private func expectAssertionNoReturnFunction(
         functionName: String,
         file: StaticString,

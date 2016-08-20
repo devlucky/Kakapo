@@ -19,6 +19,9 @@ if has_app_changes && !has_test_changes
   warn("Tests were not updated", sticky: false)
 end
 
+# swiftlint
+swiftlint.lint_files
+
 # markdown_files = (git.added_files + git.modified_files).select{ |file| file.end_with? "md" }
 # prose.lint_files markdown_files
 # prose.check_spelling markdown_files

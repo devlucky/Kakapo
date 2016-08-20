@@ -129,7 +129,7 @@ private func serializeObject(value: Any, keyTransformer: KeyTransformer?) -> Any
  - returns: A serialized object that may be converted to JSON, usually Array or Dictionary
  */
 private func serialize(object: Serializable, keyTransformer: KeyTransformer?) -> AnyObject {
-    assert(!(object is CustomSerializable))
+    assert((object is CustomSerializable) == false)
 
     var dictionary = [String: AnyObject]()
     let mirror = Mirror(reflecting: object)
