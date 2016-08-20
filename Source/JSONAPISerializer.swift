@@ -291,47 +291,39 @@ public extension JSONAPIEntity {
         var attributes = [String: AnyObject]()
         var relationships = [String: AnyObject]()
         
-        if let linkedEntity = self as? JSONAPILinkedEntity,
-               entityLinks = linkedEntity.links where !entityLinks.isEmpty {
+        if let entityLinks = (self as? JSONAPILinkedEntity)?.links where !entityLinks.isEmpty {
             data["links"] = entityLinks.serialize(keyTransformer)
         }
         
         let excludedKeys: Set<String> = ["id", "links", "relationshipsLinks"]
         
         for child in mirror.children {
-            guard let label = child.label else {
-                continue
-            }
-
-            if let value = child.value as? JSONAPISerializable,
-                let data = value.data(includeRelationships: false, includeAttributes: false, keyTransformer: keyTransformer) {
-                if includeRelationships {
-                    var relationship: [String: AnyObject] = ["data" : data]
-                    
-                    if let linkedEntity = self as? JSONAPILinkedEntity,
-                           relationshipsLinks = linkedEntity.relationshipsLinks?[label] where !relationshipsLinks.isEmpty {
-                        relationship["links"] = relationshipsLinks.serialize(keyTransformer)
+            if let label = child.label {
+                if let value = child.value as? JSONAPISerializable,
+                    let data = value.data(includeRelationships: false, includeAttributes: false, keyTransformer: keyTransformer) {
+                    if includeRelationships {
+                        var relationship: [String: AnyObject] = ["data" : data]
+                        
+                        if let linkedEntity = self as? JSONAPILinkedEntity,
+                            relationshipsLinks = linkedEntity.relationshipsLinks?[label] where !relationshipsLinks.isEmpty {
+                            relationship["links"] = relationshipsLinks.serialize(keyTransformer)
+                        }
+                        
+                        relationships[transformed(label)] = relationship
                     }
-                    
-                    relationships[transformed(label)] = relationship
-                }
-            } else if includeAttributes && !excludedKeys.contains(label) {
-                if let value = child.value as? Serializable {
-                    attributes[transformed(label)] = value.serialize(keyTransformer)
-                } else {
-                    assert(child.value is AnyObject)
-                    attributes[transformed(label)] = child.value as? AnyObject
+                } else if includeAttributes && !excludedKeys.contains(label) {
+                    if let value = child.value as? Serializable {
+                        attributes[transformed(label)] = value.serialize(keyTransformer)
+                    } else {
+                        assert(child.value is AnyObject)
+                        attributes[transformed(label)] = child.value as? AnyObject
+                    }
                 }
             }
         }
         
-        if includeAttributes && !attributes.isEmpty {
-            data["attributes"] = attributes
-        }
-        
-        if includeRelationships && !relationships.isEmpty {
-            data["relationships"] = relationships
-        }
+        data["attributes"] = attributes.isEmpty ? nil : attributes
+        data["relationships"] = relationships.isEmpty ? nil : relationships
 
         return data
     }
