@@ -303,7 +303,8 @@ public extension JSONAPIEntity {
                 continue
             }
 
-            if let value = child.value as? JSONAPISerializable, let data = value.data(includeRelationships: false, includeAttributes: false, keyTransformer: keyTransformer) {
+            if let value = child.value as? JSONAPISerializable,
+                let data = value.data(includeRelationships: false, includeAttributes: false, keyTransformer: keyTransformer) {
                 if includeRelationships {
                     var relationship: [String: AnyObject] = ["data" : data]
                     

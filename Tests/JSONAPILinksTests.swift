@@ -50,7 +50,7 @@ class JSONAPILinksSpec: QuickSpec {
     
     struct Meta: Serializable {
         let copyright = "Copyright 2015 Example Corp."
-        let authors = ["Yehuda Katz", "Steve Klabnik","Dan Gebhardt","Tyler Kellen"]
+        let authors = ["Yehuda Katz", "Steve Klabnik", "Dan Gebhardt", "Tyler Kellen"]
     }
     
     override func spec() {
