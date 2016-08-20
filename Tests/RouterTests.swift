@@ -89,7 +89,7 @@ class RouterTests: QuickSpec {
             Router.disableAll()
         }
 
-        describe("Describe Cancelling requests") {
+        describe("Cancelling requests") {
             var router: Router!
             let baseURL = "http://www.funky-cancel-request.com"
             let latency = NSTimeInterval(2)
@@ -120,8 +120,8 @@ class RouterTests: QuickSpec {
             }
 
             it("should not confuse multiple request with identical URL") {
-                var responseError_A: NSError?
-                var responseError_B: NSError?
+                var responseURL_A: NSURL? = nil
+                var responseError_B: NSError? = nil
                 let canceledRequestID = "999"
 
                 router.get("/cash/:id") { request in
@@ -136,16 +136,17 @@ class RouterTests: QuickSpec {
                 let requestURL_B = NSURL(string: "\(baseURL)/cash/\(canceledRequestID)")!
 
                 let dataTask_A = NSURLSession.sharedSession().dataTaskWithURL(requestURL_A) { (data, response, error) in
-                    responseError_A = error
+                    responseURL_A = response?.URL
                 }
                 let dataTask_B = NSURLSession.sharedSession().dataTaskWithURL(requestURL_B) { (data, response, error) in
                     responseError_B = error
                 }
+
                 dataTask_A.resume()
-                dataTask_B.cancel()
+                dataTask_B.cancel() // cancel immediately -> should never get executed, because of Router.latency
 
                 // expect task A to succeed
-                expect(responseError_A).toEventually(beNil(), timeout: (latency + 1))
+                expect(responseURL_A).toEventually(beTruthy(), timeout: (latency + 1))
 
                 // expect task B to get cancelled
                 expect(responseError_B).toEventually(beTruthy(), timeout: (latency + 1))
