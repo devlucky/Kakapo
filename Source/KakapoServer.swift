@@ -49,7 +49,7 @@ public final class KakapoServer: NSURLProtocol {
 
      Note: calls to `stopLoading()` will set this value to `true`
      */
-    private(set) var requestCancelled:Bool = false
+    private(set) var requestCancelled: Bool = false
     
     /**
      Register and return a new Router in the Server
