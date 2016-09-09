@@ -16,9 +16,11 @@ import Alamofire
 @testable import Kakapo
 
 /**
- A test server that conforms to NSURLProtocol, in order to intercept outgoing network for unit tests. As `NSURLProtocol` documentation states:
+ A test server that conforms to NSURLProtocol, in order to intercept outgoing network for unit tests.
+ As `NSURLProtocol` documentation states:
  
- "Classes are consulted in the reverse order of their registration. A similar design governs the process to create the canonical form of a request with canonicalRequestForRequest:."
+ "Classes are consulted in the reverse order of their registration.
+ A similar design governs the process to create the canonical form of a request with canonicalRequestForRequest:."
  
  Thus, we use this test server to intercept real network calls in tests as a fallback for `KakapoServer`.
  */
@@ -44,7 +46,8 @@ private final class RouterTestServer: NSURLProtocol {
         guard let requestURL = request.URL,
                   client = client else { return }
 
-        client.URLProtocol(self, didReceiveResponse: NSHTTPURLResponse(URL: requestURL, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: nil)!, cacheStoragePolicy: .AllowedInMemoryOnly)
+        let response = NSHTTPURLResponse(URL: requestURL, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: nil)!
+        client.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
         client.URLProtocolDidFinishLoading(self)
     }
 
@@ -77,14 +80,15 @@ struct CustomResponse: ResponseFieldsProvider {
 class RouterTests: QuickSpec {
     
     override func spec() {
+
         var db = KakapoDB()
         
-        beforeEach{
+        beforeEach {
             RouterTestServer.register()
             db = KakapoDB()
         }
         
-        afterEach{
+        afterEach {
             RouterTestServer.disable()
             Router.disableAll()
         }
@@ -181,7 +185,7 @@ class RouterTests: QuickSpec {
         describe("Registering urls") {
             var router: Router!
             
-            beforeEach{
+            beforeEach {
                 router = Router.register("http://www.test.com")
             }
             
@@ -303,7 +307,7 @@ class RouterTests: QuickSpec {
         describe("Non registered urls") {
             var router: Router!
             
-            beforeEach{
+            beforeEach {
                 router = Router.register("http://www.test.com")
             }
             
@@ -356,7 +360,7 @@ class RouterTests: QuickSpec {
         describe("Request body") {
             var router: Router!
             
-            beforeEach{
+            beforeEach {
                 router = Router.register("http://www.test.com")
             }
             
@@ -380,7 +384,7 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(request.copy() as! NSURLRequest){ (_, _, _) in }.resume()
+                NSURLSession.sharedSession().dataTaskWithRequest(request.copy() as! NSURLRequest) { (_, _, _) in }.resume()
                 
                 expect(info?.components).toEventually(equal(["id" : "1"]))
                 expect(info?.queryParameters).toEventually(equal([]))
@@ -433,7 +437,7 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(request){ (_, _, _) in }.resume()
+                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
                 
                 expect(contentType).toEventually(equal("application/json"))
                 expect(accept).toEventually(equal("application/json"))
@@ -450,7 +454,7 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(request){ (_, _, _) in }.resume()
+                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
                 
                 expect(count).toEventually(be(0))
             }
@@ -459,7 +463,7 @@ class RouterTests: QuickSpec {
         describe("Response objects") {
             var router: Router!
             
-            beforeEach{
+            beforeEach {
                 router = Router.register("http://www.test.com")
             }
             
@@ -467,8 +471,8 @@ class RouterTests: QuickSpec {
                 
                 let url = NSURL(string: "http://www.test.com/users")!
                 
-                beforeEach{
-                    router.get("/users"){ request in
+                beforeEach {
+                    router.get("/users") { request in
                         return ["":""]
                     }
                 }
@@ -501,7 +505,7 @@ class RouterTests: QuickSpec {
                 
                 var responseDictionary: NSDictionary? = nil
                 
-                router.get("/users/:id"){ request in
+                router.get("/users/:id") { request in
                     return db.find(User.self, id: request.components["id"]!)
                 }
                 
@@ -519,7 +523,7 @@ class RouterTests: QuickSpec {
                 var statusCode: Int? = nil
                 var responseDictionary: NSDictionary? = nil
                 
-                router.get("/users/:id"){ request in
+                router.get("/users/:id") { request in
                     return Response(statusCode: 200, body: db.find(User.self, id: request.components["id"]!)!)
                 }
                 
@@ -538,7 +542,7 @@ class RouterTests: QuickSpec {
                 var statusCode: Int? = nil
                 var dataLength = 10000
                 
-                router.get("/users/:id"){ request in
+                router.get("/users/:id") { request in
                     // Optional.Some("none") -> not valid JSON object
                     return Response(statusCode: 400, body: Optional.Some("none"))
                 }
@@ -556,8 +560,10 @@ class RouterTests: QuickSpec {
             it("should return the specified response headers inside a response object with code when requesting a registered url") {
                 var allHeaders: [String : String]? = nil
                 
-                router.get("/users/:id"){ request in
-                    return Response(statusCode: 400, body: ["id" : "foo", "type" : "User"], headerFields: ["access_token" : "094850348502", "user_id" : "124"])
+                router.get("/users/:id") { request in
+                    let body = ["id" : "foo", "type" : "User"]
+                    let headerFields = ["access_token" : "094850348502", "user_id" : "124"]
+                    return Response(statusCode: 400, body: body, headerFields: headerFields)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -575,7 +581,7 @@ class RouterTests: QuickSpec {
                 var responseDictionary: NSDictionary? = nil
                 var statusCode: Int? = nil
                 
-                router.get("/users/:id"){ request in
+                router.get("/users/:id") { request in
                     return CustomResponse(statusCode: 400, body: ["id" : 2], headerFields: ["access_token" : "094850348502"])
                 }
                 
@@ -596,7 +602,7 @@ class RouterTests: QuickSpec {
                 
                 var responseArray: NSArray? = nil
                 
-                router.get("/users"){ request in
+                router.get("/users") { request in
                     return db.findAll(User)
                 }
                 
@@ -612,7 +618,7 @@ class RouterTests: QuickSpec {
             }
             
             it("should return nil for objects not serializable to JSON") {
-                router.get("/nothing/:id"){ request in
+                router.get("/nothing/:id") { request in
                     return Optional.Some("none")
                 }
                 
@@ -725,7 +731,8 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2")!) { (data, response, _) in
+                let url = NSURL(string: "http://www.test.com/users/1/comments/2")!
+                NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
                     responseURL = response?.URL
                     }.resume()
                 
@@ -906,7 +913,7 @@ class RouterTests: QuickSpec {
                 return configuration
             }()
             
-            beforeEach{
+            beforeEach {
                 response = nil
                 router = Router.register("http://kakapotest.com")
                 router.get("/users/:id") { request in

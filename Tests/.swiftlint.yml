@@ -1,0 +1,44 @@
+disabled_rules:
+  - function_body_length
+  - force_try
+  - force_cast
+  - force_unwrapping
+  - trailing_whitespace  # xcode add it by default, we might enable it and use autocorrect
+
+opt_in_rules:
+  - empty_count
+
+line_length: 200 # goal: 110 
+
+type_body_length:
+  warning: 800
+  error: 1200
+
+file_length:
+  warning: 1000
+  error: 1500
+
+type_name:
+  min_length: 4 # only warning
+  max_length: # warning and error
+    warning: 40
+    error: 50
+  excluded: 
+    - Dog
+    - Cat
+
+variable_name:
+  min_length: # only min_length
+    error: 4 # only error
+  excluded: # excluded via string array
+    - id
+    - URL
+    - key
+    - db
+    - sut
+    - dog
+    - cat
+    - age
+    
+reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit)
+

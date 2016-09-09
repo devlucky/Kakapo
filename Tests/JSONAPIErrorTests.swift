@@ -18,9 +18,9 @@ class JSONAPIErrorsSpec: QuickSpec {
     private struct ErrorDescription: Serializable {
         let description: String
     }
-
+    
     override func spec() {
-        
+
         func json(object: Serializable) -> JSON {
             return JSON(object.serialize()!)
         }
@@ -60,20 +60,23 @@ class JSONAPIErrorsSpec: QuickSpec {
                     Router.disableAll()
                 }
                 
-                it("should affect the status code of the request") { /* occasionally failing test, added diagnostic */
+                it("should affect the status code of the request") {
+                    // occasionally failing test, added diagnostic
+                    // https://github.com/devlucky/Kakapo/issues/79
                     let router = Router.register("http://www.test.com")
                     // diagnostic
                     var handlerCalled = false
                     
-                    router.get("/users"){ request in
+                    router.get("/users") { request in
                         handlerCalled = true
                         return JSONAPIError(statusCode: 501) { (error) in
                             error.title = "test"
                         }
                     }
                     
-                    var statusCode: Int = -1 // sometimes this test fails, use -1 to distinguish between nil. Looks like a timeout but it's weird that only happens to this test. Maybe the route is not matched sometimes?
-                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
+                    var statusCode: Int = -1
+                    let url = NSURL(string: "http://www.test.com/users")!
+                    NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
                         let response = response as! NSHTTPURLResponse
                         statusCode = response.statusCode
                         // diagnostic
@@ -84,21 +87,23 @@ class JSONAPIErrorsSpec: QuickSpec {
                     let startTime = CFAbsoluteTimeGetCurrent()
                     expect(statusCode).toEventually(equal(501))
                     let endTime = CFAbsoluteTimeGetCurrent()
-                    expect(endTime - startTime) < 1 // Quick's default timeout, the responde should be done immediately anyway.
+                     // Quick's default timeout, the responde should be done immediately anyway.
+                    expect(endTime - startTime) < 1
                     expect(handlerCalled) == true
                 }
                 
                 it("should affect the header fields of the response") {
                     let router = Router.register("http://www.test.com")
                     
-                    router.get("/users"){ request in
+                    router.get("/users") { request in
                         return JSONAPIError(statusCode: 404, headerFields: ["foo": "bar"]) { (error) in
                             error.title = "test"
                         }
                     }
                     
                     var foo: String?
-                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
+                    let url = NSURL(string: "http://www.test.com/users")!
+                    NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
                         let response = response as! NSHTTPURLResponse
                         let headers = response.allHeaderFields as? [String: String]
                         foo = headers?["foo"]

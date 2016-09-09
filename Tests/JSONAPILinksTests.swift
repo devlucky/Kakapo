@@ -50,11 +50,11 @@ class JSONAPILinksSpec: QuickSpec {
     
     struct Meta: Serializable {
         let copyright = "Copyright 2015 Example Corp."
-        let authors = ["Yehuda Katz", "Steve Klabnik","Dan Gebhardt","Tyler Kellen"]
+        let authors = ["Yehuda Katz", "Steve Klabnik", "Dan Gebhardt", "Tyler Kellen"]
     }
     
     override func spec() {
-        
+
         func json(object: Serializable) -> JSON {
             return JSON(object.serialize()!)
         }
@@ -74,7 +74,9 @@ class JSONAPILinksSpec: QuickSpec {
             }
             
             it("should serialize top level links") {
-                let object = json(JSONAPISerializer(dog, topLevelLinks: ["test": JSONAPILink.Simple(value: "hello"), "another": JSONAPILink.Object(href: "http://example.com/articles/1/comments", meta: Meta())]))
+                let topLevelLinks = ["test": JSONAPILink.Simple(value: "hello"),
+                                     "another": JSONAPILink.Object(href: "http://example.com/articles/1/comments", meta: Meta())]
+                let object = json(JSONAPISerializer(dog, topLevelLinks: topLevelLinks))
                 let links = object["links"].dictionaryValue
                 expect(links.count) == 2
                 expect(links["test"]).to(equal("hello"))

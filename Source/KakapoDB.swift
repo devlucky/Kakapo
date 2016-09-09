@@ -71,11 +71,11 @@ public final class KakapoDB {
     }
     
     private func barrierSync<T>(closure: () -> T) -> T {
-        var object: T?
+        var object: T!
         dispatch_barrier_sync(queue) {
             object = closure()
         }
-        return object!
+        return object
     }
 
     private func barrierAsync(closure: () -> ()) {
@@ -83,11 +83,11 @@ public final class KakapoDB {
     }
 
     private func sync<T>(closure: () -> T) -> T {
-        var object: T?
+        var object: T!
         dispatch_sync(queue) {
             object = closure()
         }
-        return object!
+        return object
     }
     
     /**
@@ -106,7 +106,7 @@ public final class KakapoDB {
         let objects = ids.map { id in T(id: id, db: self) }
         
         barrierAsync {
-            self.lookup(T).value.appendContentsOf(objects.flatMap{ $0 as Storable })
+            self.lookup(T).value.appendContentsOf(objects.flatMap { $0 as Storable })
         }
         
         return objects
@@ -187,7 +187,7 @@ public final class KakapoDB {
      */
     public func findAll<T: Storable>(_: T.Type) -> [T] {
         return sync {
-            self.lookup(T).value.flatMap{$0 as? T}
+            self.lookup(T).value.flatMap {$0 as? T}
         }
     }
     

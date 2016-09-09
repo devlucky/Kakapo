@@ -1,0 +1,50 @@
+disabled_rules:
+  - trailing_whitespace # xcode add it by default, we might enable it and use autocorrect
+  - valid_docs # has some problems with init (don't want a returns) and other stuff
+  - conditional_binding_cascade
+  
+opt_in_rules:
+  - empty_count
+  - force_unwrapping
+  - missing_docs
+  
+included:
+  - Source
+  - Tests
+  
+excluded:
+  - Pods
+  - Examples
+
+line_length: 500 # goal: 110 
+
+type_body_length:
+  warning: 300
+  error: 400
+
+file_length:
+  warning: 500
+  error: 1200
+
+type_name:
+  min_length: 4 # only warning
+  max_length: # warning and error
+    warning: 40
+    error: 50
+  excluded: 
+    - To
+    - GET
+    - PUT
+
+variable_name:
+  min_length: # only min_length
+    error: 4 # only error
+  excluded: # excluded via string array
+    - id
+    - URL
+    - key
+    - db
+    - HTTPBody
+    - HTTPHeaders
+    
+reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit)

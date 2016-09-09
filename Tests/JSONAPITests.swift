@@ -64,7 +64,7 @@ class JSONAPISpec: QuickSpec {
     }
     
     override func spec() {
-        
+
         let cats = [Cat(id: "33", name: "Stancho"), Cat(id: "44", name: "Hez")]
         let dog = Dog(id: "22", name: "Joan", cat: cats[0])
         let user = User(id: "11", name: "Alex", dog: dog, cats: cats)

@@ -379,6 +379,7 @@
 				DE76E1251D0DC5FA009721A4 /* Frameworks */,
 				DE76E1261D0DC5FA009721A4 /* Headers */,
 				DE76E1271D0DC5FA009721A4 /* Resources */,
+				DEB7A5131D68E5D000E017E6 /* Swift Lint */,
 			);
 			buildRules = (
 			);
@@ -397,6 +398,7 @@
 				DE76E1331D0DC640009721A4 /* Frameworks */,
 				DE76E1341D0DC640009721A4 /* Headers */,
 				DE76E1351D0DC640009721A4 /* Resources */,
+				DEB7A5141D68E5E900E017E6 /* Swift Lint */,
 			);
 			buildRules = (
 			);
@@ -436,6 +438,7 @@
 				DE76E14F1D0DC65B009721A4 /* Frameworks */,
 				DE76E1501D0DC65B009721A4 /* Headers */,
 				DE76E1511D0DC65B009721A4 /* Resources */,
+				DEB7A5151D68E5F700E017E6 /* Swift Lint */,
 			);
 			buildRules = (
 			);
@@ -475,6 +478,7 @@
 				DE76E16B1D0DC671009721A4 /* Frameworks */,
 				DE76E16C1D0DC671009721A4 /* Headers */,
 				DE76E16D1D0DC671009721A4 /* Resources */,
+				DEB7A5121D68E59500E017E6 /* Swift Lint */,
 			);
 			buildRules = (
 			);
@@ -735,6 +739,62 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Kakapo tvOSTests/Pods-Kakapo tvOSTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		DEB7A5121D68E59500E017E6 /* Swift Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Lint";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+		};
+		DEB7A5131D68E5D000E017E6 /* Swift Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Lint";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+		};
+		DEB7A5141D68E5E900E017E6 /* Swift Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Lint";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+		};
+		DEB7A5151D68E5F700E017E6 /* Swift Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Lint";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
 		};
 		E13417CC27D9C197069F9A7B /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

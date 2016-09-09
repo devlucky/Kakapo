@@ -12,6 +12,7 @@ import Nimble
 @testable import Kakapo
 
 class RouteMatcherTests: QuickSpec {
+    
     override func spec() {
         
         func match(path path: String, requestURL: String) -> URLInfo? {
@@ -100,7 +101,8 @@ class RouteMatcherTests: QuickSpec {
                     }
                     
                     it("should retreive multiple query parameters") {
-                        expect(match(path: "/users/:id", requestURL: "/users/1?page=2&size=50")?.queryParameters) == [NSURLQueryItem(name: "page", value: "2"), NSURLQueryItem(name: "size", value: "50")]
+                        let queryParameters = [NSURLQueryItem(name: "page", value: "2"), NSURLQueryItem(name: "size", value: "50")]
+                        expect(match(path: "/users/:id", requestURL: "/users/1?page=2&size=50")?.queryParameters) == queryParameters
                     }
                 }
             }
@@ -139,9 +141,7 @@ class RouteMatcherTests: QuickSpec {
                     let result = matchRoute("http://test.com/api/:api_version/",
                                             path: "/users/:id",
                                             requestURL: NSURL(string: "http://test.com/api/v3/users/1")!)
-                    expect(result).to(beNil()) // TODO: decide if we want to implement it. ATM baseURL must be contained in the requestURL
-//                    expect(result?.components) == ["id" : "1"]
-//                    expect(result?.queryParameters) == [NSURLQueryItem(name: "api_version", value: "v3")]
+                    expect(result).to(beNil())
                 }
                 
                 it("should match any subdomain when the base url doesn't contain a scheme (wildcard baseURL)") {

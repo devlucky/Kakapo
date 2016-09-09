@@ -14,8 +14,8 @@ import Nimble
 struct MaybeEmpty<T>: Serializable {
     let value: T
     
-    init(_ obj: T) {
-        value = obj
+    init(_ value: T) {
+        self.value = value
     }
 }
 
@@ -40,8 +40,9 @@ class SerializeSpec: QuickSpec {
             self.friends = friends
         }
     }
-    
+        
     override func spec() {
+
         let user = User(name: "Alex")
         
         describe("Serialization of Serializable entities") {
