@@ -22,7 +22,7 @@ matrix:
     - osx_image: xcode8
       env: FASTLANE_ENV=tvos
     - osx_image: xcode8
-      env: FASTLANE_ENV=osx1011
+      env: FASTLANE_ENV=osx
     - osx_image: xcode8
       env: FASTLANE_ENV=ios93
     - osx_image: xcode8
