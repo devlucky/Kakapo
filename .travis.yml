@@ -8,7 +8,6 @@ env:
     - FASTLANE_LANE=ci_commit
 
 before_install:
-  - gem uninstall json -v 2.0.1 # workaround for Fastlane conflict https://github.com/travis-ci/travis-ci/issues/6325
   - gem update fastlane
   - gem install danger --no-ri --no-doc
   - gem install danger-swiftlint --no-ri --no-doc
