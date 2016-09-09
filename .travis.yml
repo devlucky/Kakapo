@@ -8,6 +8,7 @@ env:
     - FASTLANE_LANE=ci_commit
 
 before_install:
+  - cd $(brew --repo); git fetch; git reset --hard origin/master; brew update
   - gem update fastlane
   - gem install danger --no-ri --no-doc
   - gem install danger-swiftlint --no-ri --no-doc
