@@ -160,7 +160,7 @@ public extension XCTestCase {
         }
     }
     
-    // MARK:- Private Methods
+    // MARK: Private Methods
     
     // swiftlint:disable function_parameter_count
     private func expectAssertionReturnFunction(
