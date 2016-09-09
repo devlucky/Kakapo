@@ -161,7 +161,7 @@ public final class Router {
      */
     func canInitWithRequest(request: NSURLRequest) -> Bool {
         guard let requestURL = request.URL
-            where requestURL.absoluteString.containsString(baseURL) else { return false }
+            where requestURL.absoluteString!.containsString(baseURL) else { return false }
         
         for (key, route) in routes where route.method.rawValue == request.HTTPMethod {
             if  matchRoute(baseURL, path: key, requestURL: requestURL) != nil {

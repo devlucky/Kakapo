@@ -22,3 +22,11 @@ target 'Kakapo macOSTests' do
 	platform :osx, '10.11'
     testing_pods
 end
+
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |configuration|
+            configuration.build_settings['SWIFT_VERSION'] = "2.3"
+        end
+    end
+end
