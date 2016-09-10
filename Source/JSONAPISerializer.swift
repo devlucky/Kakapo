@@ -163,7 +163,7 @@ extension Array: JSONAPISerializable {
     public func includedRelationships(includeChildren: Bool, keyTransformer: KeyTransformer?) -> [AnyObject]? {
         guard Element.self is JSONAPISerializable.Type else { return nil }
         let includedRelationships = flatMap { ($0 as? JSONAPISerializable)?.includedRelationships(includeChildren, keyTransformer: keyTransformer) }.flatMap { $0 }
-        return includedRelationships.count > 0 ? includedRelationships : nil
+        return includedRelationships.isEmpty ? nil : includedRelationships
     }
     
     private func unifiedIncludedRelationships() -> [AnyObject] {
