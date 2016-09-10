@@ -1,5 +1,5 @@
+import Foundation
 import Kakapo // NOTE: Build "Kakapo iOS" for a 64 bit simulator to successfully import the dynamic framework
-
 /*:
  # Kakapo
  
