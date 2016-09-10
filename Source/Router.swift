@@ -14,7 +14,7 @@ import Foundation
  By default, though, the Router will return a 200 status code and `["Content-Type": "application/json"]` header fields when only returning a Serializable object.
  In order to customize that behavior, check `ResponseFieldsProvider` to provide custom status code and header fields.
  */
-public typealias RouteHandler = Request -> Serializable?
+public typealias RouteHandler = (Request) -> Serializable?
 
 /**
  A Request struct used in `RouteHandlers` to provide valid requests.
@@ -24,10 +24,10 @@ public struct Request {
     public let components: [String : String]
     
     /// The decomposed URLInfo query parameters
-    public let queryParameters: [NSURLQueryItem]
+    public let queryParameters: [URLQueryItem]
     
     /// An optional request body
-    public let HTTPBody: NSData?
+    public let HTTPBody: Data?
     
     /// An optional dictionary holding the request header fields
     public let HTTPHeaders: [String: String]?
@@ -52,7 +52,7 @@ public protocol ResponseFieldsProvider: CustomSerializable {
 extension ResponseFieldsProvider {
     
     /// The default implementation just return the serialized body.
-    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> AnyObject? {
         return body.serialize(keyTransformer)
     }
 }
@@ -95,19 +95,19 @@ public struct Response: ResponseFieldsProvider {
  */
 public final class Router {
     
-    private typealias Route = (method: HTTPMethod, handler: RouteHandler)
+    fileprivate typealias Route = (method: HTTPMethod, handler: RouteHandler)
     
-    private enum HTTPMethod: String {
+    fileprivate enum HTTPMethod: String {
         case GET, POST, PUT, DELETE
     }
     
-    private var routes: [String : Route] = [:]
+    fileprivate var routes: [String : Route] = [:]
 
     /// The `baseURL` of the Router
     public let baseURL: String
     
     /// The desired latency (in seconds) to delay the mocked responses. Default value is 0.
-    public var latency: NSTimeInterval = 0
+    public var latency: TimeInterval = 0
 
     /**
      Register a new Router in the `KakapoServer`.
@@ -128,7 +128,7 @@ public final class Router {
      
      - returns: An new initialized Router. Note that two Router objects can hold the same baseURL.
      */
-    public class func register(baseURL: String) -> Router {
+    public class func register(_ baseURL: String) -> Router {
         return KakapoServer.register(baseURL)
     }
     
@@ -137,7 +137,7 @@ public final class Router {
      
      - parameter baseURL: The base URL to be unregistered
      */
-    public class func unregister(baseURL: String) {
+    public class func unregister(_ baseURL: String) {
         KakapoServer.unregister(baseURL)
     }
     
@@ -159,11 +159,10 @@ public final class Router {
      
      - returns: true if a route matches the request
      */
-    func canInitWithRequest(request: NSURLRequest) -> Bool {
-        guard let requestURL = request.URL
-            where requestURL.absoluteString?.containsString(baseURL) ?? false else { return false }
+    func canInitWithRequest(_ request: URLRequest) -> Bool {
+        guard let requestURL = request.url, requestURL.absoluteString.contains(baseURL) else { return false }
         
-        for (key, route) in routes where route.method.rawValue == request.HTTPMethod {
+        for (key, route) in routes where route.method.rawValue == request.httpMethod {
             if  matchRoute(baseURL, path: key, requestURL: requestURL) != nil {
                 return true
             }
@@ -172,9 +171,9 @@ public final class Router {
         return false
     }
     
-    func startLoading(server: KakapoServer) {
-        guard let requestURL = server.request.URL,
-                  client = server.client else { return }
+    func startLoading(_ server: KakapoServer) {
+        guard let requestURL = server.request.url,
+                  let client = server.client else { return }
         
         var statusCode = 200
         var headerFields: [String : String]? = ["Content-Type": "application/json"]
@@ -184,7 +183,7 @@ public final class Router {
             if let info = matchRoute(baseURL, path: key, requestURL: requestURL) {
                 // If the request body is nil use `NSURLProtocol` property see swizzling in `NSMutableURLRequest.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
-                let dataBody = server.request.HTTPBody ?? NSURLProtocol.propertyForKey("kkp_requestHTTPBody", inRequest: server.request) as? NSData
+                let dataBody = server.request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: server.request) as? Data
 
                 let request = Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields)
                 serializableObject = route.handler(request)
@@ -197,20 +196,20 @@ public final class Router {
             headerFields = serializableObject.headerFields
         }
         
-        if let response = NSHTTPURLResponse(URL: requestURL, statusCode: statusCode, HTTPVersion: "HTTP/1.1", headerFields: headerFields) {
-            client.URLProtocol(server, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
+        if let response = HTTPURLResponse(url: requestURL, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: headerFields) {
+            client.urlProtocol(server, didReceive: response, cacheStoragePolicy: .allowedInMemoryOnly)
         }
         
         if let data = serializableObject?.toData() {
-            client.URLProtocol(server, didLoadData: data)
+            client.urlProtocol(server, didLoad: data)
         }
         
-        let didFinishLoading: (NSURLProtocol) -> () = { (server) in
-            client.URLProtocolDidFinishLoading(server)
+        let didFinishLoading: (URLProtocol) -> () = { (server) in
+            client.urlProtocolDidFinishLoading(server)
         }
 
-        let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
-        dispatch_after(delayTime, dispatch_get_main_queue()) {
+        let delayTime = DispatchTime.now() + Double(Int64(latency * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: delayTime) {
             // before reporting "finished", check if request has been canceled in the meantime
             if server.requestCancelled == false {
                 didFinishLoading(server)
@@ -236,8 +235,8 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func get(path: String, handler: RouteHandler) {
-        routes[path] = (.GET, handler)
+    public func get(_ path: String, handler: @escaping RouteHandler) {
+        routes[path] = Route(method: .GET, handler: handler)
     }
     
     /**
@@ -258,8 +257,8 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func post(path: String, handler: RouteHandler) {
-        routes[path] = (.POST, handler)
+    public func post(_ path: String, handler: @escaping RouteHandler) {
+        routes[path] =  Route(method: .POST, handler: handler)
     }
     
     /**
@@ -280,8 +279,8 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func del(path: String, handler: RouteHandler) {
-        routes[path] = (.DELETE, handler)
+    public func del(_ path: String, handler: @escaping RouteHandler) {
+        routes[path] = Route(method: .DELETE, handler: handler)
     }
     
     /**
@@ -302,8 +301,8 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func put(path: String, handler: RouteHandler) {
-        routes[path] = (.PUT, handler)
+    public func put(_ path: String, handler: @escaping RouteHandler) {
+        routes[path] = Route(method: .PUT, handler: handler)
     }
 
 }

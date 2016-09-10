@@ -28,7 +28,7 @@ class SerializeSpec: QuickSpec {
     struct CustomUser: CustomSerializable {
         let name: String
         
-        func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
+        func customSerialize(_ keyTransformer: KeyTransformer?) -> AnyObject? {
             return [keyTransformer?(key: "customName") ?? "customName": name]
         }
     }
@@ -77,7 +77,7 @@ class SerializeSpec: QuickSpec {
                 expect(first["name"] as? String).to(equal("Alex"))
             }
             
-            func checkObject(object: AnyObject?) {
+            func checkObject(_ object: AnyObject?) {
                 let obj = object as? [String: AnyObject]
                 expect(obj?.keys.first).to(equal("name"))
                 expect(obj?.values.first as? String).to(equal("Alex"))
@@ -110,7 +110,7 @@ class SerializeSpec: QuickSpec {
                 expect(user["name"] as? String).to(equal("Alex"))
             }
             
-            func checkObject(object: AnyObject?) {
+            func checkObject(_ object: AnyObject?) {
                 let obj = object as? [String: AnyObject]
                 expect(obj?.keys.first).to(equal("name"))
                 expect(obj?.values.first as? String).to(equal("Alex"))
@@ -159,7 +159,7 @@ class SerializeSpec: QuickSpec {
             }
             
             it("serialize an optional") {
-                let optional = MaybeEmpty(Optional.Some(1))
+                let optional = MaybeEmpty(Optional.some(1))
                 let serialized = optional.serialize() as! [String: AnyObject] as? [String: Int]
                 expect(serialized?["value"]).to(equal(1))
             }
@@ -172,7 +172,7 @@ class SerializeSpec: QuickSpec {
             }
             
             it("recursively serialize Optionals") {
-                let optional = MaybeEmpty(Optional.Some(Optional.Some(1)))
+                let optional = MaybeEmpty(Optional.some(Optional.some(1)))
                 let serialized = optional.serialize() as! [String: AnyObject] as? [String: Int]
                 expect(serialized?["value"]).to(be(1))
             }
@@ -180,12 +180,12 @@ class SerializeSpec: QuickSpec {
         
         describe("KeyTransformer") {
             it("should handle the keyTransformer when serializing a Serializable object") {
-                let serialized = user.serialize { $0.uppercaseString } as! [String: AnyObject]
+                let serialized = user.serialize { $0.uppercased } as! [String: AnyObject]
                 expect(serialized["NAME"] as? String).to(equal("Alex"))
             }
             
             it("should handle the keyTransformer when serializing a CustomSerializable object") {
-                let serialized = CustomUser(name: "Alex").serialize { $0.uppercaseString } as! [String: AnyObject]
+                let serialized = CustomUser(name: "Alex").serialize { $0.uppercased } as! [String: AnyObject]
                 expect(serialized["CUSTOMNAME"] as? String).to(equal("Alex"))
             }
         }

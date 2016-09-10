@@ -55,7 +55,7 @@ class JSONAPILinksSpec: QuickSpec {
     
     override func spec() {
 
-        func json(object: Serializable) -> JSON {
+        func json(_ object: Serializable) -> JSON {
             return JSON(object.serialize()!)
         }
         
@@ -63,19 +63,19 @@ class JSONAPILinksSpec: QuickSpec {
             let dog = Dog(id: "22",
                           name: "Joan",
                           cat: nil,
-                          links: ["self": JSONAPILink.Simple(value: "selfish"),
-                                  "related": JSONAPILink.Simple(value: "relatedish")])
+                          links: ["self": JSONAPILink.simple(value: "selfish"),
+                                  "related": JSONAPILink.simple(value: "relatedish")])
             
             it("should serialize data with links") {
-                let object = json(JSONAPISerializer(dog, topLevelLinks: ["test": JSONAPILink.Simple(value: "hello")]))
+                let object = json(JSONAPISerializer(dog, topLevelLinks: ["test": JSONAPILink.simple(value: "hello")]))
                 let links = object["data"]["links"].dictionaryValue
                 expect(links.count) == 2
                 expect(links["self"]).to(equal("selfish"))
             }
             
             it("should serialize top level links") {
-                let topLevelLinks = ["test": JSONAPILink.Simple(value: "hello"),
-                                     "another": JSONAPILink.Object(href: "http://example.com/articles/1/comments", meta: Meta())]
+                let topLevelLinks = ["test": JSONAPILink.simple(value: "hello"),
+                                     "another": JSONAPILink.object(href: "http://example.com/articles/1/comments", meta: Meta())]
                 let object = json(JSONAPISerializer(dog, topLevelLinks: topLevelLinks))
                 let links = object["links"].dictionaryValue
                 expect(links.count) == 2
@@ -91,8 +91,8 @@ class JSONAPILinksSpec: QuickSpec {
                             links: nil),
                         Cat(id: "44",
                             name: "Hez",
-                            links: ["test": JSONAPILink.Simple(value: "hello"),
-                                    "another": JSONAPILink.Object(href: "http://example.com/articles/1/comments", meta: Meta())])]
+                            links: ["test": JSONAPILink.simple(value: "hello"),
+                                    "another": JSONAPILink.object(href: "http://example.com/articles/1/comments", meta: Meta())])]
             let dog = Dog(id: "22",
                           name: "Joan",
                           cat: cats[0],
@@ -177,8 +177,8 @@ class JSONAPILinksSpec: QuickSpec {
             
             it("should not serialize nil relationships links") {
                 let userLinks = [
-                    "one": JSONAPILink.Simple(value: "hello"),
-                    "two": JSONAPILink.Object(href: "hello", meta: Meta())
+                    "one": JSONAPILink.simple(value: "hello"),
+                    "two": JSONAPILink.object(href: "hello", meta: Meta())
                 ]
                 
                 let newUser = NoCatsUser(id: "11",

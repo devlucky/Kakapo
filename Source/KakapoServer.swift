@@ -38,9 +38,9 @@ import Foundation
  let manager = Manager(configuration: configuration)
  ```
  */
-public final class KakapoServer: NSURLProtocol {
+public final class KakapoServer: URLProtocol {
 
-    private static var routers: [Router] = []
+    fileprivate static var routers: [Router] = []
 
     /**
      `true`, if the `request` of the `KakapoServer` instance has been cancelled, otherwise `false`.
@@ -49,7 +49,7 @@ public final class KakapoServer: NSURLProtocol {
 
      Note: calls to `stopLoading()` will set this value to `true`
      */
-    private(set) var requestCancelled: Bool = false
+    fileprivate(set) var requestCancelled: Bool = false
     
     /**
      Register and return a new Router in the Server
@@ -58,8 +58,8 @@ public final class KakapoServer: NSURLProtocol {
      
      - returns: A newly initialized Router object, which is configured to use the `baseURL`.
      */
-    class func register(baseURL: String) -> Router {
-        NSURLProtocol.registerClass(self)
+    class func register(_ baseURL: String) -> Router {
+        URLProtocol.registerClass(self)
         
         let router = Router(baseURL: baseURL)
         routers.append(router)
@@ -72,7 +72,7 @@ public final class KakapoServer: NSURLProtocol {
      
      - parameter baseURL: The base URL to be unregistered
      */
-    class func unregister(baseURL: String) {
+    class func unregister(_ baseURL: String) {
         routers = routers.filter { $0.baseURL != baseURL }
     }
     
@@ -81,7 +81,7 @@ public final class KakapoServer: NSURLProtocol {
      */
     class func disable() {
         routers = []
-        NSURLProtocol.unregisterClass(self)
+        URLProtocol.unregisterClass(self)
     }
     
     /**
@@ -96,12 +96,12 @@ public final class KakapoServer: NSURLProtocol {
      
      - returns: true if any of the registered route match the request URL
      */
-    override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        return routers.indexOf({ $0.canInitWithRequest(request) }) != nil
+    override public class func canInit(with request: URLRequest) -> Bool {
+        return routers.index(where: { $0.canInitWithRequest(request) }) != nil
     }
     
     /// Just returns the given request without changes
-    override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+    override public class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
     
@@ -111,7 +111,7 @@ public final class KakapoServer: NSURLProtocol {
             return
         }
 
-        if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
+        if let routerIndex = KakapoServer.routers.index(where: { $0.canInitWithRequest(request) }) {
             KakapoServer.routers[routerIndex].startLoading(self)
         }
     }

@@ -14,25 +14,53 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - Alamofire (3.5.0)
-  - Nimble (4.1.0)
+  - Alamofire (4.0.0-beta.2)
+  - Nimble (5.0.0-alpha.30p1)
   - Quick (0.9.3)
   - SwiftyJSON (2.3.2)
 
 DEPENDENCIES:
   - AFNetworking
-  - Alamofire
-  - Nimble (~> 4.0)
-  - Quick (~> 0.9)
-  - SwiftyJSON (~> 2.3)
+  - Alamofire (from `https://github.com/Alamofire/Alamofire.git`, branch `swift3`)
+  - Nimble (from `https://github.com/Quick/Nimble.git`, branch `swift-3.0`)
+  - Quick (from `https://github.com/Quick/Quick.git`, branch `swift-3.0`)
+  - SwiftyJSON (from `https://github.com/IBM-Swift/SwiftyJSON.git`, branch `master`)
+
+EXTERNAL SOURCES:
+  Alamofire:
+    :branch: swift3
+    :git: https://github.com/Alamofire/Alamofire.git
+  Nimble:
+    :branch: swift-3.0
+    :git: https://github.com/Quick/Nimble.git
+  Quick:
+    :branch: swift-3.0
+    :git: https://github.com/Quick/Quick.git
+  SwiftyJSON:
+    :branch: master
+    :git: https://github.com/IBM-Swift/SwiftyJSON.git
+
+CHECKOUT OPTIONS:
+  Alamofire:
+    :commit: 680690beaa7abf9578487688de4d24d038f679b5
+    :git: https://github.com/Alamofire/Alamofire.git
+  Nimble:
+    :commit: 220152be528dcc0537764c179c95b8174028c80c
+    :git: https://github.com/Quick/Nimble.git
+  Quick:
+    :commit: 81d2a7bd95ef91e2604ee0431bba6fe59ad662dc
+    :git: https://github.com/Quick/Quick.git
+  SwiftyJSON:
+    :commit: 46324eb5c8ba6adf6b31b16d3173c194242558de
+    :git: https://github.com/IBM-Swift/SwiftyJSON.git
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  Alamofire: b70a7352335f8ea5babd0a923eb7e8eacc67b877
-  Nimble: 97a0a4cae5124c117115634b2d055d8c97d0af19
-  Quick: 13a2a2b19a5d8e3ed4fd0c36ee46597fd77ebf71
+  Alamofire: 7f837be535fe424db2b87d9117f13836939719ca
+  Nimble: c5b995b4cd57789ec44b0cfb79640fc00e61a8c7
+  Quick: 31fb576b6cbb6b028cc5e0016e4366accbb346f5
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
 
-PODFILE CHECKSUM: 66bedabd70eea15b6dd5269aa323b84c92270588
+PODFILE CHECKSUM: 6e8e7cc5b924d3dac4c1eea74709b88bb51f3aa1
 
 COCOAPODS: 1.0.1

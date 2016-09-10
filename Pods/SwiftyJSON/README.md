@@ -77,7 +77,7 @@ if let userName = json[999999]["wrong_key"]["wrong_name"].string {
 
 ## Requirements
 
-- iOS 7.0+ / Mac OS X 10.9+
+- iOS 7.0+ / OS X 10.9+
 - Xcode 7
 
 ##Integration
@@ -99,6 +99,22 @@ You can use [Carthage](https://github.com/Carthage/Carthage) to install `SwiftyJ
 ```
 github "SwiftyJSON/SwiftyJSON"
 ```
+
+####Swift Package Manager
+You can use [The Swift Package Manager](https://swift.org/package-manager) to install `SwiftyJSON` by adding the proper description to your `Package.swift` file:
+```swift
+import PackageDescription
+
+let package = Package(
+    name: "YOUR_PROJECT_NAME",
+    targets: [],
+    dependencies: [
+        .Package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", versions: "2.3.3" ..< Version.max)
+    ]
+)
+```
+
+Note that the [Swift Package Manager](https://swift.org/package-manager) is still in early design and development, for more infomation checkout its [GitHub Page](https://github.com/apple/swift-package-manager)
 
 ####Manually (iOS 7+, OS X 10.9+)
 

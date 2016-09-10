@@ -23,29 +23,29 @@ import Foundation
 public enum JSONAPILink: CustomSerializable {
 
     /** A string containing the link’s URL. */
-    case Simple(value: String)
+    case simple(value: String)
     /**
      An object which can contain more information than the link itself
      
      - parameter href: a string containing the link’s URL.
      - parameter meta: a meta object containing non-standard meta-information about the link.
      */
-    case Object(href: String, meta: Serializable)
+    case object(href: String, meta: Serializable)
     
     // MARK: CustomSerializable
     
     /**
      The `JSONAPILink` implementation of `CustomSerializable` returns directly the link for `.Simple` or returns a dictionary containing the link (href key) and the serialized meta object (meta key) for `.Object`
      */
-    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> AnyObject? {
         switch self {
-        case let Object(href, meta):
-            var serializedObject: [String: AnyObject] = ["href" : href]
+        case let .object(href, meta):
+            var serializedObject: [String: AnyObject] = ["href" : href as AnyObject]
             serializedObject["meta"] = meta.serialize(keyTransformer)
             
-            return serializedObject
-        case let Simple(value):
-            return value
+            return serializedObject as AnyObject?
+        case let .simple(value):
+            return value as AnyObject?
         }
     }
 }

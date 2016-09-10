@@ -15,13 +15,13 @@ import SwiftyJSON
 
 class JSONAPIErrorsSpec: QuickSpec {
     
-    private struct ErrorDescription: Serializable {
+    fileprivate struct ErrorDescription: Serializable {
         let description: String
     }
     
     override func spec() {
 
-        func json(object: Serializable) -> JSON {
+        func json(_ object: Serializable) -> JSON {
             return JSON(object.serialize()!)
         }
         
@@ -76,8 +76,8 @@ class JSONAPIErrorsSpec: QuickSpec {
                     
                     var statusCode: Int = -1
                     let url = NSURL(string: "http://www.test.com/users")!
-                    NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
-                        let response = response as! NSHTTPURLResponse
+                    URLSession.shared.dataTask(with: url as URL) { (data, response, _) in
+                        let response = response as! HTTPURLResponse
                         statusCode = response.statusCode
                         // diagnostic
                         expect(statusCode).to(equal(501))
@@ -103,8 +103,8 @@ class JSONAPIErrorsSpec: QuickSpec {
                     
                     var foo: String?
                     let url = NSURL(string: "http://www.test.com/users")!
-                    NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
-                        let response = response as! NSHTTPURLResponse
+                    URLSession.shared.dataTask(with: url as URL) { (data, response, _) in
+                        let response = response as! HTTPURLResponse
                         let headers = response.allHeaderFields as? [String: String]
                         foo = headers?["foo"]
                         }.resume()
