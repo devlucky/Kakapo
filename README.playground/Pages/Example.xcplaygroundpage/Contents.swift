@@ -1,5 +1,6 @@
 import Foundation
-import Kakapo // NOTE: Build "Kakapo iOS" for a 64 bit simulator to successfully import the dynamic framework
+import Kakapo
+
 /*:
  # Kakapo
  
@@ -21,27 +22,17 @@ struct Zoo: Serializable {
 }
 
 let zoo = Zoo(parrots: [kakapo])
-let json = NSString(data: zoo.toData()!, encoding: NSUTF8StringEncoding)!
+let json = zoo.prettyPrint()
 
 //: ## CustomSerializable
-struct CustomZoo: CustomSerializable {
-    let parrots: [Parrot]
-    
-    // this is a really simple `CustomSerializable` that could be achieved with `Serializable` by just using a property "species" (dictionary). 
-    // See JSONAPI implementation for more complex, real life, examples.
+struct Custom: CustomSerializable {
     func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
-        // transformer will be not nill when this object is wrapped into a `SerializationTransformer` (e.g. `SnakeCaseTransformer`)... if the object doesn't need key transformation just ignore it
-        let key: (String) -> (String) = { (key) in
-            return keyTransformer?(key: key) ?? key
-        }
-        
-        let species = [key("parrot"): parrots.serialize() ?? []]
-        return [key("species"): species]
+         return ["foo": "bar"]
     }
 }
 
-let customZoo = CustomZoo(parrots: [kakapo])
-let customZooJson = NSString(data: customZoo.toData()!, encoding: NSUTF8StringEncoding)!
+let custom = Custom()
+let customJson = custom.prettyPrint()
 
 //: ## JSON API
 struct Dog: JSONAPIEntity {
@@ -57,13 +48,14 @@ struct Person: JSONAPIEntity {
 
 let person = Person(id: "1", name: "Alex", dog: Dog(id: "2", name: "Joan"))
 let serializable = JSONAPISerializer(person, topLevelMeta: ["foo": "bar"])
-let personJson = NSString(data: serializable.toData()!, encoding: NSUTF8StringEncoding)!
+let personJson = serializable.prettyPrint()
 
 //: ## Router
 let router = Router.register("https://kakapo.com/api/v1")
+
 router.get("zoo/:animal") { (request) -> Serializable? in
     if let animal = request.components["animal"] where animal == "parrot" {
-        return Parrot(name: "Kakapo") // or use KakapoDB for dynamic stuff!
+        return Parrot(name: "Kakapo")
     }
     return Response(statusCode: 404, body: ["error": "Animal not found"])
 }
@@ -91,9 +83,9 @@ struct Article: Storable, Serializable {
     
     init(id: String, db: KakapoDB) {
         self.id = id
-        self.text = String(arc4random()) // use Fakery!
+        self.text = String(arc4random())
         author = db.insert { (id) -> Author in
-            return Author(id: id, db: db) // id must always come from db
+            return Author(id: id, db: db)
         }
     }
 }

@@ -142,3 +142,9 @@ private func serialize(object: Serializable, keyTransformer: KeyTransformer?) ->
     
     return dictionary
 }
+
+public extension Serializable {
+    func prettyPrint() -> String {
+        return String(data: toData()!, encoding: NSUTF8StringEncoding)!
+    }
+}
