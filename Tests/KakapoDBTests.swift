@@ -17,7 +17,7 @@ struct User: Storable, Serializable {
     let age: Int
     
     init(id: String, db: KakapoDB) {
-        self.init(firstName: "tmp", lastName: "tmp", age: random(), id: id)
+        self.init(firstName: "tmp", lastName: "tmp", age: Int(arc4random()), id: id)
     }
     
     init(firstName: String, lastName: String, age: Int, id: String) {
@@ -34,7 +34,7 @@ struct Comment: Storable {
     let likes: Int
     
     init(id: String, db: KakapoDB) {
-        self.init(text: "tmp", likes: random(), id: id)
+        self.init(text: "tmp", likes: Int(arc4random()), id: id)
     }
     
     init(text: String, likes: Int, id: String) {
