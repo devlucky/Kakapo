@@ -38,13 +38,18 @@ public typealias URLInfo = (components: [String : String], queryParameters: [NSU
  - returns: A URL info object containing `components` and `queryParameters` or nil if `requestURL`doesn't match the route.
  */
 func matchRoute(baseURL: String, path: String, requestURL: NSURL) -> URLInfo? {
-    
+
     // remove the baseURL and the params, if baseURL is not in the string the result will be nil
-    guard let relevantURL: String = {
-        let string = requestURL.absoluteString // http://kakapo.com/api/users/1234?a=b
-        let stringWithoutParams = string.substring(.To, string: "?") ?? string // http://kakapo.com/api/users/1234
-        return stringWithoutParams.substring(.From, string: baseURL) // `/api/users`
-        }() else { return nil }
+
+    guard let string = requestURL.absoluteString /*http://kakapo.com/api/users/1234?a=b*/ else {
+        return nil
+    }
+    
+    let stringWithoutParams = string.substring(.To, string: "?") ?? string /* http://kakapo.com/api/users/1234 */
+    
+    guard let relevantURL = stringWithoutParams.substring(.From, string: baseURL) else {
+        return nil
+    }
     
     let routePathComponents = path.split("/") // e.g. [users, :userid]
     let requestPathComponents = relevantURL.split("/") // e.g. [users, 1234]
