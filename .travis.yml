@@ -18,7 +18,7 @@ before_script:
 matrix:
   include:
     - osx_image: xcode8
-      env: FASTLANE_ENV=ios83
+      env: FASTLANE_ENV=ios84
     - osx_image: xcode8
       env: FASTLANE_ENV=tvos
     - osx_image: xcode8
