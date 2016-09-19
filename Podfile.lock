@@ -21,7 +21,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
-  - Alamofire
+  - Alamofire (~> 3.5)
   - Nimble (~> 4.0)
   - Quick (~> 0.9)
   - SwiftyJSON (~> 2.3)
@@ -33,6 +33,6 @@ SPEC CHECKSUMS:
   Quick: 13a2a2b19a5d8e3ed4fd0c36ee46597fd77ebf71
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
 
-PODFILE CHECKSUM: 66bedabd70eea15b6dd5269aa323b84c92270588
+PODFILE CHECKSUM: 5e0cf4a16a29f40fbfa5db931bff03c2caf9b949
 
 COCOAPODS: 1.0.1

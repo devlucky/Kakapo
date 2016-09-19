@@ -4,7 +4,7 @@ def testing_pods
     pod 'Quick', '~> 0.9'
     pod 'Nimble', '~> 4.0'
     pod 'SwiftyJSON', '~> 2.3'
-    pod 'Alamofire'
+    pod 'Alamofire', '~> 3.5'
     pod 'AFNetworking'
 end
 
