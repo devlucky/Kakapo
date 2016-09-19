@@ -54,7 +54,7 @@ With Kakapo you can just create Swift structs/classes/enums that are automatical
 
   * Dynamic mocking
   * Prototyping
-  * Swift 2.2 compatible
+  * Swift 2.3 compatible (swift 3.0 WIP)
   * Compatible with [![Platform](https://img.shields.io/cocoapods/p/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
   * Protocol oriented and pluggable
   * Fully customizable by defining custom serialization and custom responses
