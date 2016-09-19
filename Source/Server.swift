@@ -1,5 +1,5 @@
 //
-//  KakapoServer.swift
+//  Server.swift
 //  Kakapo
 //
 //  Created by Joan Romano on 30/04/16.
@@ -16,11 +16,11 @@ import Foundation
 
  ### Examples
  
- 1- Configure `NSURLSessionConfiguration` by adding `KakapoServer` to `protocolClasses`:
+ 1- Configure `NSURLSessionConfiguration` by adding `Server` to `protocolClasses`:
  
  ```
  let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
- configuration.protocolClasses = [KakapoServer.self]
+ configuration.protocolClasses = [Server.self]
  // NOTE: better to just add if is not nil
 ```
  
@@ -38,12 +38,12 @@ import Foundation
  let manager = Manager(configuration: configuration)
  ```
  */
-public final class KakapoServer: NSURLProtocol {
+public final class Server: NSURLProtocol {
 
     private static var routers: [Router] = []
 
     /**
-     `true`, if the `request` of the `KakapoServer` instance has been cancelled, otherwise `false`.
+     `true`, if the `request` of the `Server` instance has been cancelled, otherwise `false`.
 
      Default: `false`
 
@@ -85,10 +85,10 @@ public final class KakapoServer: NSURLProtocol {
     }
     
     /**
-     `KakapoServer` checks if the given request matches any of the registered routes
+     `Server` checks if the given request matches any of the registered routes
      and determines if the request should be intercepted.
 
-     Note: If this method returns `true`, then the OS will create a new `KakapoServer` instance for the `request`
+     Note: If this method returns `true`, then the OS will create a new `Server` instance for the `request`
            via the `init(request:cachedResponse:client:)` initializer. So, this `request` is the same, which
            we'll have access to later on in the `startLoading()` and `stopLoading()` methods.
      
@@ -111,8 +111,8 @@ public final class KakapoServer: NSURLProtocol {
             return
         }
 
-        if let routerIndex = KakapoServer.routers.indexOf({ $0.canInitWithRequest(request) }) {
-            KakapoServer.routers[routerIndex].startLoading(self)
+        if let routerIndex = Server.routers.indexOf({ $0.canInitWithRequest(request) }) {
+            Server.routers[routerIndex].startLoading(self)
         }
     }
     

@@ -22,7 +22,7 @@ import Alamofire
  "Classes are consulted in the reverse order of their registration.
  A similar design governs the process to create the canonical form of a request with canonicalRequestForRequest:."
  
- Thus, we use this test server to intercept real network calls in tests as a fallback for `KakapoServer`.
+ Thus, we use this test server to intercept real network calls in tests as a fallback for `Server`.
  */
 private final class RouterTestServer: NSURLProtocol {
 
@@ -81,11 +81,11 @@ class RouterTests: QuickSpec {
     
     override func spec() {
 
-        var db = KakapoDB()
+        var store = Store()
         
         beforeEach {
             RouterTestServer.register()
-            db = KakapoDB()
+            store = Store()
         }
         
         afterEach {
@@ -167,14 +167,14 @@ class RouterTests: QuickSpec {
                 let requestURL = NSURL(string: "\(baseURL)/epic-fail/1")!
 
                 /*
-                Note: we need to manually create a KakapoServer instance here to test the stopping logic, because
-                      usually the KakapoServer instances are automatically created by the operating system.
+                Note: we need to manually create a Server instance here to test the stopping logic, because
+                      usually the Server instances are automatically created by the operating system.
                       And there's no way for us to access these automatically created instances from the Router.
                       Therefore we simulate the "stopLoading" and "startLoading" mechanism manually.
                 */
                 let urlRequest = NSURLRequest(URL: requestURL)
                 let client = ProtocolClientTest()
-                let server = KakapoServer(request: urlRequest, cachedResponse: nil, client: client)
+                let server = Server(request: urlRequest, cachedResponse: nil, client: client)
 
                 server.stopLoading()
                 expect(server.requestCancelled).to(beTrue())
@@ -501,12 +501,12 @@ class RouterTests: QuickSpec {
             }
             
             it("should return the specified object when requesting a registered url") {
-                db.create(User.self, number: 2)
+                store.create(User.self, number: 2)
                 
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id") { request in
-                    return db.find(User.self, id: request.components["id"]!)
+                    return store.find(User.self, id: request.components["id"]!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
@@ -518,13 +518,13 @@ class RouterTests: QuickSpec {
             }
             
             it("should return the specified object and code inside a response object with code when requesting a registered url") {
-                db.create(User.self, number: 20)
+                store.create(User.self, number: 20)
                 
                 var statusCode: Int? = nil
                 var responseDictionary: NSDictionary? = nil
                 
                 router.get("/users/:id") { request in
-                    return Response(statusCode: 200, body: db.find(User.self, id: request.components["id"]!)!)
+                    return Response(statusCode: 200, body: store.find(User.self, id: request.components["id"]!)!)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -598,12 +598,12 @@ class RouterTests: QuickSpec {
             }
             
             it("should return the specified array of objects when requesting a registered url") {
-                db.create(User.self, number: 20)
+                store.create(User.self, number: 20)
                 
                 var responseArray: NSArray? = nil
                 
                 router.get("/users") { request in
-                    return db.findAll(User)
+                    return store.findAll(User)
                 }
                 
                 NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
@@ -909,7 +909,7 @@ class RouterTests: QuickSpec {
             let url = NSURL(string: "http://kakapotest.com/users/1")!
             let configuration: NSURLSessionConfiguration = {
                 let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-                configuration.protocolClasses = [KakapoServer.self]
+                configuration.protocolClasses = [Server.self]
                 return configuration
             }()
             

@@ -110,7 +110,7 @@ public final class Router {
     public var latency: NSTimeInterval = 0
 
     /**
-     Register a new Router in the `KakapoServer`.
+     Register a new `Router` in the `Server`.
      The `baseURL` can contain a scheme, and the requestURL must match the scheme; if it doesn't contain a scheme then
      the `baseURL` is a wildcard and will be matched by any subdomain or any scheme:
      
@@ -129,7 +129,7 @@ public final class Router {
      - returns: An new initialized Router. Note that two Router objects can hold the same baseURL.
      */
     public class func register(baseURL: String) -> Router {
-        return KakapoServer.register(baseURL)
+        return Server.register(baseURL)
     }
     
     /**
@@ -138,14 +138,14 @@ public final class Router {
      - parameter baseURL: The base URL to be unregistered
      */
     public class func unregister(baseURL: String) {
-        KakapoServer.unregister(baseURL)
+        Server.unregister(baseURL)
     }
     
     /**
      Disables all Routers, stopping the request intercepting
      */
     public class func disableAll() {
-        KakapoServer.disable()
+        Server.disable()
     }
     
     init(baseURL: String) {
@@ -172,7 +172,7 @@ public final class Router {
         return false
     }
     
-    func startLoading(server: KakapoServer) {
+    func startLoading(server: Server) {
         guard let requestURL = server.request.URL,
                   client = server.client else { return }
         

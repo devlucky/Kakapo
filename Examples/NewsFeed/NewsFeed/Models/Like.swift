@@ -25,9 +25,9 @@ struct Like: Serializable, Storable, JSONInitializable {
     let id: String
     let author: User
     
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
-        author = db.create(User).first!
+        author = store.create(User).first!
     }
     
     init(json: JSON) {
