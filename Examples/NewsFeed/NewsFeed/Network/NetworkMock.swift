@@ -38,12 +38,12 @@ enum Result: ResponseFieldsProvider {
 }
 
 let router = Router.register("https://kakapobook.com/api/")
-let db = KakapoDB()
-let loggedInUser = db.create(User).first!
+let store = Store()
+let loggedInUser = store.create(User).first!
 
 func startMockingNetwork() {
     let startTime = CFAbsoluteTimeGetCurrent()
-    db.create(Post.self, number: 200)
+    store.create(Post.self, number: 200)
     let endTime = CFAbsoluteTimeGetCurrent()
     print("Created fake Posts in \(endTime - startTime)")
     
@@ -54,7 +54,7 @@ private func mockNetwork() {
     
     func update<T: protocol<Storable, Serializable>>(entity: T) -> Serializable {
         do {
-            try db.update(entity)
+            try store.update(entity)
             return entity
         } catch {
             return Result.Error("couldn't update \(entity.self).\(entity.id)", 500)
@@ -65,8 +65,8 @@ private func mockNetwork() {
     
     func like<T: Likeable>(type: T.Type, with request: Request) -> Serializable {
         let likeableId = request.components["id"]!
-        var likeable = db.find(type.self, id: likeableId)!
-        let like = db.insert { Like(id: $0, author: loggedInUser) }
+        var likeable = store.find(type.self, id: likeableId)!
+        let like = store.insert { Like(id: $0, author: loggedInUser) }
         likeable.likes.append(like)
         return update(likeable)
     }
@@ -74,7 +74,7 @@ private func mockNetwork() {
     func unlike<T: Likeable>(type: T.Type, with request: Request) -> Serializable {
         let likeableId = request.components["id"]!
         let likeId = request.components["like_id"]!
-        var likeable = db.find(type.self, id: likeableId)!
+        var likeable = store.find(type.self, id: likeableId)!
         let index = likeable.likes.indexOf { (like) -> Bool in
             return like.id == likeId && like.author.id == loggedInUser.id
         }
@@ -116,25 +116,25 @@ private func mockNetwork() {
     // MARK: Post
     
     router.get("users/:user_id/newsfeed") { (request) -> Serializable? in
-        return db.findAll(Post)
+        return store.findAll(Post)
     }
     
     router.get("post/:post_id") { (request) -> Serializable? in
-        return db.find(Post.self, id: request.components["post_id"]!)
+        return store.find(Post.self, id: request.components["post_id"]!)
     }
     
     router.post("post") { (request) -> Serializable? in
         let body = JSON.parse(NSString(data: request.HTTPBody!, encoding: NSUTF8StringEncoding) as! String)
-        return db.insert { (id) -> Post in
+        return store.insert { (id) -> Post in
             return Post(id: id, text: body["text"].string!, author: loggedInUser)
         }
     }
     
     router.del("post/:post_id") { (request) -> Serializable? in
-        let post = db.find(Post.self, id: request.components["post_id"]!)!
+        let post = store.find(Post.self, id: request.components["post_id"]!)!
         
         do {
-            try db.delete(post)
+            try store.delete(post)
             return Result.Success("deleted")
         } catch {
             return Result.Error("couldn't delete post", 404)
@@ -145,8 +145,8 @@ private func mockNetwork() {
     
     router.post("post/:post_id/comment") { (request) -> Serializable? in
         let body = JSON(request.HTTPBody!)
-        var post = db.find(Post.self, id: request.components["post_id"]!)!
-        let comment = db.insert { (id) -> Comment in
+        var post = store.find(Post.self, id: request.components["post_id"]!)!
+        let comment = store.insert { (id) -> Comment in
             return Comment(id: id, author: loggedInUser, text: body["text"].string!)
         }
         post.comments.append(comment)
@@ -154,13 +154,13 @@ private func mockNetwork() {
     }
     
     router.get("post/:post_id/comment/:comment_id") { (request) -> Serializable? in
-        let post = db.find(Post.self, id: request.components["post_id"]!)!
+        let post = store.find(Post.self, id: request.components["post_id"]!)!
         let index = post.comments.indexOf { $0.id == request.components["comment_id"]! }!
         return post.comments[index]
     }
     
     router.del("post/:post_id/comment/:comment_id") { (request) -> Serializable? in
-        var post = db.find(Post.self, id: request.components["post_id"]!)!
+        var post = store.find(Post.self, id: request.components["post_id"]!)!
         let index = post.comments.indexOf { $0.id == request.components["comment_id"]! }!
         post.comments.removeAtIndex(index)
         return update(post)

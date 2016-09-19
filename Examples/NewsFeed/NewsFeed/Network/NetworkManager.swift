@@ -24,7 +24,7 @@ class NetworkManager {
     private lazy var manager: Manager = {
         let configuration: NSURLSessionConfiguration = {
             let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            configuration.protocolClasses = [KakapoServer.self]
+            configuration.protocolClasses = [Server.self]
             return configuration
         }()
         

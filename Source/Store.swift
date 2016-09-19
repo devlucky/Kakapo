@@ -1,5 +1,5 @@
 //
-//  KakapoDB.swift
+//  Store.swift
 //  Kakapo
 //
 //  Created by Joan Romano on 31/03/16.
@@ -12,21 +12,21 @@ import Foundation
  A base protocol providing basic storage behavior with an `id` and a generic `init` method for all objects that will be inserted. 
  */
 public protocol Storable {
-    /// The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to assume that the conversion will always succeeed.
+    /// The unique identifier provided by `Store`, objects shouldn't generate ids themselves. `Store` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to assume that the conversion will always succeeed.
     var id: String { get }
     
     /**
-     An initializer that is used by `KakapoDB` to create objects to be stored in the db
+     An initializer that is used by `Store` to create objects to be stored in the store
      
-     - parameter id: The unique identifier provided by `KakapoDB`, objects shouldn't generate ids themselves. `KakapoDB` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to ssume that the conversion will always succeeed.
-     - parameter db: The db that is creating the object, can be used  to generate other `Storable` objects, for example relationships of the object: `myRelationship = db.create(MyRelationshipType)` or `myrelationship = db.insert { MyRelationshipType(id: $0, db: db) }`. The relationsip will also recieve the `db` instance to eventually initialize its relationships.
+     - parameter id: The unique identifier provided by `Store`, objects shouldn't generate ids themselves. `Store` generate `Int` ids converted to String for better compatibilities with standards like JSONAPI, in case you need `Int` ids is safe to ssume that the conversion will always succeeed.
+     - parameter store: The store that is creating the object, can be used  to generate other `Storable` objects, for example relationships of the object: `myRelationship = store.create(MyRelationshipType)` or `myrelationship = store.insert { MyRelationshipType(id: $0, store: store) }`. The relationsip will also recieve the `store` instance to eventually initialize its relationships.
      
-     - returns: A configured object stored in the db.
+     - returns: A configured object stored in the store.
      */
-    init(id: String, db: KakapoDB)
+    init(id: String, store: Store)
 }
 
-enum KakapoDBError: ErrorType {
+enum StoreError: ErrorType {
     case InvalidEntity
 }
 
@@ -45,27 +45,27 @@ private final class ArrayBox<T> {
 }
 
 /**
- An in-memory database that holds state supporting insertion, deletion, updating and finding.
+ An in-memory store that holds state supporting insertion, deletion, updating and finding.
  
  You can use this class together with a Router to achieve the behavior you want after some request is done. An example
  could be returning an User after a get request with that User's id:
  
-    let db = KakapoDB()
-    db.create(User.self, number: 20)
+    let store = Store()
+    store.create(User.self, number: 20)
  
     router.get("/users/:id"){ request in
-        return db.find(User.self, id: someId)
+        return store.find(User.self, id: someId)
     }
  
- In order for your classes to be used by the database, they must conform to the `Storable` protocol. For more info about `Router` and `Serializable`, check the `Router` class documentation.
+ In order for your classes to be used by the `Store`, they must conform to the `Storable` protocol. For more info about `Router` and `Serializable`, check the `Router` class documentation.
  */
-public final class KakapoDB {
+public final class Store {
     
-    private let queue = dispatch_queue_create("com.kakapodb.queue", DISPATCH_QUEUE_CONCURRENT)
+    private let queue = dispatch_queue_create("com.Store.queue", DISPATCH_QUEUE_CONCURRENT)
     private var _uuid = -1
     private var store: [String: ArrayBox<Storable>] = [:]
 
-    /// Initialize a new in-memory database
+    /// Initialize a new in-memory store
     public init() {
         // empty but needed to be initialized from other modules.
     }
@@ -103,7 +103,7 @@ public final class KakapoDB {
             return (0..<number).map { _ in self.uuid()}
         }
         
-        let objects = ids.map { id in T(id: id, db: self) }
+        let objects = ids.map { id in T(id: id, store: self) }
         
         barrierAsync {
             self.lookup(T).value.appendContentsOf(objects.flatMap { $0 as Storable })
@@ -139,7 +139,7 @@ public final class KakapoDB {
      
      - parameter entity: The Storable object to be updated
      
-     - throws: `KakapoDBError.InvalidEntity` if no Storable object with same `id` was found
+     - throws: `StoreError.InvalidEntity` if no Storable object with same `id` was found
      */
     public func update<T: Storable>(entity: T) throws {
         let updated: Bool = barrierSync {
@@ -151,16 +151,16 @@ public final class KakapoDB {
         }
         
         if !updated {
-            throw KakapoDBError.InvalidEntity
+            throw StoreError.InvalidEntity
         }
     }
     
     /**
      Deletes the given Storable object
      
-     - parameter entity: The Storable object to be deleted, the database will delete any object found with same id and type.
+     - parameter entity: The Storable object to be deleted, the store will delete any object found with same id and type.
      
-     - throws: `KakapoDBError.InvalidEntity` if no Storable object with same `id` was found
+     - throws: `StoreError.InvalidEntity` if no Storable object with same `id` was found
      */
     public func delete<T: Storable>(entity: T) throws {
         let deleted: Bool = barrierSync {
@@ -174,7 +174,7 @@ public final class KakapoDB {
         }
         
         if !deleted {
-            throw KakapoDBError.InvalidEntity
+            throw StoreError.InvalidEntity
         }
     }
     

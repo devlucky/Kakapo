@@ -19,7 +19,7 @@
   - [Serializable protocol](#serializable-protocol)
   - [Router: Register and Intercept](#router---register-and-intercept)  
     - [Third-party network libraries](#third-party-libraries)
-  - [Leverage the database - Dynamic mocking](#leverage-the-database---dynamic-mocking)
+  - [Leverage the Store - Dynamic mocking](#leverage-the-store---dynamic-mocking)
   - [CustomSerializable](#customserializable)
   - [JSONAPI](#jsonapi)
   - [Expanding Null values with Property Policy](#expanding-null-values-with-property-policy)
@@ -93,11 +93,11 @@ router.get("/users") { request in
 You might be wondering where the dynamic part is; here is when the different modules of Kakapo take place:
 
 ```Swift
-let db = KakapoDB()
-db.create(User.self, number: 20)
+let store = Store()
+store.create(User.self, number: 20)
 
 router.get("/users") { request in
-  return db.findAll(User.self)
+  return store.findAll(User.self)
 }
 ```
 
@@ -185,24 +185,24 @@ Third-Party libraries that use the Foundation networking APIs are also supported
 
 ```swift
  let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
- configuration.protocolClasses = [KakapoServer.self]
+ configuration.protocolClasses = [Server.self]
  let manager = Manager(configuration: configuration)
 ```
 
-### Leverage the database - Dynamic mocking
+### Leverage the Store - Dynamic mocking
 
-Kakapo gets even more powerful when using your Routers together with the Database. You can create, insert, remove, update or find objects.
+Kakapo gets even more powerful when using your Routers together with the Store. You can create, insert, remove, update or find objects.
 
 This lets you mock the APIs behaviors as if you were using a real backend. This is the **dynamic** side of Kakapo.
 
-To create entities that can be used with the database, your types need to conform to the `Storable` protocol.
+To create entities that can be used with the store, your types need to conform to the `Storable` protocol.
 
 ```Swift
 struct Article: Storable, Serializable {
     let id: String
     let text: String
 
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
         self.text = randomString() // you might use some faker library like Fakery!
     }
@@ -212,12 +212,12 @@ struct Article: Storable, Serializable {
 An example usage could be to retrieve a specific `Article`:
 
 ```Swift
-let db = KakapoDB()
-db.create(Article.self, number: 20)
+let store = Store()
+store.create(Article.self, number: 20)
 
 router.get("/articles/:id") { request in
   let articleId = request.components["id"]
-  return db.find(Article.self, id: articleId)
+  return store.find(Article.self, id: articleId)
 }
 ```
 
@@ -225,15 +225,15 @@ Of course you can perform any logic which fits your needs:
 
 ```Swift
 router.post("/article/:id") { request in
-  return db.insert { (id) -> User in
+  return store.insert { (id) -> User in
     return Article(text: "text from body", id: id)
   }
 }
 
 router.del("/article/:id") { request in
   let articleId = request.components["id"]
-  let article = db.find(Article.self, id: articleId)
-  db.delete(article)
+  let article = store.find(Article.self, id: articleId)
+  store.delete(article)
 
   return ["status": "success"]
 }
