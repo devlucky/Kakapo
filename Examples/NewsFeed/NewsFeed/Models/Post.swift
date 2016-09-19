@@ -23,7 +23,7 @@ struct Post: Serializable, Storable, JSONInitializable, Likeable {
     init(id: String, db: KakapoDB) {
         self.id = id
         date = sharedFaker.date.pastDate().timeIntervalSince1970
-        text = sharedFaker.lorem.paragraph(sentencesAmount: random() % 6 + 1)
+        text = sharedFaker.lorem.paragraph(sentencesAmount: Int(arc4random()) % 6 + 1)
         author = db.create(User).first!
         likes = db.create(Like.self, number: random(15))
         comments = db.create(Comment.self, number: random(5))
