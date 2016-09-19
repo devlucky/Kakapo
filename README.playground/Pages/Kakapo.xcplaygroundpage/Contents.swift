@@ -10,7 +10,4 @@
  3. Dynamically Mock your APIs for Testing
  
  */
-
-
-
-//: [Next](@next)
+//: `@joanromano / @manzopower`
