@@ -1,4 +1,10 @@
-# declared_trivial = github.pr_title.include? "#trivial"
+declared_trivial = github.pr_title.include? "#trivial"
+has_source_changes = !git.modified_files.grep(/Source/).empty?
+no_changelog_entry = !git.modified_files.include?("Changelog.md")
+
+if has_source_changes && no_changelog_entry && !declared_trivial
+  fail("Any changes to library code need a summary in the Changelog.")
+end
 
 # Make it more obvious that a PR is a work in progress and shouldn't be merged yet
 warn("PR is classed as Work in Progress") if github.pr_title.include? "[WIP]"

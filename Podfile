@@ -2,10 +2,8 @@ use_frameworks!
 
 def testing_pods
     pod 'Quick', :branch => 'swift-3.0', :git => 'https://github.com/Quick/Quick.git'
-    pod 'Nimble', :branch => 'swift-3.0', :git => 'https://github.com/Quick/Nimble.git'
+    pod 'Nimble', '~> 5.0'
     pod 'SwiftyJSON', :branch => 'master', :git => 'https://github.com/IBM-Swift/SwiftyJSON.git'
-    pod 'Alamofire', :branch => 'swift3', :git => 'https://github.com/Alamofire/Alamofire.git'
-    pod 'AFNetworking'
 end
 
 target 'Kakapo iOSTests' do

@@ -129,13 +129,44 @@ public class Cache<T: DataConvertible where T.Result == T, T : DataRepresentable
         }
     }
     
-    public func removeAll() {
+    public func removeAll(completion: (() -> ())? = nil) {
+        let group = dispatch_group_create();
         for (_, (_, memoryCache, diskCache)) in self.formats {
             memoryCache.removeAllObjects()
-            diskCache.removeAllData()
+            dispatch_group_enter(group)
+            diskCache.removeAllData {
+                dispatch_group_leave(group)
+            }
+        }
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            let timeout = dispatch_time(DISPATCH_TIME_NOW, Int64(60 * NSEC_PER_SEC))
+            if dispatch_group_wait(group, timeout) != 0 {
+                Log.error("removeAll timed out waiting for disk caches")
+            }
+            let path = self.cachePath
+            do {
+                try NSFileManager.defaultManager().removeItemAtPath(path)
+            } catch {
+                Log.error("Failed to remove path \(path)", error as NSError)
+            }
+            if let completion = completion {
+                dispatch_async(dispatch_get_main_queue()) {
+                    completion()
+                }
+            }
         }
     }
-    
+
+    // MARK: Size
+
+    public var size: UInt64 {
+        var size: UInt64 = 0
+        for (_, (_, _, diskCache)) in self.formats {
+            dispatch_sync(diskCache.cacheQueue) { size += diskCache.size }
+        }
+        return size
+    }
+
     // MARK: Notifications
     
     func onMemoryWarning() {

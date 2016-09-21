@@ -1,5 +1,7 @@
+import Foundation
 import Kakapo // NOTE: Build "Kakapo iOS" for a 64 bit simulator to successfully import the dynamic framework
 
+// playgrounds are not supported in Swift 2.3, please use 3.0 branch (ATM WIP)
 /*:
  # Kakapo
  
@@ -63,7 +65,7 @@ let personJson = NSString(data: serializable.toData()!, encoding: NSUTF8StringEn
 let router = Router.register("https://kakapo.com/api/v1")
 router.get("zoo/:animal") { (request) -> Serializable? in
     if let animal = request.components["animal"] where animal == "parrot" {
-        return Parrot(name: "Kakapo") // or use KakapoDB for dynamic stuff!
+        return Parrot(name: "Kakapo") // or use Store for dynamic stuff!
     }
     return Response(statusCode: 404, body: ["error": "Animal not found"])
 }
@@ -71,14 +73,14 @@ router.get("zoo/:animal") { (request) -> Serializable? in
 //: request **GET** `https://kakapo.com/api/v1/parrot`
 //: will return `{"name": "Kakapo"}`
 
-//: ## KakapoDB
-let db = KakapoDB()
+//: ## Store
+let store = Store()
 
 struct Author: Storable, Serializable {
     let id: String
     let name: String
     
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
         self.name = String(arc4random()) // use Fakery!
     }
@@ -89,32 +91,32 @@ struct Article: Storable, Serializable {
     let text: String
     let author: Author
     
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
         self.text = String(arc4random()) // use Fakery!
-        author = db.insert { (id) -> Author in
-            return Author(id: id, db: db) // id must always come from db
+        author = store.insert { (id) -> Author in
+            return Author(id: id, store: store) // id must always come from the store
         }
     }
 }
 
 //: Create 10 random article
-let articles = db.create(Article.self, number: 10)
+let articles = store.create(Article.self, number: 10)
 //: Get all articles
 router.get("articles") { (request) -> Serializable? in
-    return db.findAll(Article)
+    return store.findAll(Article)
 }
 
 //: Get all articles from the given author
 router.get("articles/:author_id") { (request) -> Serializable? in
-    return db.filter(Article.self) { (article) -> Bool in
+    return store.filter(Article.self) { (article) -> Bool in
         return article.author.id == request.components["author_id"]
     }
 }
 
 //: Create an article
 router.post("article") { (request) -> Serializable? in
-    return db.insert { (id) -> Article in
-        return Article(id: id, db: db)
+    return store.insert { (id) -> Article in
+        return Article(id: id, store: store)
     }
 }
