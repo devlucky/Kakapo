@@ -3,7 +3,14 @@
 ### HEAD
 --------------
 
+
+### 1.0.0
+------------
+
 - Swift 2.3 support
+- Renamed `KakapoDB` to `Store`
+- `init(id:db:)` required by `Storable` protocol has been changed to `init(id:store:)`
+- Renamed `KakapoServer` to `Server`
 
 ### 0.2.0
 ------------

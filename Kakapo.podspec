@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Kakapo"
-  s.version          = "0.2.0"
+  s.version          = "1.0.0"
   s.summary          = "Dynamically Mock server behaviors and responses."
 
   s.description      = <<-DESC
