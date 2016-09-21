@@ -27,7 +27,7 @@ public protocol Storable {
 }
 
 enum StoreError: Error {
-    case InvalidEntity
+    case invalidEntity
 }
 
 /**
@@ -119,7 +119,7 @@ public final class Store {
      
      - returns: The new inserted Storable object
      */
-    public func insert<T: Storable>(_ handler: (String) -> T) -> T {
+    @discardableResult public func insert<T: Storable>(_ handler: (String) -> T) -> T {
         let id = barrierSync {
             return self.generateUUID()
         }

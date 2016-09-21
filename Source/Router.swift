@@ -172,8 +172,8 @@ public final class Router {
     }
     
     func startLoading(_ server: Server) {
-        guard let requestURL = server.request.URL,
-                  client = server.client else { return }
+        guard let requestURL = server.request.url,
+                  let client = server.client else { return }
         
         var statusCode = 200
         var headerFields: [String : String]? = ["Content-Type": "application/json"]
