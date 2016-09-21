@@ -37,29 +37,29 @@
 		DE76E15D1D0DC65B009721A4 /* Kakapo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE76E1531D0DC65B009721A4 /* Kakapo.framework */; };
 		DE76E1791D0DC672009721A4 /* Kakapo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE76E16F1D0DC671009721A4 /* Kakapo.framework */; };
 		DE76E1861D0DC754009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
-		DE76E1871D0DC754009721A4 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* KakapoDB.swift */; };
-		DE76E1881D0DC754009721A4 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* KakapoServer.swift */; };
+		DE76E1871D0DC754009721A4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* Store.swift */; };
+		DE76E1881D0DC754009721A4 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* Server.swift */; };
 		DE76E18A1D0DC754009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E18B1D0DC754009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
 		DE76E18C1D0DC754009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
 		DE76E18D1D0DC754009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
 		DE76E18E1D0DC755009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
-		DE76E18F1D0DC755009721A4 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* KakapoDB.swift */; };
-		DE76E1901D0DC755009721A4 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* KakapoServer.swift */; };
+		DE76E18F1D0DC755009721A4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* Store.swift */; };
+		DE76E1901D0DC755009721A4 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* Server.swift */; };
 		DE76E1921D0DC755009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E1931D0DC755009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
 		DE76E1941D0DC755009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
 		DE76E1951D0DC755009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
 		DE76E1961D0DC755009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
-		DE76E1971D0DC755009721A4 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* KakapoDB.swift */; };
-		DE76E1981D0DC755009721A4 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* KakapoServer.swift */; };
+		DE76E1971D0DC755009721A4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* Store.swift */; };
+		DE76E1981D0DC755009721A4 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* Server.swift */; };
 		DE76E19A1D0DC755009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E19B1D0DC755009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
 		DE76E19C1D0DC755009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
 		DE76E19D1D0DC755009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
 		DE76E19E1D0DC756009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
-		DE76E19F1D0DC756009721A4 /* KakapoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* KakapoDB.swift */; };
-		DE76E1A01D0DC756009721A4 /* KakapoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* KakapoServer.swift */; };
+		DE76E19F1D0DC756009721A4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* Store.swift */; };
+		DE76E1A01D0DC756009721A4 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* Server.swift */; };
 		DE76E1A21D0DC756009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E1A31D0DC756009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
 		DE76E1A41D0DC756009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
@@ -74,9 +74,9 @@
 		DE76E1BB1D0DC857009721A4 /* JSONAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */; };
 		DE76E1BC1D0DC857009721A4 /* JSONAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */; };
 		DE76E1BD1D0DC857009721A4 /* JSONAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */; };
-		DE76E1BE1D0DC857009721A4 /* KakapoDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B21D0DC857009721A4 /* KakapoDBTests.swift */; };
-		DE76E1BF1D0DC857009721A4 /* KakapoDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B21D0DC857009721A4 /* KakapoDBTests.swift */; };
-		DE76E1C01D0DC857009721A4 /* KakapoDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B21D0DC857009721A4 /* KakapoDBTests.swift */; };
+		DE76E1BE1D0DC857009721A4 /* StoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B21D0DC857009721A4 /* StoreTests.swift */; };
+		DE76E1BF1D0DC857009721A4 /* StoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B21D0DC857009721A4 /* StoreTests.swift */; };
+		DE76E1C01D0DC857009721A4 /* StoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B21D0DC857009721A4 /* StoreTests.swift */; };
 		DE76E1C11D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */; };
 		DE76E1C21D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */; };
 		DE76E1C31D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */; };
@@ -141,8 +141,8 @@
 		DE76E0FA1D0DC37E009721A4 /* Kakapo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Kakapo.h; sourceTree = "<group>"; };
 		DE76E0FE1D0DC38B009721A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPISerializer.swift; sourceTree = "<group>"; };
-		DE76E1021D0DC395009721A4 /* KakapoDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoDB.swift; sourceTree = "<group>"; };
-		DE76E1031D0DC395009721A4 /* KakapoServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoServer.swift; sourceTree = "<group>"; };
+		DE76E1021D0DC395009721A4 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		DE76E1031D0DC395009721A4 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
 		DE76E1061D0DC395009721A4 /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		DE76E1071D0DC395009721A4 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
@@ -156,7 +156,7 @@
 		DE76E16F1D0DC671009721A4 /* Kakapo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kakapo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE76E1781D0DC672009721A4 /* Kakapo iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Kakapo iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPITests.swift; sourceTree = "<group>"; };
-		DE76E1B21D0DC857009721A4 /* KakapoDBTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KakapoDBTests.swift; sourceTree = "<group>"; };
+		DE76E1B21D0DC857009721A4 /* StoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StoreTests.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicyTests.swift; sourceTree = "<group>"; };
 		DE76E1B41D0DC857009721A4 /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		DE76E1B51D0DC857009721A4 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializerTests.swift; sourceTree = "<group>"; };
@@ -299,7 +299,7 @@
 				8BE0FC7E1D16BD8300FE706A /* JSONAPILinksTests.swift */,
 				DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */,
 				DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */,
-				DE76E1B21D0DC857009721A4 /* KakapoDBTests.swift */,
+				DE76E1B21D0DC857009721A4 /* StoreTests.swift */,
 				DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */,
 				DE76E1B41D0DC857009721A4 /* RouterTests.swift */,
 				DE76E1B51D0DC857009721A4 /* SerializerTests.swift */,
@@ -316,8 +316,8 @@
 				DE8202791D20068A00552FEC /* JSONAPIError.swift */,
 				8BE0FC831D172EC900FE706A /* JSONAPILinks.swift */,
 				DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */,
-				DE76E1021D0DC395009721A4 /* KakapoDB.swift */,
-				DE76E1031D0DC395009721A4 /* KakapoServer.swift */,
+				DE76E1021D0DC395009721A4 /* Store.swift */,
+				DE76E1031D0DC395009721A4 /* Server.swift */,
 				DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */,
 				DE76E1061D0DC395009721A4 /* Router.swift */,
 				DE76E1071D0DC395009721A4 /* Serializer.swift */,
@@ -517,7 +517,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = devlucky;
 				TargetAttributes = {
 					DE76E1281D0DC5FA009721A4 = {
@@ -537,9 +537,11 @@
 					};
 					DE76E16E1D0DC671009721A4 = {
 						CreatedOnToolsVersion = 7.3;
+						LastSwiftMigration = 0800;
 					};
 					DE76E1771D0DC672009721A4 = {
 						CreatedOnToolsVersion = 7.3;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -818,10 +820,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE76E1981D0DC755009721A4 /* KakapoServer.swift in Sources */,
+				DE76E1981D0DC755009721A4 /* Server.swift in Sources */,
 				DE76E19A1D0DC755009721A4 /* PropertyPolicy.swift in Sources */,
 				DE76E19D1D0DC755009721A4 /* RouteMatcher.swift in Sources */,
-				DE76E1971D0DC755009721A4 /* KakapoDB.swift in Sources */,
+				DE76E1971D0DC755009721A4 /* Store.swift in Sources */,
 				8BE0FC851D172EC900FE706A /* JSONAPILinks.swift in Sources */,
 				DE76E19C1D0DC755009721A4 /* Serializer.swift in Sources */,
 				DE4924261D356A2000604142 /* NSMutableURLRequest+FixCopy.m in Sources */,
@@ -837,10 +839,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE76E1901D0DC755009721A4 /* KakapoServer.swift in Sources */,
+				DE76E1901D0DC755009721A4 /* Server.swift in Sources */,
 				DE76E1921D0DC755009721A4 /* PropertyPolicy.swift in Sources */,
 				DE76E1951D0DC755009721A4 /* RouteMatcher.swift in Sources */,
-				DE76E18F1D0DC755009721A4 /* KakapoDB.swift in Sources */,
+				DE76E18F1D0DC755009721A4 /* Store.swift in Sources */,
 				8BE0FC861D172EC900FE706A /* JSONAPILinks.swift in Sources */,
 				DE76E1941D0DC755009721A4 /* Serializer.swift in Sources */,
 				DE4924271D356A2000604142 /* NSMutableURLRequest+FixCopy.m in Sources */,
@@ -859,7 +861,7 @@
 				DE76E1BC1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC811D16BD9B00FE706A /* JSONAPILinksTests.swift in Sources */,
 				DE76E1CB1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
-				DE76E1BF1D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
+				DE76E1BF1D0DC857009721A4 /* StoreTests.swift in Sources */,
 				DE76E1C81D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C51D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE8202801D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
@@ -873,10 +875,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE76E1881D0DC754009721A4 /* KakapoServer.swift in Sources */,
+				DE76E1881D0DC754009721A4 /* Server.swift in Sources */,
 				DE76E18A1D0DC754009721A4 /* PropertyPolicy.swift in Sources */,
 				DE76E18D1D0DC754009721A4 /* RouteMatcher.swift in Sources */,
-				DE76E1871D0DC754009721A4 /* KakapoDB.swift in Sources */,
+				DE76E1871D0DC754009721A4 /* Store.swift in Sources */,
 				8BE0FC871D172EC900FE706A /* JSONAPILinks.swift in Sources */,
 				DE76E18C1D0DC754009721A4 /* Serializer.swift in Sources */,
 				DE4924281D356A2000604142 /* NSMutableURLRequest+FixCopy.m in Sources */,
@@ -895,7 +897,7 @@
 				DE76E1BD1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC821D16BD9C00FE706A /* JSONAPILinksTests.swift in Sources */,
 				DE76E1CC1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
-				DE76E1C01D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
+				DE76E1C01D0DC857009721A4 /* StoreTests.swift in Sources */,
 				DE76E1C91D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C61D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE8202811D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
@@ -909,10 +911,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE76E1A01D0DC756009721A4 /* KakapoServer.swift in Sources */,
+				DE76E1A01D0DC756009721A4 /* Server.swift in Sources */,
 				DE76E1A21D0DC756009721A4 /* PropertyPolicy.swift in Sources */,
 				DE76E1A51D0DC756009721A4 /* RouteMatcher.swift in Sources */,
-				DE76E19F1D0DC756009721A4 /* KakapoDB.swift in Sources */,
+				DE76E19F1D0DC756009721A4 /* Store.swift in Sources */,
 				8BE0FC841D172EC900FE706A /* JSONAPILinks.swift in Sources */,
 				DE76E1A41D0DC756009721A4 /* Serializer.swift in Sources */,
 				DE4924251D356A2000604142 /* NSMutableURLRequest+FixCopy.m in Sources */,
@@ -931,7 +933,7 @@
 				DE76E1BB1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC801D16BD9A00FE706A /* JSONAPILinksTests.swift in Sources */,
 				DE76E1CA1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
-				DE76E1BE1D0DC857009721A4 /* KakapoDBTests.swift in Sources */,
+				DE76E1BE1D0DC857009721A4 /* StoreTests.swift in Sources */,
 				DE76E1C71D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE76E1C41D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE82027F1D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
@@ -976,8 +978,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1022,8 +1026,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1042,6 +1048,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1052,6 +1059,7 @@
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1065,6 +1073,7 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = 4;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1077,6 +1086,7 @@
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1089,6 +1099,7 @@
 				PRODUCT_NAME = Kakapo;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = 4;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1100,6 +1111,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1113,6 +1125,7 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1124,6 +1137,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1136,6 +1150,7 @@
 				PRODUCT_NAME = Kakapo;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1147,11 +1162,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 822EBBB73B6B4117D229CDF1 /* Pods-Kakapo tvOSTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
+				SWIFT_VERSION = 2.3;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Debug;
@@ -1160,11 +1177,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E357918ACA29146B64834E63 /* Pods-Kakapo tvOSTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
+				SWIFT_VERSION = 2.3;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Release;
@@ -1173,7 +1192,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -1190,6 +1209,7 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1199,7 +1219,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -1215,6 +1235,7 @@
 				PRODUCT_NAME = Kakapo;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 2.3;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1224,6 +1245,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C9E9EAD776E83C0F5785A0DB /* Pods-Kakapo macOSTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
@@ -1232,6 +1254,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-macOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -1239,6 +1262,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EC9701EC992A6D8D7A349FE0 /* Pods-Kakapo macOSTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
@@ -1247,6 +1271,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-macOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
@@ -1254,6 +1279,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1267,6 +1293,7 @@
 				PRODUCT_NAME = Kakapo;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1276,6 +1303,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1288,6 +1316,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-iOS";
 				PRODUCT_NAME = Kakapo;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 2.3;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1297,11 +1326,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DFC29110721D31BE30199824 /* Pods-Kakapo iOSTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -1309,11 +1340,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EC34C9368B0957EEB74A515E /* Pods-Kakapo iOSTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};

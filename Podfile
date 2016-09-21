@@ -4,7 +4,7 @@ def testing_pods
     pod 'Quick', '~> 0.9'
     pod 'Nimble', '~> 4.0'
     pod 'SwiftyJSON', '~> 2.3'
-    pod 'Alamofire'
+    pod 'Alamofire', '~> 3.5'
     pod 'AFNetworking'
 end
 
@@ -21,4 +21,12 @@ end
 target 'Kakapo macOSTests' do
 	platform :osx, '10.11'
     testing_pods
+end
+
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |configuration|
+            configuration.build_settings['SWIFT_VERSION'] = "2.3"
+        end
+    end
 end

@@ -20,13 +20,13 @@ struct Post: Serializable, Storable, JSONInitializable, Likeable {
     var likes: [Like]
     var comments: [Comment]
     
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
         date = sharedFaker.date.pastDate().timeIntervalSince1970
-        text = sharedFaker.lorem.paragraph(sentencesAmount: random() % 6 + 1)
-        author = db.create(User).first!
-        likes = db.create(Like.self, number: random(15))
-        comments = db.create(Comment.self, number: random(5))
+        text = sharedFaker.lorem.paragraph(sentencesAmount: Int(arc4random()) % 6 + 1)
+        author = store.create(User).first!
+        likes = store.create(Like.self, number: random(15))
+        comments = store.create(Comment.self, number: random(5))
     }
     
     init(json: JSON) {

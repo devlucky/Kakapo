@@ -9,14 +9,12 @@
 import Foundation
 
 extension String {
-
+    
     func escapedFilename() -> String {
-        let originalString = self as NSString as CFString
-        let charactersToLeaveUnescaped = " \\" as NSString as CFString // TODO: Add more characters that are valid in paths but not in URLs
-        let legalURLCharactersToBeEscaped = "/:" as NSString as CFString
-        let encoding = CFStringBuiltInEncodings.UTF8.rawValue
-        let escapedPath = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, originalString, charactersToLeaveUnescaped, legalURLCharactersToBeEscaped, encoding)
-        return escapedPath as NSString as String
+        return [ "\0":"%00", ":":"%3A", "/":"%2F" ]
+            .reduce(self.componentsSeparatedByString("%").joinWithSeparator("%25")) {
+                str, m in str.componentsSeparatedByString(m.0).joinWithSeparator(m.1)
+        }
     }
     
     func MD5String() -> String {
@@ -37,7 +35,10 @@ extension String {
     
     func MD5Filename() -> String {
         let MD5String = self.MD5String()
-        let pathExtension = (self as NSString).pathExtension
+
+        // NSString.pathExtension alone could return a query string, which can lead to very long filenames.
+        let pathExtension = NSURL(string: self)?.pathExtension ?? (self as NSString).pathExtension
+
         if pathExtension.characters.count > 0 {
             return (MD5String as NSString).stringByAppendingPathExtension(pathExtension) ?? MD5String
         } else {

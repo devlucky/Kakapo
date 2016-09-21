@@ -1,6 +1,6 @@
 ![Alamofire: Elegant Networking in Swift](https://raw.githubusercontent.com/Alamofire/Alamofire/assets/alamofire.png)
 
-[![Build Status](https://travis-ci.org/Alamofire/Alamofire.svg)](https://travis-ci.org/Alamofire/Alamofire)
+[![Build Status](https://travis-ci.org/Alamofire/Alamofire.svg?branch=master)](https://travis-ci.org/Alamofire/Alamofire)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Alamofire.svg)](https://img.shields.io/cocoapods/v/Alamofire.svg)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Platform](https://img.shields.io/cocoapods/p/Alamofire.svg?style=flat)](http://cocoadocs.org/docsets/Alamofire)
@@ -32,7 +32,8 @@ In order to keep Alamofire focused specifically on core networking implementatio
 ## Requirements
 
 - iOS 8.0+ / Mac OS X 10.9+ / tvOS 9.0+ / watchOS 2.0+
-- Xcode 7.3+
+- Xcode 8.0+
+- Swift 2.2 or 2.3
 
 ## Migration Guides
 
@@ -67,11 +68,11 @@ To integrate Alamofire into your Xcode project using CocoaPods, specify it in yo
 
 ```ruby
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '9.0'
+platform :ios, '10.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-    pod 'Alamofire', '~> 3.4'
+    pod 'Alamofire', '~> 3.5'
 end
 ```
 
@@ -95,7 +96,7 @@ $ brew install carthage
 To integrate Alamofire into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "Alamofire/Alamofire" ~> 3.4
+github "Alamofire/Alamofire" ~> 3.5
 ```
 
 Run `carthage update` to build the framework and drag the built `Alamofire.framework` into your Xcode project.
@@ -386,6 +387,14 @@ Alamofire.request(.GET, "https://httpbin.org/get", headers: headers)
              debugPrint(response)
          }
 ```
+
+The default Alamofire `Manager` provides a common set of headers for every request. These include:
+
+* `Accept-Encoding`, which defaults to `gzip;q=1.0, compress;q=0.5`, per [RFC7230](https://tools.ietf.org/html/rfc7230#section-4.2.3).
+* `Accept-Language`, which defaults to up to the top 6 preferred languages on the system, formatted like `en;q=1.0`, per [RFC7231](https://tools.ietf.org/html/rfc7231#section-5.3.5).
+* `User-Agent`, which contains versioning information about the current app. For example: `iOS Example/1.0 (com.alamofire.iOS-Example; build:1; iOS 9.3.0) Alamofire/3.4.2`, per [RFC7231](https://tools.ietf.org/html/rfc7231#section-5.5.3).
+
+Customizing these headers, since they need to be added to every request, should be done by creating a customized `Manager` instance and modifying the `defaultHTTPHeaders` dictionary, as shown in the [Modifying Session Configuration](#modifying-session-configuration) section.
 
 ### Caching
 
@@ -718,7 +727,7 @@ Requests can be suspended, resumed, and cancelled:
 Before implementing custom response serializers or object serialization methods, it's important to be prepared to handle any errors that may occur. Alamofire recommends handling these through the use of either your own `NSError` creation methods, or a simple `enum` that conforms to `ErrorType`. For example, this `BackendError` type, which will be used in later examples:
 
 ```swift
-enum BackendError: ErrorType {
+public enum BackendError: ErrorType {
     case Network(error: NSError)
     case DataSerialization(reason: String)
     case JSONSerialization(error: NSError)
