@@ -9,6 +9,7 @@ env:
 
 before_install:
   - gem update fastlane
+  - gem update scan
   - gem install danger --no-ri --no-doc
   - gem install danger-swiftlint --no-ri --no-doc
 
