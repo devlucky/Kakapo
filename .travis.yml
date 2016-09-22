@@ -9,9 +9,6 @@ env:
   global:
     - FASTLANE_LANE=ci_commit
 
-before_script:
-  - danger
-
 matrix:
   include:
     - osx_image: xcode8
@@ -29,6 +26,7 @@ script:
   - set -o pipefail
   - fastlane $FASTLANE_LANE configuration:Debug --env $FASTLANE_ENV
   - pod lib lint --quick
+  - bundle exec danger
 
 podfile: Podfile
 
