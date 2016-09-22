@@ -61,39 +61,26 @@ class JSONAPIErrorsSpec: QuickSpec {
                 }
                 
                 it("should affect the status code of the request") {
-                    // occasionally failing test, added diagnostic
-                    // https://github.com/devlucky/Kakapo/issues/79
-                    let router = Router.register("http://www.test.com")
-                    // diagnostic
-                    var handlerCalled = false
-                    
+                    let router = Router.register("http://www.test123.com")
+
                     router.get("/users") { request in
-                        handlerCalled = true
                         return JSONAPIError(statusCode: 501) { (error) in
                             error.title = "test"
                         }
                     }
                     
                     var statusCode: Int = -1
-                    let url = NSURL(string: "http://www.test.com/users")!
+                    let url = NSURL(string: "http://www.test123.com/users")!
                     NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
                         let response = response as! NSHTTPURLResponse
                         statusCode = response.statusCode
-                        // diagnostic
-                        expect(statusCode).to(equal(501))
                         }.resume()
                     
-                    // diagnostic to check if it's a timeout
-                    let startTime = CFAbsoluteTimeGetCurrent()
                     expect(statusCode).toEventually(equal(501))
-                    let endTime = CFAbsoluteTimeGetCurrent()
-                     // Quick's default timeout, the responde should be done immediately anyway.
-                    expect(endTime - startTime) < 1
-                    expect(handlerCalled) == true
                 }
                 
                 it("should affect the header fields of the response") {
-                    let router = Router.register("http://www.test.com")
+                    let router = Router.register("http://www.test1234.com")
                     
                     router.get("/users") { request in
                         return JSONAPIError(statusCode: 404, headerFields: ["foo": "bar"]) { (error) in
@@ -102,7 +89,7 @@ class JSONAPIErrorsSpec: QuickSpec {
                     }
                     
                     var foo: String?
-                    let url = NSURL(string: "http://www.test.com/users")!
+                    let url = NSURL(string: "http://www.test1234.com/users")!
                     NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
                         let response = response as! NSHTTPURLResponse
                         let headers = response.allHeaderFields as? [String: String]

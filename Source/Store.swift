@@ -53,7 +53,7 @@ private final class ArrayBox<T> {
     let store = Store()
     store.create(User.self, number: 20)
  
-    router.get("/users/:id"){ request in
+    router.get("/users/:id") { request in
         return store.find(User.self, id: someId)
     }
  
