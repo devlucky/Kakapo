@@ -35,3 +35,6 @@ after_failure:
   - cat -n $TMPDIR/com.apple.dt.XCTest-status/Session*.log
   - cat -n ~/Library/Logs/DiagnosticReports/xctest*.crash
 
+# sleep a bit -> https://github.com/travis-ci/travis-ci/issues/4725
+after_success:
+  - sleep 10
