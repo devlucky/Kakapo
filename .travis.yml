@@ -1,4 +1,6 @@
 language: objective-c
+cache:
+  - bundler
 
 notifications:
   slack: devlucky:0AP12qjjfc2Zxc0s9yo1cQQm
@@ -6,15 +8,6 @@ notifications:
 env:
   global:
     - FASTLANE_LANE=ci_commit
-
-before_install:
-  - gem update fastlane
-  - gem update scan
-  - gem install danger --no-ri --no-doc
-  - gem install danger-swiftlint --no-ri --no-doc
-
-before_script:
-  - danger
 
 matrix:
   include:
@@ -28,11 +21,13 @@ matrix:
       env: FASTLANE_ENV=ios10 KKP_CODECOV=true
       after_success:
         - bash <(curl -s https://codecov.io/bash) -J 'Kakapo'
+        - sleep 15
 
 script:
   - set -o pipefail
   - fastlane $FASTLANE_LANE configuration:Debug --env $FASTLANE_ENV
   - pod lib lint --quick
+  - bundle exec danger
 
 podfile: Podfile
 
@@ -41,3 +36,6 @@ after_failure:
   - cat -n $TMPDIR/com.apple.dt.XCTest-status/Session*.log
   - cat -n ~/Library/Logs/DiagnosticReports/xctest*.crash
 
+# sleep a bit -> https://github.com/travis-ci/travis-ci/issues/4725
+after_success:
+  - sleep 15
