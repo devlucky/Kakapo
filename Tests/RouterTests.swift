@@ -15,56 +15,6 @@ import Alamofire
 
 @testable import Kakapo
 
-/**
- A test server that conforms to NSURLProtocol, in order to intercept outgoing network for unit tests.
- As `NSURLProtocol` documentation states:
- 
- "Classes are consulted in the reverse order of their registration.
- A similar design governs the process to create the canonical form of a request with canonicalRequestForRequest:."
- 
- Thus, we use this test server to intercept real network calls in tests as a fallback for `Server`.
- */
-private final class RouterTestServer: NSURLProtocol {
-
-    class func register() {
-        NSURLProtocol.registerClass(self)
-    }
-    
-    class func disable() {
-        NSURLProtocol.unregisterClass(self)
-    }
-    
-    override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        return true
-    }
-    
-    override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
-        return request
-    }
-    
-    override func startLoading() {
-        guard let requestURL = request.URL,
-                  client = client else { return }
-
-        let response = NSHTTPURLResponse(URL: requestURL, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: nil)!
-        client.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
-        client.URLProtocolDidFinishLoading(self)
-    }
-
-    override func stopLoading() {}
-}
-
-private final class ProtocolClientTest: NSObject, NSURLProtocolClient {
-    @objc func URLProtocol(`protocol`: NSURLProtocol, wasRedirectedToRequest request: NSURLRequest, redirectResponse: NSURLResponse) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, cachedResponseIsValid cachedResponse: NSCachedURLResponse) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didReceiveResponse response: NSURLResponse, cacheStoragePolicy policy: NSURLCacheStoragePolicy) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didLoadData data: NSData) { /* intentionally left empty */ }
-    @objc func URLProtocolDidFinishLoading(`protocol`: NSURLProtocol) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didFailWithError error: NSError) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didReceiveAuthenticationChallenge challenge: NSURLAuthenticationChallenge) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didCancelAuthenticationChallenge challenge: NSURLAuthenticationChallenge) { /* intentionally left empty */ }
-}
-
 struct CustomResponse: ResponseFieldsProvider {
     let statusCode: Int
     let body: Serializable
@@ -173,7 +123,7 @@ class RouterTests: QuickSpec {
                       Therefore we simulate the "stopLoading" and "startLoading" mechanism manually.
                 */
                 let urlRequest = NSURLRequest(URL: requestURL)
-                let client = ProtocolClientTest()
+                let client = FakeURLProtocolClient()
                 let server = Server(request: urlRequest, cachedResponse: nil, client: client)
 
                 server.stopLoading()

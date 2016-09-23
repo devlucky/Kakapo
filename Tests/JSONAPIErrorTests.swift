@@ -56,10 +56,15 @@ class JSONAPIErrorsSpec: QuickSpec {
             
             context("Provides response fields") {
                 
-                afterEach {
-                    Router.disableAll()
+                beforeEach {
+                    RouterTestServer.register()
                 }
                 
+                afterEach {
+                    RouterTestServer.disable()
+                    Router.disableAll()
+                }
+
                 it("should affect the status code of the request") {
                     let router = Router.register("http://www.test123.com")
 
