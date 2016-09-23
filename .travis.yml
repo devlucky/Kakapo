@@ -37,4 +37,4 @@ after_failure:
 
 # sleep a bit -> https://github.com/travis-ci/travis-ci/issues/4725
 after_success:
-  - sleep 10
+  - sleep 5
