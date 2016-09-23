@@ -21,6 +21,7 @@ matrix:
       env: FASTLANE_ENV=ios10 KKP_CODECOV=true
       after_success:
         - bash <(curl -s https://codecov.io/bash) -J 'Kakapo'
+        - sleep 15
 
 script:
   - set -o pipefail
@@ -37,4 +38,4 @@ after_failure:
 
 # sleep a bit -> https://github.com/travis-ci/travis-ci/issues/4725
 after_success:
-  - sleep 10
+  - sleep 15
