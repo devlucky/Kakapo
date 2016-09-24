@@ -7,16 +7,16 @@ def testing_pods
 end
 
 target 'Kakapo iOSTests' do
-	platform :ios, '9.0'
+    platform :ios, '9.0'
     testing_pods
 end
 
 target 'Kakapo tvOSTests' do
-	platform :tvos, '9.2'
+    platform :tvos, '9.2'
     testing_pods
 end
 
 target 'Kakapo macOSTests' do
-	platform :osx, '10.11'
+    platform :osx, '10.11'
     testing_pods
 end
