@@ -84,15 +84,11 @@ strip_invalid_archs() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework "$BUILT_PRODUCTS_DIR/AFNetworking-tvOS/AFNetworking.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Alamofire-tvOS/Alamofire.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Nimble-tvOS/Nimble.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Quick-tvOS/Quick.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftyJSON-tvOS/SwiftyJSON.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework "$BUILT_PRODUCTS_DIR/AFNetworking-tvOS/AFNetworking.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Alamofire-tvOS/Alamofire.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Nimble-tvOS/Nimble.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Quick-tvOS/Quick.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftyJSON-tvOS/SwiftyJSON.framework"

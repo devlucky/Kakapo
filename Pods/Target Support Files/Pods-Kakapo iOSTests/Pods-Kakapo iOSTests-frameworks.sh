@@ -84,15 +84,11 @@ strip_invalid_archs() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework "$BUILT_PRODUCTS_DIR/AFNetworking-iOS/AFNetworking.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Alamofire-iOS/Alamofire.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Nimble-iOS/Nimble.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Quick-iOS/Quick.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftyJSON-iOS/SwiftyJSON.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework "$BUILT_PRODUCTS_DIR/AFNetworking-iOS/AFNetworking.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Alamofire-iOS/Alamofire.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Nimble-iOS/Nimble.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Quick-iOS/Quick.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftyJSON-iOS/SwiftyJSON.framework"
