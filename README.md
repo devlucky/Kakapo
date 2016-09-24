@@ -54,7 +54,9 @@ With Kakapo you can just create Swift structs/classes/enums that are automatical
 
   * Dynamic mocking
   * Prototyping
-  * Swift 2.3 compatible (swift 3.0 WIP)
+  * Swift 3.0 compatible (from version `2.0.0`, `master` branch)
+  * Swift 2.3 compatible (from version `1.0.0`, branch `feature/swift2.3`)
+  * Swift 2.2 compatible (versions `0.x.y`, branch `feature/swift2.2`)
   * Compatible with [![Platform](https://img.shields.io/cocoapods/p/Kakapo.svg?style=flat)](http://cocoapods.org/pods/Kakapo)
   * Protocol oriented and pluggable
   * Fully customizable by defining custom serialization and custom responses
@@ -116,7 +118,7 @@ struct User: Serializable {
 
 let user = User(name: "Alex")
 let serializedUser = user.serialize()
-print(serializedUser["name"]) // Alex
+//  -> ["name": "Alex"]
 ```
 
 Also, standard library types are supported: this means that `Array`, `Dictionary` or `Optional` can be serialized:
@@ -155,8 +157,10 @@ router.get("/users/:id") { request in
 Now everything is ready to test your mocked API; you can perform your request as you usually would do:
 
 ```Swift
-session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, _, _) in
-  // handle response
+let session = URLSession.shared
+let url = URL(string: "http://www.test.com/users/1")!
+session.dataTask(with: url) { (data, _, _) in
+    // handle response
 }.resume()
 ```
 
@@ -166,7 +170,7 @@ session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, 
 In the previous example the handler was returning a simple `Dictionary`; while this works because `Dictionary` is already `Serializable`, you can also create your own entities that conform to `Serializable`:
 
 ```Swift
-struct User: Storable, Serializable {
+struct User: Serializable {
     let firstName: String
     let lastName: String
     let id: String
@@ -177,16 +181,17 @@ router.get("/users/:id") { request in
 }
 ```
 
-When a request is matched, the RouteHandler receives a `Request` object that represents your request including components, query parmaters, HTTPBody and HTTPHeaders. The `Request` object can be useful when building dynamic repsonses.
+When a request is matched, the RouteHandler receives a `Request` object that represents your request including components, query parameters, HTTPBody and HTTPHeaders. The `Request` object can be useful when building dynamic responses.
 
 #### Third-Party Libraries
 
-Third-Party libraries that use the Foundation networking APIs are also supported but you might need to set a proper `NSURLSessionConfiguration`. For example, to setup `Alamofire`:
+Third-Party libraries that use the Foundation networking APIs are also supported but you might need to set a proper `URLSessionConfiguration`.  
+For example, to setup `Alamofire`:
 
 ```swift
- let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
- configuration.protocolClasses = [Server.self]
- let manager = Manager(configuration: configuration)
+let configuration = URLSessionConfiguration.default
+configuration.protocolClasses = [Server.self]
+let sessionManager = SessionManager(configuration: configuration)
 ```
 
 ### Leverage the Store - Dynamic mocking
@@ -216,7 +221,7 @@ let store = Store()
 store.create(Article.self, number: 20)
 
 router.get("/articles/:id") { request in
-  let articleId = request.components["id"]
+  let articleId = request.components["id"]!
   return store.find(Article.self, id: articleId)
 }
 ```
@@ -225,15 +230,15 @@ Of course you can perform any logic which fits your needs:
 
 ```Swift
 router.post("/article/:id") { request in
-  return store.insert { (id) -> User in
-    return Article(text: "text from body", id: id)
-  }
+    return store.insert { (id) -> Article in
+        return Article(id: id, text: "text from the body")
+    }
 }
 
 router.del("/article/:id") { request in
-  let articleId = request.components["id"]
-  let article = store.find(Article.self, id: articleId)
-  store.delete(article)
+  let articleId = request.components["id"]!
+  let article = store.find(Article.self, id: articleId)!
+  try! store.delete(article)
 
   return ["status": "success"]
 }
@@ -273,7 +278,7 @@ struct User: JSONAPIEntity {
 Note that `JSONAPIEntity` objects are already `Serializable` and you could just use them together with your Routers. However, to completely follow the JSONAPI structure in your responses, you should wrap them into a `JSONAPISerializer` struct:
 
 ```Swift
-router.get("/users/:id"){ request in
+router.get("/users/:id") { request in
   let cats = [Cat(id: "33", name: "Joan"), Cat(id: "44", name: "Hez")]
   let user = User(id: "11", name: "Alex", cats: cats)
   return JSONAPISerializer(user)
@@ -326,15 +331,16 @@ Kakapo provides a default `ResponseFieldsProvider` implementation in the Respons
 
 ```Swift
 router.get("/users/:id"){ request in
-    return Response(statusCode: 400, body: ["id" : 2], headerFields: ["access_token" : "094850348502"])
+    return Response(statusCode: 400, body: user, headerFields: ["access_token" : "094850348502"])
 }
 
-session.dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
+let url = URL(string: "http://www.test.com/users/2")!
+session.dataTaskWithURL() { (data, response, _) in
     let allHeaders = response.allHeaderFields
     let statusCode = response.statusCode
     print(allHeaders["access_token"]) // 094850348502
     print(statusCode) // 400
-    }.resume()
+}.resume()
 ```
 
 Otherwise your `Serializable` object can directly implement the protocol: take a look at `JSONAPIError` to see another example.
