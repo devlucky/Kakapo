@@ -61,7 +61,7 @@ private final class ArrayBox<T> {
  */
 public final class Store {
     
-    private let queue = DispatchQueue(label: "com.store.queue", attributes: DispatchQueue.Attributes.concurrent)
+    private let queue = DispatchQueue(label: "com.store.queue", attributes: .concurrent)
     private var uuid = -1
     private var store: [String: ArrayBox<Storable>] = [:]
 
@@ -72,9 +72,9 @@ public final class Store {
     
     private func barrierSync<T>(_ closure: () -> T) -> T {
         var object: T!
-        queue.sync(flags: .barrier, execute: {
+        queue.sync(flags: .barrier) {
             object = closure()
-        }) 
+        }
         return object
     }
 

@@ -44,7 +44,7 @@ class RouterTests: QuickSpec {
         describe("Cancelling requests") {
             var router: Router!
             let baseURL = "http://www.funky-cancel-request.com"
-            let latency = TimeInterval(2)
+            let latency: TimeInterval = 2
 
             beforeEach {
                 router = Router.register(baseURL)
