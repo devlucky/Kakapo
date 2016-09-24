@@ -9,11 +9,9 @@ env:
 
 before_install:
   - gem update fastlane
+  - gem update scan
   - gem install danger --no-ri --no-doc
   - gem install danger-swiftlint --no-ri --no-doc
-
-before_script:
-  - danger
 
 matrix:
   include:
@@ -25,13 +23,15 @@ matrix:
       env: FASTLANE_ENV=ios93
     - osx_image: xcode8
       env: FASTLANE_ENV=ios10 KKP_CODECOV=true
+      before_script:
+        - danger
+        - pod lib lint --quick
       after_success:
         - bash <(curl -s https://codecov.io/bash) -J 'Kakapo'
 
 script:
   - set -o pipefail
   - fastlane $FASTLANE_LANE configuration:Debug --env $FASTLANE_ENV
-  - pod lib lint --quick
 
 podfile: Podfile
 

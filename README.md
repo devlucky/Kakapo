@@ -351,7 +351,8 @@ Even though Kakapo is ready to use, it is not meant to be shipped to the App Sto
 
 ### Newsfeed
 
-Make sure you check the [demo app](https://github.com/devlucky/Kakapo/tree/master/Examples/NewsFeed) we created using Kakapo: a prototyped newsfeed app which lets the user create new posts and like/unlike them.
+Make sure you check the [demo app](https://github.com/devlucky/Kakapo/tree/master/Examples/NewsFeed) we created using Kakapo: a prototyped newsfeed app which lets the user create new posts and like/unlike them.  
+To quickly try it use: `pod try Kakapo`
 
 ![](https://raw.githubusercontent.com/devlucky/Kakapo/master/Examples/NewsFeed/newsfeed.png)
 
