@@ -95,13 +95,13 @@ public struct Response: ResponseFieldsProvider {
  */
 public final class Router {
     
-    fileprivate typealias Route = (method: HTTPMethod, handler: RouteHandler)
+    private typealias Route = (method: HTTPMethod, handler: RouteHandler)
     
-    fileprivate enum HTTPMethod: String {
+    private enum HTTPMethod: String {
         case GET, POST, PUT, DELETE
     }
     
-    fileprivate var routes: [String : Route] = [:]
+    private var routes: [String : Route] = [:]
 
     /// The `baseURL` of the Router
     public let baseURL: String
@@ -208,8 +208,8 @@ public final class Router {
             client.urlProtocolDidFinishLoading(server)
         }
 
-        let delayTime = DispatchTime.now() + Double(Int64(latency * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-        DispatchQueue.main.asyncAfter(deadline: delayTime) {
+        let deadline = DispatchTime.now() + latency
+        DispatchQueue.main.asyncAfter(deadline: deadline) {
             // before reporting "finished", check if request has been canceled in the meantime
             if server.requestCancelled == false {
                 didFinishLoading(server)

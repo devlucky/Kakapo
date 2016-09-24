@@ -15,7 +15,7 @@ import SwiftyJSON
 
 class JSONAPIErrorsSpec: QuickSpec {
     
-    fileprivate struct ErrorDescription: Serializable {
+    private struct ErrorDescription: Serializable {
         let description: String
     }
     

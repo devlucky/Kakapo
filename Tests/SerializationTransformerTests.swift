@@ -35,12 +35,12 @@ struct LowercaseFirstCharacterTransformer<Wrapped: Serializable>: SerializationT
 
 class SerializationTransformerSpec: QuickSpec {
     
-    fileprivate struct Dog: JSONAPIEntity {
+    private struct Dog: JSONAPIEntity {
         let id: String
         let dogName: String
     }
     
-    fileprivate struct JUser: JSONAPIEntity {
+    private struct JUser: JSONAPIEntity {
         let id: String
         let userName: String
         let doggyDog: Dog

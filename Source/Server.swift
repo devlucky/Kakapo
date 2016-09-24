@@ -34,7 +34,7 @@ import Foundation
  */
 public final class Server: URLProtocol {
 
-    fileprivate static var routers: [Router] = []
+    private static var routers: [Router] = []
 
     /**
      `true`, if the `request` of the `Server` instance has been cancelled, otherwise `false`.
@@ -43,7 +43,7 @@ public final class Server: URLProtocol {
 
      Note: calls to `stopLoading()` will set this value to `true`
      */
-    fileprivate(set) var requestCancelled: Bool = false
+    private(set) var requestCancelled: Bool = false
     
     /**
      Register and return a new Router in the Server

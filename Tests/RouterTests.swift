@@ -491,7 +491,7 @@ class RouterTests: QuickSpec {
                 var dataLength = 10000
                 
                 router.get("/users/:id") { request in
-                    // Optional.Some("none") -> not valid JSON object
+                    // Optional.some("none") -> not valid JSON object
                     return Response(statusCode: 400, body: Optional.some("none"))
                 }
                 

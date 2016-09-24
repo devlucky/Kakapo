@@ -251,20 +251,20 @@ class JSONAPISpec: QuickSpec {
         }
         
         describe("JSON API Entity with PropertyPolicies") {
-            it("should handle PropertyPolicy.None") {
+            it("should handle PropertyPolicy.none") {
                 let object = json(Policy<Int>(id: "12", policy: .none))
                 let attributes = object["attributes"].dictionaryObject
                 expect(attributes).to(beNil())
 
             }
             
-            it("should handle PropertyPolicy.Null") {
+            it("should handle PropertyPolicy.null") {
                 let object = json(Policy<Int>(id: "12", policy: .null))
                 let attributes = object["attributes"].dictionaryObject!
                 expect(attributes["policy"] as? NSNull).toNot(beNil())
             }
             
-            it("should handle PropertyPolicy.Some(T)") {
+            it("should handle PropertyPolicy.some(T)") {
                 let object = json(Policy(id: "12", policy: .some(123)))
                 let attributes = object["attributes"].dictionaryValue
                 expect(attributes["policy"]?.intValue).to(equal(123))
@@ -282,14 +282,14 @@ class JSONAPISpec: QuickSpec {
                 expect(data[0]["type"].stringValue).to(equal("user"))
             }
             
-            it("should handle PropertyPolicy as releantionships when the associated type is JSONAPIEntity but .Null") {
+            it("should handle PropertyPolicy as releantionships when the associated type is JSONAPIEntity but .null") {
                 let object = json(Policy<User>(id: "12", policy: .null))
                 let data = object["relationships"]["policy"].dictionaryObject!["data"] as? [String: AnyObject]
                 expect(data).toNot(beNil())
                 expect(data?.count).to(equal(0))
             }
             
-            it("should exclude PropertyPolicy as releantionships when the associated type is JSONAPIEntity but .None") {
+            it("should exclude PropertyPolicy as releantionships when the associated type is JSONAPIEntity but .none") {
                 let object = json(Policy<User>(id: "12", policy: .none))
                 let relationships = object["relationships"].dictionary
                 expect(relationships).to(beNil())
@@ -416,19 +416,19 @@ class JSONAPISpec: QuickSpec {
             
             context("included PropertyPolicies") {
                 
-                it("should handle PropertyPolicy.None") {
+                it("should handle PropertyPolicy.none") {
                     let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .none), includeChildren: true))
                     let included = includedRelationshipsById(object)
                     expect(included.count).to(equal(0))
                 }
                 
-                it("should handle PropertyPolicy.Null") {
+                it("should handle PropertyPolicy.null") {
                     let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .null), includeChildren: true))
                     let included = includedRelationshipsById(object)
                     expect(included.count).to(equal(0))
                 }
                 
-                it("should handle PropertyPolicy.Some(T)") {
+                it("should handle PropertyPolicy.some(T)") {
                     let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .some(user)), includeChildren: true))
                     let included = includedRelationshipsById(object)
                     let dog = included["22"]

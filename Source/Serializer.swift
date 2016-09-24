@@ -96,7 +96,7 @@ extension Optional: CustomSerializable {
 }
 
 extension PropertyPolicy {
-    /// `PropertyPolicy` serializes as nil when `.None`, as `NSNull` when `.Null` or serialize the object for `.Some`
+    /// `PropertyPolicy` serializes as nil when `.none`, as `NSNull` when `.null` or serialize the object for `.some`
     public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
         switch self {
         case .none:

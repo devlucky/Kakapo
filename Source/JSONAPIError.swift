@@ -70,7 +70,7 @@ public struct JSONAPIError: ResponseFieldsProvider {
         }
     }
     
-    fileprivate let builder: Builder
+    private let builder: Builder
 
     // MARK: ResponseFieldsProvider
     
