@@ -1,34 +1,18 @@
 PODS:
   - Nimble (5.0.0)
-  - Quick (0.9.3)
-  - SwiftyJSON (2.3.2)
+  - Quick (0.10.0)
+  - SwiftyJSON (3.0.0)
 
 DEPENDENCIES:
   - Nimble (~> 5.0)
-  - Quick (from `https://github.com/Quick/Quick.git`, branch `swift-3.0`)
-  - SwiftyJSON (from `https://github.com/IBM-Swift/SwiftyJSON.git`, branch `master`)
-
-EXTERNAL SOURCES:
-  Quick:
-    :branch: swift-3.0
-    :git: https://github.com/Quick/Quick.git
-  SwiftyJSON:
-    :branch: master
-    :git: https://github.com/IBM-Swift/SwiftyJSON.git
-
-CHECKOUT OPTIONS:
-  Quick:
-    :commit: 36ebbc75e093c7553a5145ed5dd21484364cd78d
-    :git: https://github.com/Quick/Quick.git
-  SwiftyJSON:
-    :commit: 73b523a107b798021ca9af74b5f7c20e435c8809
-    :git: https://github.com/IBM-Swift/SwiftyJSON.git
+  - Quick (~> 0.10)
+  - SwiftyJSON (~> 3.0)
 
 SPEC CHECKSUMS:
   Nimble: 56fc9f5020effa2206de22c3dd910f4fb011b92f
-  Quick: 31fb576b6cbb6b028cc5e0016e4366accbb346f5
-  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+  Quick: 5d290df1c69d5ee2f0729956dcf0fd9a30447eaa
+  SwiftyJSON: f57b2b44bc166617372d1c70773591fe9f0f5fd4
 
-PODFILE CHECKSUM: bcef78b0b8a9b617ed472e31ad38e54e1bd940dd
+PODFILE CHECKSUM: 0f7fdda4d66cc3719aef3fde1c0760a3c427ba11
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.1.0.rc.2
