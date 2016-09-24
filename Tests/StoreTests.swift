@@ -56,19 +56,18 @@ class StoreTests: QuickSpec {
         
         describe("Creation and Insertion") {
             it("should create a large number of elements") {
-                let queue = DispatchQueue("queue", DISPATCH_QUEUE_CONCURRENT)
-                DispatchQueue.apply(attributes: 1000, iterations: queue, execute: { i in
-                    sut.create(User)
-                })
+                DispatchQueue.concurrentPerform(iterations: 1000) { (i) in
+                    sut.create(User.self)
+                }
                 
-                DispatchQueue.apply(attributes: 5000, iterations: queue, execute: { i in
-                    sut.create(Comment)
-                })
+                DispatchQueue.concurrentPerform(iterations: 5000) { (i) in
+                    sut.create(Comment.self)
+                }
                 
-                let userObjects = sut.findAll(User)
+                let userObjects = sut.findAll(User.self)
                 let user = sut.find(User.self, id: "1")
                 
-                let commentObjects = sut.findAll(Comment)
+                let commentObjects = sut.findAll(Comment.self)
                 let aComment = sut.find(Comment.self, id: "1000")
                 let anotherComment = sut.find(Comment.self, id: "1002")
                 
@@ -89,26 +88,25 @@ class StoreTests: QuickSpec {
             }
             
             it("should create a large number of elements respecting the previous ones") {
-                let queue = DispatchQueue("queue", DISPATCH_QUEUE_CONCURRENT)
-                DispatchQueue.apply(attributes: 1000, iterations: queue, execute: { i in
-                    sut.create(User)
-                })
+                DispatchQueue.concurrentPerform(iterations: 1000) { (i) in
+                    sut.create(User.self)
+                }
                 
                 let createdObjects = sut.create(User.self, number: 20000)
-                let totalObjects = sut.findAll(User)
+                let totalObjects = sut.findAll(User.self)
                 
                 expect(createdObjects.count) == 20000
                 expect(totalObjects.count) == 21000
             }
             
             it("should insert a large number of elements") {
-                DispatchQueue.apply(attributes: 1000, iterations: DispatchQueue("queue", DISPATCH_QUEUE_CONCURRENT), execute: { _ in
+                DispatchQueue.concurrentPerform(iterations: 1000) { (i) in
                     sut.insert { (id) -> (User) in
                         return User(firstName: "Name " + id, lastName: "Last Name " + id, age: 10, id: id)
                     }
-                })
-                
-                let userObjects = sut.findAll(User)
+                }
+
+                let userObjects = sut.findAll(User.self)
                 let user = sut.find(User.self, id: "1")
                 
                 expect(user).toNot(beNil())
@@ -247,7 +245,7 @@ class StoreTests: QuickSpec {
                 sut.create(User.self, number: 5)
                 let elementToDelete = sut.find(User.self, id: "2")!
                 try! sut.delete(elementToDelete)
-                let usersArray = sut.findAll(User)
+                let usersArray = sut.findAll(User.self)
                 
                 expect(usersArray.count).to(equal(4))
             }
@@ -261,7 +259,7 @@ class StoreTests: QuickSpec {
                 
                 let elementToDelete = User(firstName: "Joan", lastName: "Romano", age: 28, id: theId)
                 try! sut.delete(elementToDelete)
-                let usersArray = sut.findAll(User)
+                let usersArray = sut.findAll(User.self)
                 
                 expect(usersArray.count).to(equal(0))
             }
@@ -270,7 +268,7 @@ class StoreTests: QuickSpec {
                 let user = sut.create(User.self).first!
                 let elementToDelete = Comment(text: "", likes: 0, id: user.id)
                 expect { try sut.delete(elementToDelete) }.to(throwError(errorType: StoreError.self))
-                expect(sut.findAll(User).count).to(equal(1))
+                expect(sut.findAll(User.self).count).to(equal(1))
             }
             
             it("should delete an object with same id and same type but different properties") {
@@ -328,28 +326,25 @@ class StoreTests: QuickSpec {
             
             it("should be able to concurrently delete objects") {
                 let users = sut.create(User.self, number: 100)
-                
-                DispatchQueue.apply(attributes: 100, iterations: DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) { i in
+                DispatchQueue.concurrentPerform(iterations: 100) { (i) in
                     try! sut.delete(users[i])
                 }
-                
                 expect(sut.findAll(User.self).count).to(equal(0))
             }
             
             it("should be able to concurrently update and delete objects") {
                 let users = sut.create(User.self, number: 100)
                 
-                DispatchQueue.apply(attributes: 100, iterations: DispatchQueue.global(DispatchQueue.GlobalQueuePriority.background, 0)) { i in
+                DispatchQueue.concurrentPerform(iterations: 100) { (i) in
                     try! sut.update(users[i])
                     try! sut.delete(users[i])
                 }
-                
-                expect(sut.findAll(User.self).count).to(equal(0))
+                expect(sut.findAll(User.self)).to(beEmpty())
             }
         }
         
         describe("store Operations Deadlock 💀💀💀💀💀💀💀💀") {
-            let queue = DispatchQueue("com.store.testDeadlock", DISPATCH_QUEUE_SERIAL)
+            let queue = DispatchQueue(label: "com.store.testDeadlock")
             
             beforeEach {
                 sut.insert { id -> User in
@@ -371,7 +366,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously writing from another queue into the store during a writing operation") {
                 let user = sut.insert { (id) -> User in
-                    queue.sync() {
+                    let _ = queue.sync {
                         sut.insert { (id) -> User in
                             return User(id: id, store: sut)
                         }
@@ -392,8 +387,8 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously writing from another queue into the store during a reading operation") {
                 let result = sut.filter(User.self, includeElement: { (_) -> Bool in
-                    queue.sync() {
-                        sut.create(User)
+                    let _ = queue.sync {
+                        sut.create(User.self)
                     }
                     return true
                 })
@@ -403,7 +398,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when reading the store during a read operation") {
                 let result = sut.filter(User.self, includeElement: { (_) -> Bool in
-                    sut.findAll(User.self)
+                    let _ = sut.findAll(User.self)
                     return true
                 })
                 
@@ -412,8 +407,8 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously reading the store from another queue during a reading operation") {
                 let result = sut.filter(User.self, includeElement: { (_) -> Bool in
-                    queue.sync() {
-                        sut.findAll(User)
+                    let _ = queue.sync {
+                        sut.findAll(User.self)
                     }
                     return true
                 })
@@ -423,7 +418,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when reading the store during a write operation") {
                 let user = sut.insert { (id) -> User in
-                    sut.findAll(User.self)
+                    let _ = sut.findAll(User.self)
                     return User(id: id, store: sut)
                 }
                 expect(user).toEventuallyNot(beNil())
@@ -431,8 +426,8 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously reading the store from another queue during a write operation") {
                 let user = sut.insert { (id) -> User in
-                    queue.sync() {
-                        sut.findAll(User)
+                    let _ = queue.sync {
+                        sut.findAll(User.self)
                     }
                     return User(id: id, store: sut)
                 }

@@ -9,39 +9,39 @@
 import Foundation
 
 /**
- A test server that conforms to NSURLProtocol, in order to intercept outgoing network for unit tests.
- As `NSURLProtocol` documentation states:
+ A test server that conforms to URLProtocol, in order to intercept outgoing network for unit tests.
+ As `URLProtocol` documentation states:
  
  "Classes are consulted in the reverse order of their registration.
  A similar design governs the process to create the canonical form of a request with canonicalRequestForRequest:."
  
  Thus, we use this test server to intercept real network calls in tests as a fallback for `Server`.
  */
-final class RouterTestServer: NSURLProtocol {
+final class RouterTestServer: URLProtocol {
     
     class func register() {
-        NSURLProtocol.registerClass(self)
+        URLProtocol.registerClass(self)
     }
     
     class func disable() {
-        NSURLProtocol.unregisterClass(self)
+        URLProtocol.unregisterClass(self)
     }
     
-    override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+    override class func canInit(with request: URLRequest) -> Bool {
         return true
     }
     
-    override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
     
     override func startLoading() {
-        guard let requestURL = request.URL,
-            client = client else { return }
+        guard let requestURL = request.url,
+            let client = client else { return }
         
-        let response = NSHTTPURLResponse(URL: requestURL, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: nil)!
-        client.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .AllowedInMemoryOnly)
-        client.URLProtocolDidFinishLoading(self)
+        let response = HTTPURLResponse(url: requestURL, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+        client.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowedInMemoryOnly)
+        client.urlProtocolDidFinishLoading(self)
     }
     
     override func stopLoading() {}

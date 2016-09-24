@@ -75,8 +75,8 @@ class JSONAPIErrorsSpec: QuickSpec {
                     }
                     
                     var statusCode: Int = -1
-                    let url = NSURL(string: "http://www.test123.com/users")!
-                    URLSession.shared.dataTask(with: url as URL) { (data, response, _) in
+                    let url = URL(string: "http://www.test123.com/users")!
+                    URLSession.shared.dataTask(with: url) { (data, response, _) in
                         let response = response as! HTTPURLResponse
                         statusCode = response.statusCode
                         }.resume()
@@ -94,8 +94,8 @@ class JSONAPIErrorsSpec: QuickSpec {
                     }
                     
                     var foo: String?
-                    let url = NSURL(string: "http://www.test1234.com/users")!
-                    URLSession.shared.dataTask(with: url as URL) { (data, response, _) in
+                    let url = URL(string: "http://www.test1234.com/users")!
+                    URLSession.shared.dataTask(with: url) { (data, response, _) in
                         let response = response as! HTTPURLResponse
                         let headers = response.allHeaderFields as? [String: String]
                         foo = headers?["foo"]

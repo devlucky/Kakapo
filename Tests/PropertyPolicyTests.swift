@@ -26,26 +26,26 @@ class IgnorableNilPropertySpec: QuickSpec {
         describe("Property policy serialization") {
             it("is not serialized if nil") {
                 let serialized = Test(value: PropertyPolicy<Int>.none).serialize() as! [String: AnyObject]
-                expect(serialized.count).to(be(0))
+                expect(serialized.count) == 0
             }
             
             it("is serialized if not nil") {
                 let serialized = Test(value: PropertyPolicy.some(1)).serialize() as! [String: AnyObject]
-                expect(serialized.count).to(be(1))
+                expect(serialized.count) == 1
                 let value = serialized["value"] as? Int
-                expect(value).to(be(1))
+                expect(value) == 1
             }
             
             it("return NSNull when .Null") {
                 let serialized = Test(value: PropertyPolicy<Int>.null).serialize() as! [String: AnyObject]
-                expect(serialized.count).to(be(1))
+                expect(serialized.count) == 1
                 let value = serialized["value"] as? NSNull
                 expect(value).toNot(beNil())
             }
             
             it("recursively serialize the object if needed") {
                 let serialized = Test(value: PropertyPolicy.some(Person(name: "Alex"))).serialize() as! [String: AnyObject]
-                expect(serialized.count).to(be(1))
+                expect(serialized.count) == 1
                 let value = serialized["value"] as? [String: AnyObject]
                 expect(value?["name"] as? String).to(equal("Alex"))
             }
@@ -54,9 +54,9 @@ class IgnorableNilPropertySpec: QuickSpec {
                 let policy = PropertyPolicy.some(1)
                 let policyOfPolicy = PropertyPolicy.some(policy)
                 let serialized = Test(value: policyOfPolicy).serialize() as! [String: AnyObject]
-                expect(serialized.count).to(be(1))
+                expect(serialized.count) == 1
                 let value = serialized["value"] as? Int
-                expect(value).to(be(1))
+                expect(value) == 1
             }
         }
     }

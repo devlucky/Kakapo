@@ -101,21 +101,21 @@ class JSONAPILinksSpec: QuickSpec {
                             name: "Alex",
                             dog: dog,
                             cats: cats,
-                            links: ["one": JSONAPILink.Simple(value: "hello"),
-                                    "two": JSONAPILink.Object(href: "hello", meta: Meta())],
-                            relationshipsLinks: ["cats": ["prev": JSONAPILink.Simple(value: "hello"),
-                                                          "next": JSONAPILink.Simple(value: "world"),
-                                                          "first": JSONAPILink.Simple(value: "yeah"),
-                                                          "last": JSONAPILink.Simple(value: "text")],
-                                                 "dog": ["testDog": JSONAPILink.Simple(value: "hello"),
-                                                         "anotherDog": JSONAPILink.Object(href: "http://example.com/articles/1/comments", meta: Meta())]])
+                            links: ["one": JSONAPILink.simple(value: "hello"),
+                                    "two": JSONAPILink.object(href: "hello", meta: Meta())],
+                            relationshipsLinks: ["cats": ["prev": JSONAPILink.simple(value: "hello"),
+                                                          "next": JSONAPILink.simple(value: "world"),
+                                                          "first": JSONAPILink.simple(value: "yeah"),
+                                                          "last": JSONAPILink.simple(value: "text")],
+                                                 "dog": ["testDog": JSONAPILink.simple(value: "hello"),
+                                                         "anotherDog": JSONAPILink.object(href: "http://example.com/articles/1/comments", meta: Meta())]])
             
             let user2 = User(id: "39",
                              name: "Joro",
                              dog: dog,
                              cats: cats,
-                             links: ["joroLinkOne": JSONAPILink.Simple(value: "hello"),
-                                    "joroLinkTwo": JSONAPILink.Object(href: "hello", meta: Meta())],
+                             links: ["joroLinkOne": JSONAPILink.simple(value: "hello"),
+                                    "joroLinkTwo": JSONAPILink.object(href: "hello", meta: Meta())],
                              relationshipsLinks: nil)
             
             it("should serialize the links inside the top data object") {

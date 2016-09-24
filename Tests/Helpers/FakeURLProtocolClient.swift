@@ -8,13 +8,13 @@
 
 import Foundation
 
-final class FakeURLProtocolClient: NSObject, NSURLProtocolClient {
-    @objc func URLProtocol(`protocol`: NSURLProtocol, wasRedirectedToRequest request: NSURLRequest, redirectResponse: NSURLResponse) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, cachedResponseIsValid cachedResponse: NSCachedURLResponse) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didReceiveResponse response: NSURLResponse, cacheStoragePolicy policy: NSURLCacheStoragePolicy) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didLoadData data: NSData) { /* intentionally left empty */ }
-    @objc func URLProtocolDidFinishLoading(`protocol`: NSURLProtocol) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didFailWithError error: NSError) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didReceiveAuthenticationChallenge challenge: NSURLAuthenticationChallenge) { /* intentionally left empty */ }
-    @objc func URLProtocol(`protocol`: NSURLProtocol, didCancelAuthenticationChallenge challenge: NSURLAuthenticationChallenge) { /* intentionally left empty */ }
+final class FakeURLProtocolClient: NSObject, URLProtocolClient {
+    @objc func urlProtocol(_ protocol: URLProtocol, wasRedirectedTo request: URLRequest, redirectResponse: URLResponse) { /* intentionally left empty */ }
+    @objc func urlProtocol(_ protocol: URLProtocol, cachedResponseIsValid cachedResponse: CachedURLResponse) { /* intentionally left empty */ }
+    @objc func urlProtocol(_ protocol: URLProtocol, didReceive response: URLResponse, cacheStoragePolicy policy: URLCache.StoragePolicy) { /* intentionally left empty */ }
+    @objc func urlProtocol(_ protocol: URLProtocol, didLoad data: Data) { /* intentionally left empty */ }
+    @objc func urlProtocolDidFinishLoading(_ protocol: URLProtocol) { /* intentionally left empty */ }
+    @objc func urlProtocol(_ protocol: URLProtocol, didFailWithError error: Error) { /* intentionally left empty */ }
+    @objc func urlProtocol(_ protocol: URLProtocol, didReceive challenge: URLAuthenticationChallenge) { /* intentionally left empty */ }
+    @objc func urlProtocol(_ protocol: URLProtocol, didCancel challenge: URLAuthenticationChallenge) { /* intentionally left empty */ }
 }

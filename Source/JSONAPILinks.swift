@@ -37,15 +37,15 @@ public enum JSONAPILink: CustomSerializable {
     /**
      The `JSONAPILink` implementation of `CustomSerializable` returns directly the link for `.Simple` or returns a dictionary containing the link (href key) and the serialized meta object (meta key) for `.Object`
      */
-    public func customSerialize(_ keyTransformer: KeyTransformer?) -> AnyObject? {
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
         switch self {
         case let .object(href, meta):
-            var serializedObject: [String: AnyObject] = ["href" : href as AnyObject]
+            var serializedObject: [String: Any] = ["href" : href]
             serializedObject["meta"] = meta.serialize(keyTransformer)
             
-            return serializedObject as AnyObject?
+            return serializedObject
         case let .simple(value):
-            return value as AnyObject?
+            return value
         }
     }
 }

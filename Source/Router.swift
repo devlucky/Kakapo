@@ -52,7 +52,7 @@ public protocol ResponseFieldsProvider: CustomSerializable {
 extension ResponseFieldsProvider {
     
     /// The default implementation just return the serialized body.
-    public func customSerialize(_ keyTransformer: KeyTransformer?) -> AnyObject? {
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
         return body.serialize(keyTransformer)
     }
 }
@@ -181,7 +181,7 @@ public final class Router {
         
         for (key, route) in routes {
             if let info = matchRoute(baseURL, path: key, requestURL: requestURL) {
-                // If the request body is nil use `NSURLProtocol` property see swizzling in `NSMutableURLRequest.m`
+                // If the request body is nil use `URLProtocol` property see swizzling in `NSMutableURLRequest+FixCopy.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: server.request) as? Data
 

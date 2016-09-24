@@ -95,9 +95,6 @@
 		DE76E1CA1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
 		DE76E1CB1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
 		DE76E1CC1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
-		DE76E1CD1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
-		DE76E1CE1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
-		DE76E1CF1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
 		DE82027A1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
 		DE82027B1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
 		DE82027C1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
@@ -105,6 +102,9 @@
 		DE82027F1D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
 		DE8202801D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
 		DE8202811D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
+		DED1B1A11D96AD2B004A6551 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
+		DED1B1A21D96AD2C004A6551 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
+		DED1B1A31D96AD2C004A6551 /* XCTestCase+CustomAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,7 +169,7 @@
 		DE76E1B41D0DC857009721A4 /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		DE76E1B51D0DC857009721A4 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializerTests.swift; sourceTree = "<group>"; };
 		DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteMatcherTests.swift; sourceTree = "<group>"; };
-		DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTestCase+CustomAssertions.swift"; sourceTree = "<group>"; };
+		DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "XCTestCase+CustomAssertions.swift"; path = "../XCTestCase+CustomAssertions.swift"; sourceTree = "<group>"; };
 		DE8202791D20068A00552FEC /* JSONAPIError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIError.swift; sourceTree = "<group>"; };
 		DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIErrorTests.swift; sourceTree = "<group>"; };
 		DEBD3C741D16BC9A004E0A23 /* README.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = README.playground; sourceTree = "<group>"; };
@@ -265,6 +265,7 @@
 		DE5652FD1D94885300F02188 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */,
 				DE5652FE1D94888D00F02188 /* FakeURLProtocolClient.swift */,
 				DE5653021D9488BA00F02188 /* RouterTestServer.swift */,
 			);
@@ -322,7 +323,6 @@
 				DE76E1B51D0DC857009721A4 /* SerializerTests.swift */,
 				DE3950A91D216C77008DCF43 /* SerializationTransformerTests.swift */,
 				DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */,
-				DE76E1B71D0DC857009721A4 /* XCTestCase+CustomAssertions.swift */,
 				DE76E0FE1D0DC38B009721A4 /* Info.plist */,
 			);
 			path = Tests;
@@ -880,11 +880,11 @@
 				8BE0FC811D16BD9B00FE706A /* JSONAPILinksTests.swift in Sources */,
 				DE76E1CB1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1BF1D0DC857009721A4 /* StoreTests.swift in Sources */,
+				DED1B1A21D96AD2C004A6551 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C81D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE5653041D9488BA00F02188 /* RouterTestServer.swift in Sources */,
 				DE76E1C51D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE8202801D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
-				DE76E1CE1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C21D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 				DE3950AB1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */,
 				DE5653001D94888D00F02188 /* FakeURLProtocolClient.swift in Sources */,
@@ -918,11 +918,11 @@
 				8BE0FC821D16BD9C00FE706A /* JSONAPILinksTests.swift in Sources */,
 				DE76E1CC1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1C01D0DC857009721A4 /* StoreTests.swift in Sources */,
+				DED1B1A31D96AD2C004A6551 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C91D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE5653051D9488BA00F02188 /* RouterTestServer.swift in Sources */,
 				DE76E1C61D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE8202811D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
-				DE76E1CF1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C31D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 				DE3950AC1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */,
 				DE5653011D94888D00F02188 /* FakeURLProtocolClient.swift in Sources */,
@@ -956,11 +956,11 @@
 				8BE0FC801D16BD9A00FE706A /* JSONAPILinksTests.swift in Sources */,
 				DE76E1CA1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1BE1D0DC857009721A4 /* StoreTests.swift in Sources */,
+				DED1B1A11D96AD2B004A6551 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C71D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE5653031D9488BA00F02188 /* RouterTestServer.swift in Sources */,
 				DE76E1C41D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE82027F1D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
-				DE76E1CD1D0DC857009721A4 /* XCTestCase+CustomAssertions.swift in Sources */,
 				DE76E1C11D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 				DE3950AA1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */,
 				DE5652FF1D94888D00F02188 /* FakeURLProtocolClient.swift in Sources */,

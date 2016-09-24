@@ -39,7 +39,7 @@ public extension XCTestCase {
         _ expectedMessage: String? = nil,
         file: StaticString = #file,
         line: UInt = #line,
-        testCase: () -> Void
+        testCase: @escaping () -> Void
         ) {
         
         expectAssertionReturnFunction("assert", file: file, line: line, function: { (caller) -> () in
@@ -120,13 +120,14 @@ public extension XCTestCase {
         _ expectedMessage: String? = nil,
         file: StaticString = #file,
         line: UInt = #line,
-        testCase: () -> Void
+        testCase: @escaping () -> Void
         ) {
         
         expectAssertionNoReturnFunction("preconditionFailure", file: file, line: line, function: { (caller) -> () in
             
             Assertions.preconditionFailureClosure = { message, _, _ in
                 caller(message)
+                runForever()
             }
             
         }, expectedMessage: expectedMessage, testCase: testCase) { () -> () in
@@ -147,12 +148,13 @@ public extension XCTestCase {
         _ expectedMessage: String? = nil,
         file: StaticString = #file,
         line: UInt = #line,
-        testCase: () -> Void) {
+        testCase: @escaping () -> Void) {
         
         expectAssertionNoReturnFunction("fatalError", file: file, line: line, function: { (caller) -> () in
             
             Assertions.fatalErrorClosure = { message, _, _ in
                 caller(message)
+                runForever()
             }
             
         }, expectedMessage: expectedMessage, testCase: testCase) { () -> () in
@@ -167,7 +169,7 @@ public extension XCTestCase {
         _ functionName: String,
         file: StaticString,
         line: UInt,
-        function: (_ caller: (Bool, String) -> Void) -> Void,
+        function: (_ caller: @escaping (Bool, String) -> Void) -> Void,
         expectedMessage: String? = nil,
         testCase: () -> Void,
         cleanUp: () -> ()
@@ -196,7 +198,7 @@ public extension XCTestCase {
         _ functionName: String,
         file: StaticString,
         line: UInt,
-        function: (_ caller: (String) -> Void) -> Void,
+        function: (_ caller: @escaping (String) -> Void) -> Void,
         expectedMessage: String? = nil,
         testCase: @escaping () -> Void,
         cleanUp: () -> ()
@@ -218,4 +220,11 @@ public extension XCTestCase {
         
         expect(assertionMessage).toEventually(be(expectedMessage))
     }
+}
+
+/// This is a `noreturn` function that runs forever and doesn't return.
+private func runForever() -> Never {
+    repeat {
+        RunLoop.current.run()
+    } while (true)
 }

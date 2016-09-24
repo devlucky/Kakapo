@@ -58,7 +58,7 @@ class JSONAPISpec: QuickSpec {
         let id: String
         let title: String
         
-        func customSerialize(_ keyTransformer: KeyTransformer?) -> AnyObject? {
+        func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
             return ["foo": "bar"]
         }
     }

@@ -9,17 +9,17 @@
 import Foundation
 
 /**
- A server that conforms to `NSURLProtocol` in order to intercept outgoing network communication.
+ A server that conforms to `URLProtocol` in order to intercept outgoing network communication.
  You shouldn't use this class directly but register a `Router` instead.
- Since frameworks like **AFNetworking** and **Alamofire** require manual registration of the `NSURLProtocol` classes
+ Since frameworks like **AFNetworking** and **Alamofire** require manual registration of the `URLProtocol` classes
  you will need to register this class when needed.
 
  ### Examples
  
- 1- Configure `NSURLSessionConfiguration` by adding `Server` to `protocolClasses`:
+ 1- Configure `URLSessionConfiguration` by adding `Server` to `protocolClasses`:
  
  ```
- let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+ let configuration = URLSessionConfiguration.defaultSessionConfiguration()
  configuration.protocolClasses = [Server.self]
  // NOTE: better to just add if is not nil
 ```

@@ -55,7 +55,7 @@ class RouteMatcherTests: QuickSpec {
             context("when the path is representing the requestURL") {
                 
                 it("should match even if the base url is empty") {
-                    expect(matchRoute("", path: "/users", requestURL: NSURL(string: "/users")! as URL)?.components) == [:]
+                    expect(matchRoute("", path: "/users", requestURL: URL(string: "/users")!)?.components) == [:]
                 }
                 
                 it("should match a path without wilcard and equal components") {
@@ -97,11 +97,11 @@ class RouteMatcherTests: QuickSpec {
                     }
                     
                     it("should retreive the query parameter") {
-                        expect(match("/users/:id", requestURL: "/users/1?page=2")?.queryParameters) == [NSURLQueryItem(name: "page", value: "2")]
+                        expect(match("/users/:id", requestURL: "/users/1?page=2")?.queryParameters) == [URLQueryItem(name: "page", value: "2")]
                     }
                     
                     it("should retreive multiple query parameters") {
-                        let queryParameters = [NSURLQueryItem(name: "page", value: "2"), NSURLQueryItem(name: "size", value: "50")]
+                        let queryParameters = [URLQueryItem(name: "page", value: "2"), URLQueryItem(name: "size", value: "50")]
                         expect(match("/users/:id", requestURL: "/users/1?page=2&size=50")?.queryParameters) == queryParameters
                     }
                 }
@@ -111,7 +111,7 @@ class RouteMatcherTests: QuickSpec {
                 it("shoud match if the base url contains the scheme") {
                     let result = matchRoute("http://test.com/",
                                             path: "/users/:id",
-                                            requestURL: NSURL(string: "http://test.com/users/1")! as URL)
+                                            requestURL: URL(string: "http://test.com/users/1")!)
                     expect(result?.components) == ["id" : "1"]
 
                 }
@@ -119,35 +119,35 @@ class RouteMatcherTests: QuickSpec {
                 it("shoud not match if the base url contains a different the scheme") {
                     let result = matchRoute("http://test.com/",
                                             path: "/users/:id",
-                                            requestURL: NSURL(string: "https://test.com/users/1")! as URL)
+                                            requestURL: URL(string: "https://test.com/users/1")!)
                     expect(result).to(beNil())
                 }
                 
                 it("shoud match any scheme if the base url doesn't contain the scheme") {
                     let result = matchRoute("test.com/",
                                             path: "/users/:id",
-                                            requestURL: NSURL(string: "ssh://test.com/users/1")! as URL)
+                                            requestURL: URL(string: "ssh://test.com/users/1")!)
                     expect(result?.components) == ["id" : "1"]
                 }
                 
                 it("shoud match if the base url contains components") {
                     let result = matchRoute("http://test.com/api/v3/",
                                             path: "/users/:id",
-                                            requestURL: NSURL(string: "http://test.com/api/v3/users/1")! as URL)
+                                            requestURL: URL(string: "http://test.com/api/v3/users/1")!)
                     expect(result?.components) == ["id" : "1"]
                 }
                 
                 it("shoud not match if the base url contains wildcard") {
                     let result = matchRoute("http://test.com/api/:api_version/",
                                             path: "/users/:id",
-                                            requestURL: NSURL(string: "http://test.com/api/v3/users/1")! as URL)
+                                            requestURL: URL(string: "http://test.com/api/v3/users/1")!)
                     expect(result).to(beNil())
                 }
                 
                 it("should match any subdomain when the base url doesn't contain a scheme (wildcard baseURL)") {
                     let result = matchRoute("test.com/",
                                             path: "/users/:id",
-                                            requestURL: NSURL(string: "http://api.test.com/users/1")! as URL)
+                                            requestURL: URL(string: "http://api.test.com/users/1")!)
                     expect(result?.components) == ["id" : "1"]
                 }
             }
@@ -158,28 +158,28 @@ class RouteMatcherTests: QuickSpec {
                     it("should match when base url contains a trailing slash and the path doesn't contain a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "users/:id",
-                                                requestURL: NSURL(string: "http://test.com/api/v3/users/1")! as URL)
+                                                requestURL: URL(string: "http://test.com/api/v3/users/1")!)
                         expect(result?.components) == ["id" : "1"]
                     }
                     
                     it("should match when base url contains a trailing slash and the path contains a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id",
-                                                requestURL: NSURL(string: "http://test.com/api/v3/users/1")! as URL)
+                                                requestURL: URL(string: "http://test.com/api/v3/users/1")!)
                         expect(result?.components) == ["id" : "1"]
                     }
                     
                     it("should match when base url doesn't contain a trailing slash and the path contains a leading slash") {
                         let result = matchRoute("http://test.com/api/v3",
                                                 path: "/users/:id",
-                                                requestURL: NSURL(string: "http://test.com/api/v3/users/1")! as URL)
+                                                requestURL: URL(string: "http://test.com/api/v3/users/1")!)
                         expect(result?.components) == ["id" : "1"]
                     }
                     
                     it("should match when base url doesn't contain a trailing slash and the path doesn't contain a leading slash") {
                         let result = matchRoute("http://test.com/api/v3",
                                                 path: "users/:id",
-                                                requestURL: NSURL(string: "http://test.com/api/v3/users/1")! as URL)
+                                                requestURL: URL(string: "http://test.com/api/v3/users/1")!)
                         expect(result?.components) == ["id" : "1"]
                     }
                 }
@@ -188,28 +188,28 @@ class RouteMatcherTests: QuickSpec {
                     it("should match when path contains a trailing slash and the requestURL doesn't contain a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id/",
-                                                requestURL: NSURL(string: "http://test.com/api/v3/users/1")! as URL)
+                                                requestURL: URL(string: "http://test.com/api/v3/users/1")!)
                         expect(result?.components) == ["id" : "1"]
                     }
                     
                     it("should match when path contains a trailing slash and the requestURL contains a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id/",
-                                                requestURL: NSURL(string: "http://test.com/api/v3/users/1/")! as URL)
+                                                requestURL: URL(string: "http://test.com/api/v3/users/1/")!)
                         expect(result?.components) == ["id" : "1"]
                     }
                     
                     it("should match when path doesn't contain a trailing slash and the requestURL contains a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id",
-                                                requestURL: NSURL(string: "http://test.com/api/v3/users/1/")! as URL)
+                                                requestURL: URL(string: "http://test.com/api/v3/users/1/")!)
                         expect(result?.components) == ["id" : "1"]
                     }
                     
                     it("should match when path doesn't contain a trailing slash and the requestURL doesn't contain a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id",
-                                                requestURL: NSURL(string: "http://test.com/api/v3/users/1")! as URL)
+                                                requestURL: URL(string: "http://test.com/api/v3/users/1")!)
                         expect(result?.components) == ["id" : "1"]
                     }
                 }
