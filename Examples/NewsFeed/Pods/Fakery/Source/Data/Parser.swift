@@ -1,8 +1,8 @@
 import SwiftyJSON
 
-public class Parser {
+open class Parser {
 
-  public var locale: String {
+  open var locale: String {
     didSet {
       if locale != oldValue {
         loadData()
@@ -21,7 +21,7 @@ public class Parser {
 
   // MARK: - Parsing
 
-  public func fetch(key: String) -> String {
+  open func fetch(_ key: String) -> String {
     var parsed = ""
 
     if let keyData = fetchRaw(key) {
@@ -35,7 +35,7 @@ public class Parser {
         }
       }
 
-      if parsed.rangeOfString("#{") != nil {
+      if parsed.range(of: "#{") != nil {
         parsed = parse(parsed, forSubject: subject)
       }
     }
@@ -43,9 +43,9 @@ public class Parser {
     return parsed
   }
 
-  public func fetchRaw(key: String) -> JSON? {
+  open func fetchRaw(_ key: String) -> JSON? {
     var keyData: JSON?
-    let parts = key.componentsSeparatedByString(".")
+    let parts = key.components(separatedBy: ".")
 
     if parts.count > 0 {
       var parsed = data[locale]["faker"]
@@ -60,15 +60,15 @@ public class Parser {
     return keyData
   }
 
-  func parse(template: String, forSubject subject: String) -> String {
+  func parse(_ template: String, forSubject subject: String) -> String {
     var text = ""
     let string = template as NSString
     var regex: NSRegularExpression
     do {
-      try regex = NSRegularExpression(pattern: "(\\(?)#\\{([A-Za-z]+\\.)?([^\\}]+)\\}([^#]+)?", options: .CaseInsensitive)
-      let matches = regex.matchesInString(string as String,
-        options: .ReportCompletion,
-        range: NSMakeRange(0, string.length))
+      try regex = NSRegularExpression(pattern: "(\\(?)#\\{([A-Za-z]+\\.)?([^\\}]+)\\}([^#]+)?", options: .caseInsensitive)
+      let matches = regex.matches(in: string as String,
+                                  options: .reportCompletion,
+                                  range: NSRange(location: 0, length: string.length))
 
       if matches.count > 0 {
         for match in matches {
@@ -76,27 +76,27 @@ public class Parser {
             continue
           }
 
-          let prefixRange = match.rangeAtIndex(1)
-          let subjectRange = match.rangeAtIndex(2)
-          let methodRange = match.rangeAtIndex(3)
-          let otherRange = match.rangeAtIndex(4)
+          let prefixRange = match.rangeAt(1)
+          let subjectRange = match.rangeAt(2)
+          let methodRange = match.rangeAt(3)
+          let otherRange = match.rangeAt(4)
 
           if prefixRange.length > 0 {
-            text += string.substringWithRange(prefixRange)
+            text += string.substring(with: prefixRange)
           }
 
           var subjectWithDot = subject + "."
           if subjectRange.length > 0 {
-            subjectWithDot = string.substringWithRange(subjectRange)
+            subjectWithDot = string.substring(with: subjectRange)
           }
 
           if methodRange.length > 0 {
-            let key = subjectWithDot.lowercaseString + string.substringWithRange(methodRange)
+            let key = subjectWithDot.lowercased() + string.substring(with: methodRange)
             text += fetch(key)
           }
 
           if otherRange.length > 0 {
-            text += string.substringWithRange(otherRange)
+            text += string.substring(with: otherRange)
           }
         }
       } else {
@@ -108,9 +108,9 @@ public class Parser {
     return text
   }
 
-  func getSubject(key: String) -> String {
+  func getSubject(_ key: String) -> String {
     var subject: String = ""
-    var parts = key.componentsSeparatedByString(".")
+    var parts = key.components(separatedBy: ".")
 
     if parts.count > 0 {
       subject = parts[0]
@@ -124,7 +124,7 @@ public class Parser {
   func loadData() {
     if let localeData = provider.dataForLocale(locale) {
       data = JSON(data: localeData,
-        options: NSJSONReadingOptions.AllowFragments,
+        options: JSONSerialization.ReadingOptions.allowFragments,
         error: nil)
     } else if locale != Config.defaultLocale {
       locale = Config.defaultLocale

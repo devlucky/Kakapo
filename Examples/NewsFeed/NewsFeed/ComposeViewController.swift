@@ -14,12 +14,12 @@ class ComposeViewController: UIViewController, UITextViewDelegate {
     private let networkManager: NetworkManager
     private let textView: UITextView = {
         let textView = UITextView()
-        textView.font = UIFont.preferredFontForTextStyle(UIFontTextStyleBody)
+        textView.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)
         return textView
     }()
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     required init(networkManager: NetworkManager) {
@@ -34,56 +34,56 @@ class ComposeViewController: UIViewController, UITextViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor.whiteColor()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(cancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(done))
-        navigationItem.rightBarButtonItem?.enabled = false
+        view.backgroundColor = UIColor.white
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        navigationItem.rightBarButtonItem?.isEnabled = false
         
         view.addSubview(textView)
         textView.delegate = self
-        textView.snp_makeConstraints { (make) in
+        textView.snp.makeConstraints { (make) in
             make.edges.equalTo(view)
         }
         
-        [UIKeyboardWillShowNotification, UIKeyboardWillChangeFrameNotification, UIKeyboardWillHideNotification].forEach { (name) in
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardFrameDidChange(_:)), name: name, object: nil)
+        [NSNotification.Name.UIKeyboardWillShow, NSNotification.Name.UIKeyboardWillChangeFrame, NSNotification.Name.UIKeyboardWillHide].forEach { (name) in
+            NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameDidChange(_:)), name: name, object: nil)
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         textView.becomeFirstResponder()
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         textView.resignFirstResponder()
     }
     
     // MARK: Actions
 
-    @objc private func keyboardFrameDidChange(notification: NSNotification) {
+    @objc private func keyboardFrameDidChange(_ notification: Notification) {
         guard let frame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue else {
             return
         }
         
-        textView.snp_updateConstraints { (make) in
-            make.bottom.equalTo(view).inset(frame.CGRectValue().height)
+        textView.snp.updateConstraints { (make) in
+            make.bottom.equalTo(view).inset(frame.cgRectValue.height)
         }
     }
 
     @objc private func cancel() {
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     @objc private func done() {
         networkManager.createPost(with: textView.text)
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     // MARK: UITextViewDelegate
     
-    func textViewDidChange(textView: UITextView) {
-        navigationItem.rightBarButtonItem?.enabled = textView.text.characters.count > 0
+    func textViewDidChange(_ textView: UITextView) {
+        navigationItem.rightBarButtonItem?.isEnabled = textView.text.characters.count > 0
     }
 }

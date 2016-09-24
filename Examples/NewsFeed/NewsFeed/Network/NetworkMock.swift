@@ -11,12 +11,12 @@ import Kakapo
 import SwiftyJSON
 
 enum Result: ResponseFieldsProvider {
-    case Success(String)
-    case Error(String, Int)
+    case success(String)
+    case error(String, Int)
     
     var statusCode: Int {
         switch self {
-        case let .Error(_, code):
+        case let .error(_, code):
             return code
         default:
             return 200
@@ -25,9 +25,9 @@ enum Result: ResponseFieldsProvider {
     
     var body: Serializable {
         switch self {
-        case let .Success(value):
+        case let .success(value):
             return ["success": value]
-        case let .Error(value, _):
+        case let .error(value, _):
             return ["error": value]
         }
     }
@@ -39,7 +39,7 @@ enum Result: ResponseFieldsProvider {
 
 let router = Router.register("https://kakapobook.com/api/")
 let store = Store()
-let loggedInUser = store.create(User).first!
+let loggedInUser = store.create(User.self).first!
 
 func startMockingNetwork() {
     let startTime = CFAbsoluteTimeGetCurrent()
@@ -52,18 +52,18 @@ func startMockingNetwork() {
 
 private func mockNetwork() {
     
-    func update<T: protocol<Storable, Serializable>>(entity: T) -> Serializable {
+    func update<T: Storable & Serializable>(_ entity: T) -> Serializable {
         do {
             try store.update(entity)
             return entity
         } catch {
-            return Result.Error("couldn't update \(entity.self).\(entity.id)", 500)
+            return Result.error("couldn't update \(entity.self).\(entity.id)", 500)
         }
     }
     
     // MARK: Like
     
-    func like<T: Likeable>(type: T.Type, with request: Request) -> Serializable {
+    func like<T: Likeable>(_ type: T.Type, with request: Request) -> Serializable {
         let likeableId = request.components["id"]!
         var likeable = store.find(type.self, id: likeableId)!
         let like = store.insert { Like(id: $0, author: loggedInUser) }
@@ -71,21 +71,21 @@ private func mockNetwork() {
         return update(likeable)
     }
     
-    func unlike<T: Likeable>(type: T.Type, with request: Request) -> Serializable {
+    func unlike<T: Likeable>(_ type: T.Type, with request: Request) -> Serializable {
         let likeableId = request.components["id"]!
         let likeId = request.components["like_id"]!
         var likeable = store.find(type.self, id: likeableId)!
-        let index = likeable.likes.indexOf { (like) -> Bool in
+        let index = likeable.likes.index { (like) -> Bool in
             return like.id == likeId && like.author.id == loggedInUser.id
         }
-        likeable.likes.removeAtIndex(index!)
+        likeable.likes.remove(at: index!)
         return update(likeable)
     }
     
-    func performLikeAction(request: Request, action: (LikeableEntityType) -> (Serializable)) -> Serializable {
+    func performLikeAction(_ request: Request, action: (LikeableEntityType) -> (Serializable)) -> Serializable {
         let type = request.components["type"]!
         guard let entityType = LikeableEntityType(rawValue: type) else {
-            return Result.Error("Invalid type", 403)
+            return Result.error("Invalid type", 403)
         }
         
         return action(entityType)
@@ -116,7 +116,7 @@ private func mockNetwork() {
     // MARK: Post
     
     router.get("users/:user_id/newsfeed") { (request) -> Serializable? in
-        return store.findAll(Post)
+        return store.findAll(Post.self)
     }
     
     router.get("post/:post_id") { (request) -> Serializable? in
@@ -124,7 +124,7 @@ private func mockNetwork() {
     }
     
     router.post("post") { (request) -> Serializable? in
-        let body = JSON.parse(NSString(data: request.HTTPBody!, encoding: NSUTF8StringEncoding) as! String)
+        let body = JSON.parse(String(data: request.HTTPBody!, encoding: .utf8)!)
         return store.insert { (id) -> Post in
             return Post(id: id, text: body["text"].string!, author: loggedInUser)
         }
@@ -135,9 +135,9 @@ private func mockNetwork() {
         
         do {
             try store.delete(post)
-            return Result.Success("deleted")
+            return Result.success("deleted")
         } catch {
-            return Result.Error("couldn't delete post", 404)
+            return Result.error("couldn't delete post", 404)
         }
     }
     
@@ -155,14 +155,14 @@ private func mockNetwork() {
     
     router.get("post/:post_id/comment/:comment_id") { (request) -> Serializable? in
         let post = store.find(Post.self, id: request.components["post_id"]!)!
-        let index = post.comments.indexOf { $0.id == request.components["comment_id"]! }!
+        let index = post.comments.index { $0.id == request.components["comment_id"]! }!
         return post.comments[index]
     }
     
     router.del("post/:post_id/comment/:comment_id") { (request) -> Serializable? in
         var post = store.find(Post.self, id: request.components["post_id"]!)!
-        let index = post.comments.indexOf { $0.id == request.components["comment_id"]! }!
-        post.comments.removeAtIndex(index)
+        let index = post.comments.index { $0.id == request.components["comment_id"]! }!
+        post.comments.remove(at: index)
         return update(post)
     }
 }

@@ -14,7 +14,7 @@ import SwiftyJSON
 struct Post: Serializable, Storable, JSONInitializable, Likeable {
     
     let id: String
-    let date: NSTimeInterval
+    let date: TimeInterval
     var text: String
     let author: User
     var likes: [Like]
@@ -24,7 +24,7 @@ struct Post: Serializable, Storable, JSONInitializable, Likeable {
         self.id = id
         date = sharedFaker.date.pastDate().timeIntervalSince1970
         text = sharedFaker.lorem.paragraph(sentencesAmount: Int(arc4random()) % 6 + 1)
-        author = store.create(User).first!
+        author = store.create(User.self).first!
         likes = store.create(Like.self, number: random(15))
         comments = store.create(Comment.self, number: random(5))
     }
@@ -42,7 +42,7 @@ struct Post: Serializable, Storable, JSONInitializable, Likeable {
         self.id = id
         self.text = text
         self.author = author
-        date = NSDate().timeIntervalSince1970
+        date = Date().timeIntervalSince1970
         comments = []
         likes = []
     }
@@ -51,13 +51,13 @@ struct Post: Serializable, Storable, JSONInitializable, Likeable {
 extension Post {
     
     var isLikedByMe: Bool {
-        return likes.indexOf { (like) in
+        return likes.index { (like) in
             return like.author.id == loggedInUser.id
         } != nil
     }
     
     var myLike: Like? {
-        guard let index = likes.indexOf ({ (like) in
+        guard let index = likes.index (where: { (like) in
             return like.author.id == loggedInUser.id
         }) else {
             return nil
