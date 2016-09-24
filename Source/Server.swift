@@ -9,28 +9,22 @@
 import Foundation
 
 /**
- A server that conforms to `NSURLProtocol` in order to intercept outgoing network communication.
+ A server that conforms to `URLProtocol` in order to intercept outgoing network communication.
  You shouldn't use this class directly but register a `Router` instead.
- Since frameworks like **AFNetworking** and **Alamofire** require manual registration of the `NSURLProtocol` classes
+ Since frameworks like **AFNetworking** and **Alamofire** require manual registration of the `URLProtocol` classes
  you will need to register this class when needed.
 
  ### Examples
  
- 1- Configure `NSURLSessionConfiguration` by adding `Server` to `protocolClasses`:
+ 1- Configure `URLSessionConfiguration` by adding `Server` to `protocolClasses`:
  
  ```
- let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+ let configuration = URLSessionConfiguration.defaultSessionConfiguration()
  configuration.protocolClasses = [Server.self]
  // NOTE: better to just add if is not nil
 ```
  
  2- Setup the URL Session Manager
- 
- #### AFNetworking
- 
- ```
- let manager = AFURLSessionManager(sessionConfiguration: configuration)
- ```
  
  #### Alamofire
  
@@ -38,7 +32,7 @@ import Foundation
  let manager = Manager(configuration: configuration)
  ```
  */
-public final class Server: NSURLProtocol {
+public final class Server: URLProtocol {
 
     private static var routers: [Router] = []
 
@@ -58,8 +52,8 @@ public final class Server: NSURLProtocol {
      
      - returns: A newly initialized Router object, which is configured to use the `baseURL`.
      */
-    class func register(baseURL: String) -> Router {
-        NSURLProtocol.registerClass(self)
+    class func register(_ baseURL: String) -> Router {
+        URLProtocol.registerClass(self)
         
         let router = Router(baseURL: baseURL)
         routers.append(router)
@@ -72,7 +66,7 @@ public final class Server: NSURLProtocol {
      
      - parameter baseURL: The base URL to be unregistered
      */
-    class func unregister(baseURL: String) {
+    class func unregister(_ baseURL: String) {
         routers = routers.filter { $0.baseURL != baseURL }
     }
     
@@ -81,7 +75,7 @@ public final class Server: NSURLProtocol {
      */
     class func disable() {
         routers = []
-        NSURLProtocol.unregisterClass(self)
+        URLProtocol.unregisterClass(self)
     }
     
     /**
@@ -96,12 +90,12 @@ public final class Server: NSURLProtocol {
      
      - returns: true if any of the registered route match the request URL
      */
-    override public class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        return routers.indexOf({ $0.canInitWithRequest(request) }) != nil
+    override public class func canInit(with request: URLRequest) -> Bool {
+        return routers.index(where: { $0.canInitWithRequest(request) }) != nil
     }
     
     /// Just returns the given request without changes
-    override public class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+    override public class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
     
@@ -111,7 +105,7 @@ public final class Server: NSURLProtocol {
             return
         }
 
-        if let routerIndex = Server.routers.indexOf({ $0.canInitWithRequest(request) }) {
+        if let routerIndex = Server.routers.index(where: { $0.canInitWithRequest(request) }) {
             Server.routers[routerIndex].startLoading(self)
         }
     }

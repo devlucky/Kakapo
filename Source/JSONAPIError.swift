@@ -65,7 +65,7 @@ public struct JSONAPIError: ResponseFieldsProvider {
         /// A meta object containing non-standard meta-information about the error.
         public var meta: Serializable?
         
-        private init(statusCode: Int) {
+        fileprivate init(statusCode: Int) {
             status = statusCode
         }
     }
@@ -96,9 +96,9 @@ public struct JSONAPIError: ResponseFieldsProvider {
      
      - returns: An error that conforms to JSON API specifications and it's ready to be serialized
      */
-    public init(statusCode: Int, headerFields: [String: String]? = nil, errorBuilder: (error: inout Builder) -> ()) {
+    public init(statusCode: Int, headerFields: [String: String]? = nil, errorBuilder: (_ error: inout Builder) -> ()) {
         var builder = Builder(statusCode: statusCode)
-        errorBuilder(error: &builder)
+        errorBuilder(&builder)
         self.builder = builder
         self.headerFields = headerFields
     }

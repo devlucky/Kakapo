@@ -16,8 +16,8 @@ struct UppercaseTransformer<Wrapped: Serializable>: SerializationTransformer {
     
     let wrapped: Wrapped
     
-    func transform(key key: String) -> String {
-        return key.uppercaseString
+    func transform(key: String) -> String {
+        return key.uppercased()
     }
 }
 
@@ -25,9 +25,9 @@ struct LowercaseFirstCharacterTransformer<Wrapped: Serializable>: SerializationT
     
     let wrapped: Wrapped
     
-    func transform(key key: String) -> String {
+    func transform(key: String) -> String {
         let characters = key.characters
-        let first = String(characters.prefix(1)).lowercaseString
+        let first = String(characters.prefix(1)).lowercased()
         let other = String(characters.dropFirst())
         return first + other
     }
@@ -131,7 +131,7 @@ class SerializationTransformerSpec: QuickSpec {
             
             context("Optional") {
                 it("should transform the keys") {
-                    let object = Optional.Some(friend)
+                    let object = Optional.some(friend)
                     let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
                     expect(serialized["FRIENDS"]).toNot(beNil())
                 }
@@ -139,7 +139,7 @@ class SerializationTransformerSpec: QuickSpec {
             
             context("PropertyPolicy") {
                 it("should transform the keys") {
-                    let object = PropertyPolicy.Some(friend)
+                    let object = PropertyPolicy.some(friend)
                     let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
                     expect(serialized["FRIENDS"]).toNot(beNil())
                 }
@@ -205,7 +205,7 @@ class SerializationTransformerSpec: QuickSpec {
             
             context("JSON API Links") {
                 it("should transform the keys") {
-                    let object = JSONAPILink.Object(href: "test", meta: friend)
+                    let object = JSONAPILink.object(href: "test", meta: friend)
                     let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
                     expect(serialized["href"]).toNot(beNil())
                     let meta = serialized["meta"] as? [String: AnyObject]

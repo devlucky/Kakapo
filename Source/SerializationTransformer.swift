@@ -9,7 +9,7 @@
 import Foundation
 
 /// A closure that given a String as input output the transformed String, used to transform keys of the json
-public typealias KeyTransformer = (key: String) -> String
+public typealias KeyTransformer = (_ key: String) -> String
 
 /**
  *  A protocol that special `Serializable` objects can adopt to transform other **wrapped** `Serializable` objects.
@@ -31,7 +31,7 @@ public protocol SerializationTransformer: CustomSerializable {
      
      - returns: Should return the transformed key, for example an `UppercaseTransformer` would return the uppercase key.
      */
-    func transform(key key: String) -> String
+    func transform(key: String) -> String
 }
 
 extension SerializationTransformer {
@@ -42,10 +42,10 @@ extension SerializationTransformer {
      
      - returns: The serialized wrapped object with transformed keys.
      */
-    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
         return wrapped.serialize { (string) in
             let transformed = self.transform(key: string)
-            return keyTransformer?(key: transformed) ?? transformed
+            return keyTransformer?(transformed) ?? transformed
         }
     }
 }
@@ -86,7 +86,7 @@ public struct SnakecaseTransformer<Wrapped: Serializable>: SerializationTransfor
      
      - returns: The input key transformed to `snake_case`
      */
-    public func transform(key key: String) -> String {
+    public func transform(key: String) -> String {
         return key.snakecaseString()
     }
 }
@@ -100,15 +100,15 @@ private extension String {
         let startIndex = charactersView.startIndex
         let endIndex = charactersView.count - 1
         
-        for (idx, c) in charactersView.reverse().enumerate() {
+        for (idx, c) in charactersView.reversed().enumerated() {
             let char = String(c)
-            let lowerCased = char.lowercaseString
+            let lowerCased = char.lowercased()
             let isUppercase = char != lowerCased
             
-            string.insert(Character(lowerCased), atIndex: startIndex)
+            string.insert(Character(lowerCased), at: startIndex)
             
             if isUppercase && idx != endIndex {
-                string.insert("_", atIndex: startIndex)
+                string.insert("_", at: startIndex)
             }
         }
         return string
