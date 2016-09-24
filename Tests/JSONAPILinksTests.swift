@@ -171,8 +171,9 @@ class JSONAPILinksSpec: QuickSpec {
             }
             
             it("should not serialize nil links") {
-                let object = json(DogWithNoLinks(id: "213", name: "Hez", cat: cats[0]))
-                expect(object["links"].count) == 0
+                let object = json(DogWithNoLinks(id: "213", name: "Hez", cat: cats[0])).dictionary!
+                let links = object["links"]
+                expect(links).to(beNil())
             }
             
             it("should not serialize nil relationships links") {
@@ -187,14 +188,16 @@ class JSONAPILinksSpec: QuickSpec {
                                          links: userLinks)
                 
                 let object = json(newUser)
-                let links = object["relationships"]["dog"]["links"]
-                expect(links.count) == 0
+                let dog = object["relationships"]["dog"].dictionary!
+                let links = dog["links"]
+                expect(links).to(beNil())
             }
             
             it("should not have links or relationshipsLinks attributes since they are links, not attributes") {
                 let object = json(user)
-                expect(object["attributes"]["links"]).to(beEmpty())
-                expect(object["attributes"]["relationshipsLinks"]).to(beEmpty())
+                let attributes = object["attributes"].dictionary!
+                expect(attributes["links"]).to(beNil())
+                expect(attributes["relationshipsLinks"]).to(beNil())
             }
         }
     }
