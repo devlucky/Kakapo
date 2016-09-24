@@ -36,7 +36,7 @@ class IgnorableNilPropertySpec: QuickSpec {
                 expect(value) == 1
             }
             
-            it("return NSNull when .Null") {
+            it("return NSNull when .null") {
                 let serialized = Test(value: PropertyPolicy<Int>.null).serialize() as! [String: AnyObject]
                 expect(serialized.count) == 1
                 let value = serialized["value"] as? NSNull

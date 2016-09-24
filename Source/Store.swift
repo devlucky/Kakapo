@@ -61,28 +61,28 @@ private final class ArrayBox<T> {
  */
 public final class Store {
     
-    fileprivate let queue = DispatchQueue(label: "com.store.queue", attributes: DispatchQueue.Attributes.concurrent)
-    fileprivate var uuid = -1
-    fileprivate var store: [String: ArrayBox<Storable>] = [:]
+    private let queue = DispatchQueue(label: "com.store.queue", attributes: .concurrent)
+    private var uuid = -1
+    private var store: [String: ArrayBox<Storable>] = [:]
 
     /// Initialize a new in-memory store
     public init() {
         // empty but needed to be initialized from other modules.
     }
     
-    fileprivate func barrierSync<T>(_ closure: () -> T) -> T {
+    private func barrierSync<T>(_ closure: () -> T) -> T {
         var object: T!
-        queue.sync(flags: .barrier, execute: {
+        queue.sync(flags: .barrier) {
             object = closure()
-        }) 
+        }
         return object
     }
 
-    fileprivate func barrierAsync(_ closure: @escaping () -> ()) {
+    private func barrierAsync(_ closure: @escaping () -> ()) {
         queue.async(flags: .barrier, execute: closure)
     }
 
-    fileprivate func sync<T>(_ closure: () -> T) -> T {
+    private func sync<T>(_ closure: () -> T) -> T {
         var object: T!
         queue.sync {
             object = closure()
@@ -139,7 +139,7 @@ public final class Store {
      
      - parameter entity: The Storable object to be updated
      
-     - throws: `StoreError.InvalidEntity` if no Storable object with same `id` was found
+     - throws: `StoreError.invalidEntity` if no Storable object with same `id` was found
      */
     public func update<T: Storable>(_ entity: T) throws {
         let updated: Bool = barrierSync {
@@ -160,7 +160,7 @@ public final class Store {
      
      - parameter entity: The Storable object to be deleted, the store will delete any object found with same id and type.
      
-     - throws: `StoreError.InvalidEntity` if no Storable object with same `id` was found
+     - throws: `StoreError.invalidEntity` if no Storable object with same `id` was found
      */
     public func delete<T: Storable>(_ entity: T) throws {
         let deleted: Bool = barrierSync {
@@ -215,12 +215,12 @@ public final class Store {
         return filter(T.self) { $0.id == id }.first
     }
     
-    fileprivate func generateUUID() -> String {
+    private func generateUUID() -> String {
         uuid += 1
         return String(uuid)
     }
     
-    fileprivate func lookup<T: Storable>(_: T.Type) -> ArrayBox<Storable> {
+    private func lookup<T: Storable>(_: T.Type) -> ArrayBox<Storable> {
         var boxedArray: ArrayBox<Storable>
         
         if let storedBoxedArray = store[String(describing: T.self)] {

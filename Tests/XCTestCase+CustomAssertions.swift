@@ -165,7 +165,7 @@ public extension XCTestCase {
     // MARK: Private Methods
     
     // swiftlint:disable function_parameter_count
-    fileprivate func expectAssertionReturnFunction(
+    private func expectAssertionReturnFunction(
         _ functionName: String,
         file: StaticString,
         line: UInt,
@@ -194,7 +194,7 @@ public extension XCTestCase {
     }
     
     // swiftlint:disable function_parameter_count
-    fileprivate func expectAssertionNoReturnFunction(
+    private func expectAssertionNoReturnFunction(
         _ functionName: String,
         file: StaticString,
         line: UInt,

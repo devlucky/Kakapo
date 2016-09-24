@@ -282,7 +282,7 @@ router.get("/users/:id"){ request in
 
 ### Expanding Null values with Property Policy
 
-When serializing to JSON, you may want to represent a property value as `null`. For this, you can use the `PropertyPolicy` enum. It is similar to `Optional`, providing an additional `.Null` case:
+When serializing to JSON, you may want to represent a property value as `null`. For this, you can use the `PropertyPolicy` enum. It is similar to `Optional`, providing an additional `.null` case:
 
 ```Swift
 public enum PropertyPolicy<Wrapped>: CustomSerializable {
@@ -294,15 +294,15 @@ public enum PropertyPolicy<Wrapped>: CustomSerializable {
 
 It's only purpose is to be serialized in 3 different ways, to cover all possible behaviors of an Optional property.
 `PropertyPolicy` works exactly as `Optional` properties:
-- `.None` -> property not included in the serialization
-- `.Some(wrapped)` -> serialize `wrapped`
+- `.none` -> property not included in the serialization
+- `.some(wrapped)` -> serialize `wrapped`
 
-The additional case ,`.Null`, is serialized as `null` when converted to json.
+The additional case ,`.null`, is serialized as `null` when converted to json.
 
 ```Swift
-PropertyPolicy<Int>.None.serialize() // nil
-PropertyPolicy<Int>.Null.serialize() // NSNull
-PropertyPolicy<Int>.Some(1).serialize() // 1
+PropertyPolicy<Int>.none.serialize() // nil
+PropertyPolicy<Int>.null.serialize() // NSNull
+PropertyPolicy<Int>.some(1).serialize() // 1
 ```
 
 ### Key customization - Serialization Transformer

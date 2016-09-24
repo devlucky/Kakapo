@@ -92,8 +92,8 @@ private extension String {
     
     /**
      Return the substring From/To a given string or nil if the string is not contained.
-     - **From**: return the substring following the given string (e.g. `kakapo.com/users`, `kakapo.com` -> `/users`)
-     - **To**: return the substring preceding the given string (e.g. `kakapo.com/users?a=b`, `?` -> `kakapo.com/users`)
+     - **from**: return the substring following the given string (e.g. `kakapo.com/users`, `kakapo.com` -> `/users`)
+     - **to**: return the substring preceding the given string (e.g. `kakapo.com/users?a=b`, `?` -> `kakapo.com/users`)
      */
     func substring(_ mode: SplitMode, string: String) -> String? {
         guard !string.characters.isEmpty else {
@@ -106,9 +106,9 @@ private extension String {
         
         switch mode {
         case .from:
-            return self.substring(from: range.upperBound)
+            return substring(from: range.upperBound)
         case .to:
-            return self.substring(to: range.lowerBound)
+            return substring(to: range.lowerBound)
         }
     }
 }
