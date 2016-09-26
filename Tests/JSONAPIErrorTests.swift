@@ -21,7 +21,7 @@ class JSONAPIErrorsSpec: QuickSpec {
     
     override func spec() {
 
-        func json(object: Serializable) -> JSON {
+        func json(_ object: Serializable) -> JSON {
             return JSON(object.serialize()!)
         }
         
@@ -75,9 +75,9 @@ class JSONAPIErrorsSpec: QuickSpec {
                     }
                     
                     var statusCode: Int = -1
-                    let url = NSURL(string: "http://www.test123.com/users")!
-                    NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
-                        let response = response as! NSHTTPURLResponse
+                    let url = URL(string: "http://www.test123.com/users")!
+                    URLSession.shared.dataTask(with: url) { (data, response, _) in
+                        let response = response as! HTTPURLResponse
                         statusCode = response.statusCode
                         }.resume()
                     // still the only test randomly failing for no reasons...
@@ -96,9 +96,9 @@ class JSONAPIErrorsSpec: QuickSpec {
                     }
                     
                     var foo: String?
-                    let url = NSURL(string: "http://www.test1234.com/users")!
-                    NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
-                        let response = response as! NSHTTPURLResponse
+                    let url = URL(string: "http://www.test1234.com/users")!
+                    URLSession.shared.dataTask(with: url) { (data, response, _) in
+                        let response = response as! HTTPURLResponse
                         let headers = response.allHeaderFields as? [String: String]
                         foo = headers?["foo"]
                         }.resume()

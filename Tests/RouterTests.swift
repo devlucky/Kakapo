@@ -10,8 +10,6 @@ import Foundation
 
 import Quick
 import Nimble
-import AFNetworking
-import Alamofire
 
 @testable import Kakapo
 
@@ -46,7 +44,7 @@ class RouterTests: QuickSpec {
         describe("Cancelling requests") {
             var router: Router!
             let baseURL = "http://www.funky-cancel-request.com"
-            let latency = NSTimeInterval(2)
+            let latency: TimeInterval = 2
 
             beforeEach {
                 router = Router.register(baseURL)
@@ -54,28 +52,28 @@ class RouterTests: QuickSpec {
             }
 
             it("should mark a request as cancelled") {
-                var responseError: NSError? = nil
+                var responseError: Error? = nil
 
                 router.get("/foobar/:id") { request in
                     XCTFail("Request should get cancelled before execution")
                     return nil
                 }
 
-                let requestURL = NSURL(string: "\(baseURL)/foobar/1")!
+                let requestURL = URL(string: "\(baseURL)/foobar/1")!
 
-                let dataTask = NSURLSession.sharedSession().dataTaskWithURL(requestURL) { (data, response, error) in
+                let dataTask = URLSession.shared.dataTask(with: requestURL) { (data, response, error) in
                     responseError = error
                 }
 
                 dataTask.cancel()
 
-                expect(responseError).toEventually(beTruthy(), timeout: (latency + 1))
+                expect(responseError).toNotEventually(beNil(), timeout: (latency + 1))
                 expect(responseError?.localizedDescription).toEventually(equal("cancelled"), timeout: (latency + 1))
             }
 
             it("should not confuse multiple request with identical URL") {
-                var responseURL_A: NSURL? = nil
-                var responseError_B: NSError? = nil
+                var responseURL_A: URL? = nil
+                var responseError_B: Error? = nil
                 let canceledRequestID = "999"
 
                 router.get("/cash/:id") { request in
@@ -86,13 +84,13 @@ class RouterTests: QuickSpec {
                     return nil
                 }
 
-                let requestURL_A = NSURL(string: "\(baseURL)/cash/333")!
-                let requestURL_B = NSURL(string: "\(baseURL)/cash/\(canceledRequestID)")!
+                let requestURL_A = URL(string: "\(baseURL)/cash/333")!
+                let requestURL_B = URL(string: "\(baseURL)/cash/\(canceledRequestID)")!
 
-                let dataTask_A = NSURLSession.sharedSession().dataTaskWithURL(requestURL_A) { (data, response, error) in
-                    responseURL_A = response?.URL
+                let dataTask_A = URLSession.shared.dataTask(with: requestURL_A) { (data, response, error) in
+                    responseURL_A = response?.url
                 }
-                let dataTask_B = NSURLSession.sharedSession().dataTaskWithURL(requestURL_B) { (data, response, error) in
+                let dataTask_B = URLSession.shared.dataTask(with: requestURL_B) { (data, response, error) in
                     responseError_B = error
                 }
 
@@ -100,10 +98,10 @@ class RouterTests: QuickSpec {
                 dataTask_B.cancel() // cancel immediately -> should never get executed, because of Router.latency
 
                 // expect task A to succeed
-                expect(responseURL_A).toEventually(beTruthy(), timeout: (latency + 1))
+                expect(responseURL_A).toNotEventually(beNil(), timeout: (latency + 1))
 
                 // expect task B to get cancelled
-                expect(responseError_B).toEventually(beTruthy(), timeout: (latency + 1))
+                expect(responseError_B).toNotEventually(beNil(), timeout: (latency + 1))
                 expect(responseError_B?.localizedDescription).toEventually(equal("cancelled"), timeout: (latency + 1))
             }
 
@@ -114,7 +112,7 @@ class RouterTests: QuickSpec {
                     return nil
                 }
 
-                let requestURL = NSURL(string: "\(baseURL)/epic-fail/1")!
+                let requestURL = URL(string: "\(baseURL)/epic-fail/1")!
 
                 /*
                 Note: we need to manually create a Server instance here to test the stopping logic, because
@@ -122,7 +120,7 @@ class RouterTests: QuickSpec {
                       And there's no way for us to access these automatically created instances from the Router.
                       Therefore we simulate the "stopLoading" and "startLoading" mechanism manually.
                 */
-                let urlRequest = NSURLRequest(URL: requestURL)
+                let urlRequest = URLRequest(url: requestURL)
                 let client = FakeURLProtocolClient()
                 let server = Server(request: urlRequest, cachedResponse: nil, client: client)
 
@@ -147,15 +145,15 @@ class RouterTests: QuickSpec {
             
             it("should call the handler when requesting a registered url") {
                 var info: URLInfo? = nil
-                var responseURL: NSURL? = nil
+                var responseURL: URL? = nil
                 
                 router.get("/users/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
-                    responseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.url
                 }.resume()
                 
                 expect(info?.components).toEventually(equal(["id" : "1"]))
@@ -165,9 +163,9 @@ class RouterTests: QuickSpec {
             
             it("should call the handler when requesting multiple registered urls") {
                 var usersInfo: URLInfo? = nil
-                var usersResponseURL: NSURL? = nil
+                var usersResponseURL: URL? = nil
                 var usersCommentsInfo: URLInfo? = nil
-                var usersCommentsResponseURL: NSURL? = nil
+                var usersCommentsResponseURL: URL? = nil
                 
                 router.get("/comments/:id") { request in
                     XCTFail("Shouldn't reach here")
@@ -197,19 +195,19 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (_, response, _) in
-                    usersResponseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (_, response, _) in
+                    usersResponseURL = response?.url
                 }.resume()
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1/comments/2?page=2&author=hector")!) { (_, response, _) in
-                    usersCommentsResponseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1/comments/2?page=2&author=hector")!) { (_, response, _) in
+                    usersCommentsResponseURL = response?.url
                 }.resume()
                 
                 expect(usersInfo?.components).toEventually(equal(["id" : "1"]))
                 expect(usersInfo?.queryParameters).toEventually(equal([]))
                 expect(usersResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
                 expect(usersCommentsInfo?.components).toEventually(equal(["id": "1", "comment_id": "2"]))
-                expect(usersCommentsInfo?.queryParameters).toEventually(equal([NSURLQueryItem(name: "page", value: "2"), NSURLQueryItem(name: "author", value: "hector")]))
+                expect(usersCommentsInfo?.queryParameters).toEventually(equal([URLQueryItem(name: "page", value: "2"), URLQueryItem(name: "author", value: "hector")]))
                 expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
             }
             
@@ -233,21 +231,21 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                var request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
-                request.HTTPMethod = "POST"
-                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "POST"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(calledPost).toEventually(beTrue())
                 
-                request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
-                request.HTTPMethod = "PUT"
-                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "PUT"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(calledPut).toEventually(beTrue())
                 
-                request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
-                request.HTTPMethod = "DELETE"
-                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "DELETE"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(calledDel).toEventually(beTrue())
             }
@@ -261,9 +259,9 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
-                request.HTTPMethod = "POST"
-                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "POST"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(calledFirstPost).toEventually(beTrue())
                 
@@ -272,20 +270,20 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(calledSecondPost).toEventually(beTrue())
             }
             
             context("when the Router has latency") {
                 it("should delay the mocked response") {
-                    var responseData: NSData? = nil
+                    var responseData: Data? = nil
                     router.latency = 1.1
                     router.get("/users/:id") { request in
                         return ["test": "value"]
                     }
                     
-                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (data, response, _) in
                         responseData = data
                         }.resume()
                     
@@ -299,13 +297,13 @@ class RouterTests: QuickSpec {
                 it("should not affect the latency of other routers") {
                     router.latency = 2.0
                     
-                    var responseData: NSData? = nil
+                    var responseData: Data? = nil
                     let router2 = Router.register("http://www.test2.com")
                     router2.get("/users/:id") { request in
                         return ["test": "value"]
                     }
                     
-                    NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test2.com/users/1")!) { (data, response, _) in
+                    URLSession.shared.dataTask(with: URL(string: "http://www.test2.com/users/1")!) { (data, response, _) in
                         responseData = data
                         }.resume()
                     
@@ -327,8 +325,8 @@ class RouterTests: QuickSpec {
             
             it("should not call the handler when requesting a non registered url") {
                 var info: URLInfo? = nil
-                var responseURL: NSURL? = NSURL(string: "")
-                var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
+                var responseURL: URL? = URL(string: "")
+                var responseError: Error? = NSError(domain: "", code: 1, userInfo: nil)
                 
                 router.get("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
@@ -336,8 +334,8 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/userssssss/1")!) { (_, response, error) in
-                    responseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/userssssss/1")!) { (_, response, error) in
+                    responseURL = response?.url
                     responseError = error
                     }.resume()
                 
@@ -349,8 +347,8 @@ class RouterTests: QuickSpec {
             
             it("should not call the handler when requesting a registered url but using a different HTTPMethod") {
                 var info: URLInfo? = nil
-                var responseURL: NSURL? = NSURL(string: "")
-                var responseError: NSError? = NSError(domain: "", code: 1, userInfo: nil)
+                var responseURL: URL? = URL(string: "")
+                var responseError: Error? = NSError(domain: "", code: 1, userInfo: nil)
                 
                 router.del("/users/:id") { request in
                     XCTFail("Shouldn't reach here")
@@ -358,10 +356,10 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
-                request.HTTPMethod = "PUT"
-                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, response, error) in
-                    responseURL = response?.URL
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "PUT"
+                URLSession.shared.dataTask(with: request) { (_, response, error) in
+                    responseURL = response?.url
                     responseError = error
                     }.resume()
                 
@@ -378,27 +376,27 @@ class RouterTests: QuickSpec {
                 router = Router.register("http://www.test.com")
             }
             
-            it("should give back the body in the handler when a NSURLSession request has it") {
+            it("should give back the body in the handler when a URLSession request has it") {
                 var info: URLInfo? = nil
-                var bodyData: NSData? = nil
-                var bodyDictionary: NSDictionary? = nil
+                var bodyData: Data? = nil
+                var bodyDictionary: [String: AnyObject]?
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
-                request.HTTPMethod = "POST"
-                let params = ["username":"test", "password":"pass"] as Dictionary<String, String>
-                request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "POST"
+                let params = ["username":"test", "password":"pass"]
+                request.httpBody = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
                 router.post("/users/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
-                    bodyData = request.HTTPBody
-                    bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
+                    bodyData = request.httpBody
+                    bodyDictionary = try! JSONSerialization.jsonObject(with: bodyData!, options: .mutableLeaves) as? [String: AnyObject]
                     
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(request.copy() as! NSURLRequest) { (_, _, _) in }.resume()
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(info?.components).toEventually(equal(["id" : "1"]))
                 expect(info?.queryParameters).toEventually(equal([]))
@@ -407,22 +405,22 @@ class RouterTests: QuickSpec {
                 expect(bodyDictionary!["password"] as? String).toEventually(equal("pass"))
             }
             
-            it("should give back the body in the handler when a NSURLConnection request has it") {
+            it("should give back the body in the handler when a URLConnection request has it") {
                 var info: URLInfo? = nil
-                var bodyData: NSData? = nil
-                var bodyDictionary: NSDictionary? = nil
+                var bodyData: Data? = nil
+                var bodyDictionary: [String: AnyObject]?
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/user_equipment/1")!)
-                request.HTTPMethod = "PUT"
-                let params = ["username":"manzo", "token":"power"] as Dictionary<String, String>
-                request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
+                var request = URLRequest(url: URL(string: "http://www.test.com/user_equipment/1")!)
+                request.httpMethod = "PUT"
+                let params = ["username":"manzo", "token":"power"]
+                request.httpBody = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
                 router.put("/user_equipment/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
-                    bodyData = request.HTTPBody
-                    bodyDictionary = try! NSJSONSerialization.JSONObjectWithData(bodyData!, options: .MutableLeaves) as? NSDictionary
+                    bodyData = request.httpBody
+                    bodyDictionary = try! JSONSerialization.jsonObject(with: bodyData!, options: .mutableLeaves) as? Dictionary
                     
                     return nil
                 }
@@ -436,41 +434,41 @@ class RouterTests: QuickSpec {
                 expect(bodyDictionary!["token"] as? String).toEventually(equal("power"))
             }
             
-            it("should give back the HTTPHeaders in the handler when a NSURLSession request has it") {
+            it("should give back the httpHeaders in the handler when a URLSession request has it") {
                 var contentType: String? = nil
                 var accept: String? = nil
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
-                request.HTTPMethod = "POST"
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "POST"
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
                 router.post("/users/:id") { request in
-                    contentType = request.HTTPHeaders!["Content-Type"]
-                    accept = request.HTTPHeaders!["Accept"]
+                    contentType = request.httpHeaders!["Content-Type"]
+                    accept = request.httpHeaders!["Accept"]
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(contentType).toEventually(equal("application/json"))
                 expect(accept).toEventually(equal("application/json"))
             }
             
-            it("shouldn't give back HTTPHeaders in the handler when the request doesn't provide headers") {
+            it("shouldn't give back httpHeaders in the handler when the request doesn't provide headers") {
                 var count: Int? = nil
                 
-                let request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
-                request.HTTPMethod = "POST"
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "POST"
                 
                 router.post("/users/:id") { request in
-                    count = request.HTTPHeaders!.count
+                    count = request.httpHeaders!.count
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
-                expect(count).toEventually(be(0))
+                expect(count).toEventually(equal(0))
             }
         }
         
@@ -483,7 +481,7 @@ class RouterTests: QuickSpec {
             
             context("default behaviors") {
                 
-                let url = NSURL(string: "http://www.test.com/users")!
+                let url = URL(string: "http://www.test.com/users")!
                 
                 beforeEach {
                     router.get("/users") { request in
@@ -494,8 +492,8 @@ class RouterTests: QuickSpec {
                 it("should return 200 status code") {
                     var statusCode: Int? = nil
                     
-                    NSURLSession.sharedSession().dataTaskWithURL(url) { (_, response, _) in
-                        let response = response as! NSHTTPURLResponse
+                    URLSession.shared.dataTask(with: url) { (_, response, _) in
+                        let response = response as! HTTPURLResponse
                         statusCode = response.statusCode
                         }.resume()
                     
@@ -505,8 +503,8 @@ class RouterTests: QuickSpec {
                 it("should return the default header fields") {
                     var allHeaders: [String : String]? = nil
                     
-                    NSURLSession.sharedSession().dataTaskWithURL(url) { (_, response, _) in
-                        let response = response as! NSHTTPURLResponse
+                    URLSession.shared.dataTask(with: url) { (_, response, _) in
+                        let response = response as! HTTPURLResponse
                         allHeaders = response.allHeaderFields as? [String : String]
                         }.resume()
                     
@@ -517,14 +515,14 @@ class RouterTests: QuickSpec {
             it("should return the specified object when requesting a registered url") {
                 store.create(User.self, number: 2)
                 
-                var responseDictionary: NSDictionary? = nil
+                var responseDictionary: [String: AnyObject]?
                 
                 router.get("/users/:id") { request in
                     return store.find(User.self, id: request.components["id"]!)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
-                    responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    responseDictionary = try! JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? [String: AnyObject]
                     }.resume()
                 
                 expect(responseDictionary).toNotEventually(beNil())
@@ -535,16 +533,16 @@ class RouterTests: QuickSpec {
                 store.create(User.self, number: 20)
                 
                 var statusCode: Int? = nil
-                var responseDictionary: NSDictionary? = nil
+                var responseDictionary: [String: AnyObject]?
                 
                 router.get("/users/:id") { request in
                     return Response(statusCode: 200, body: store.find(User.self, id: request.components["id"]!)!)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
-                    let response = response as! NSHTTPURLResponse
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (data, response, _) in
+                    let response = response as! HTTPURLResponse
                     statusCode = response.statusCode
-                    responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+                    responseDictionary = try! JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? [String: AnyObject]
                     }.resume()
                 
                 expect(responseDictionary?["firstName"]).toNotEventually(beNil())
@@ -557,14 +555,14 @@ class RouterTests: QuickSpec {
                 var dataLength = 10000
                 
                 router.get("/users/:id") { request in
-                    // Optional.Some("none") -> not valid JSON object
-                    return Response(statusCode: 400, body: Optional.Some("none"))
+                    // Optional.some("none") -> not valid JSON object
+                    return Response(statusCode: 400, body: Optional.some("none"))
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
-                    let response = response as! NSHTTPURLResponse
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (data, response, _) in
+                    let response = response as! HTTPURLResponse
                     statusCode = response.statusCode
-                    dataLength = data!.length
+                    dataLength = data!.count
                     }.resume()
                 
                 expect(dataLength).toEventually(equal(0))
@@ -580,8 +578,8 @@ class RouterTests: QuickSpec {
                     return Response(statusCode: 400, body: body, headerFields: headerFields)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
-                    let response = response as! NSHTTPURLResponse
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (data, response, _) in
+                    let response = response as! HTTPURLResponse
                     allHeaders = response.allHeaderFields as? [String : String]
                     }.resume()
 
@@ -592,54 +590,57 @@ class RouterTests: QuickSpec {
             
             it("should gets the response fields from custom response object adopting the ResponseFieldsProvider protocol") {
                 var allHeaders: [String : String]? = nil
-                var responseDictionary: NSDictionary? = nil
+                var responseDictionary: [String: AnyObject]?
                 var statusCode: Int? = nil
                 
                 router.get("/users/:id") { request in
                     return CustomResponse(statusCode: 400, body: ["id" : 2], headerFields: ["access_token" : "094850348502"])
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/2")!) { (data, response, _) in
-                    let response = response as! NSHTTPURLResponse
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (data, response, _) in
+                    let response = response as! HTTPURLResponse
                     allHeaders = response.allHeaderFields as? [String : String]
-                    responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
+                    responseDictionary = try! JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? [String: AnyObject]
                     statusCode = response.statusCode
                     }.resume()
                 
                 expect(allHeaders?["access_token"]).toEventually(equal("094850348502"))
                 expect(statusCode).toEventually(equal(400))
-                expect(responseDictionary?["id"]).toEventually(be(2))
+                expect(responseDictionary?["id"] as? Int).toEventually(equal(2))
             }
             
             it("should return the specified array of objects when requesting a registered url") {
                 store.create(User.self, number: 20)
                 
-                var responseArray: NSArray? = nil
+                var responseArray: [[String: AnyObject]]? = nil
                 
                 router.get("/users") { request in
-                    return store.findAll(User)
+                    return store.findAll(User.self)
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users")!) { (data, response, _) in
-                    responseArray = try! NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSArray
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users")!) { (data, response, _) in
+                    responseArray = try! JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? [[String: AnyObject]]
                     }.resume()
                 
                 expect(responseArray?.count).toEventually(equal(20))
-                expect(responseArray?.firstObject?["firstName"]).toNotEventually(beNil())
-                expect(responseArray?.firstObject?["id"]).toEventually(equal("0"))
-                expect(responseArray?[14]["id"]).toEventually(equal("14"))
-                expect(responseArray?.lastObject?["id"]).toEventually(equal("19"))
+                expect(responseArray?.first).toNotEventually(beNil())
+                
+                let first = responseArray!.first!
+                expect(first["firstName"]).toNot(beNil())
+                expect(first["id"] as? String) == "0"
+                expect(responseArray?[14]["id"] as? String) == "14"
+                expect(responseArray?.last?["id"] as? String) == "19"
             }
             
             it("should return nil for objects not serializable to JSON") {
                 router.get("/nothing/:id") { request in
-                    return Optional.Some("none")
+                    return Optional.some("none")
                 }
                 
                 var called = false
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/nothing/1")!) { (data, response, _) in
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/nothing/1")!) { (data, response, _) in
                     called = true
-                    expect(data?.length).to(equal(0))
+                    expect(data?.count).to(equal(0))
                 }.resume()
                 
                 expect(called).toEventually(beTrue())
@@ -653,10 +654,10 @@ class RouterTests: QuickSpec {
                 router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
-                var responseURL: NSURL? = nil
+                var responseURL: URL? = nil
                 
                 var secondInfo: URLInfo? = nil
-                var secondResponseURL: NSURL? = nil
+                var secondResponseURL: URL? = nil
                 let secondRouter = Router.register("www.host2.com")
                 
                 router.get("/users/:id") { request in
@@ -669,12 +670,12 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
-                    responseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.url
                     }.resume()
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
-                    secondResponseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
+                    secondResponseURL = response?.url
                     }.resume()
                 
                 expect(info?.components).toEventually(equal(["id" : "1"]))
@@ -687,7 +688,7 @@ class RouterTests: QuickSpec {
             }
             
             it("Should manage which Router has to be selected when registering routes with similar baseURL") {
-                var responseURL: NSURL? = nil
+                var responseURL: URL? = nil
                 var components: [String : String]? = nil
                 router = Router.register("http://www.test.com")
                 let secondRouter = Router.register("http://www.test.com/v1")
@@ -712,8 +713,8 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/v1/foo/bar/users/1")!) { (data, response, _) in
-                    responseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/v1/foo/bar/users/1")!) { (data, response, _) in
+                    responseURL = response?.url
                     }.resume()
                 
                 expect(isReached).toEventually(beTrue())
@@ -726,7 +727,7 @@ class RouterTests: QuickSpec {
                 let secondRouter = Router.register("http://www.test.com")
                 let thirdRouter = Router.register("http://www.test.com")
                 var isReached: Bool?
-                var responseURL: NSURL? = nil
+                var responseURL: URL? = nil
                 var components: [String : String]? = nil
                 
                 router.get("/users/:user_id/comments/:comment_id") { request in
@@ -745,9 +746,9 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                let url = NSURL(string: "http://www.test.com/users/1/comments/2")!
-                NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
-                    responseURL = response?.URL
+                let url = URL(string: "http://www.test.com/users/1/comments/2")!
+                URLSession.shared.dataTask(with: url) { (data, response, _) in
+                    responseURL = response?.url
                     }.resume()
                 
                 expect(isReached).toEventually(beTrue())
@@ -759,14 +760,14 @@ class RouterTests: QuickSpec {
                 router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
-                var responseURL: NSURL? = nil
+                var responseURL: URL? = nil
                 
                 var secondInfo: URLInfo? = nil
-                var secondResponseURL: NSURL? = nil
+                var secondResponseURL: URL? = nil
                 let secondRouter = Router.register("www.host2.com")
                 
                 var thirdInfo: URLInfo? = nil
-                var thirdResponseURL: NSURL? = nil
+                var thirdResponseURL: URL? = nil
                 let thirdRouter = Router.register("www.another.com")
                 
                 router.get("/users/:id") { request in
@@ -789,16 +790,16 @@ class RouterTests: QuickSpec {
                 Router.unregister("http://www.test.com")
                 Router.unregister("www.another.com")
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
-                    responseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.url
                     }.resume()
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
-                    secondResponseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
+                    secondResponseURL = response?.url
                     }.resume()
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.another.com/sessions/55")!) { (data, response, _) in
-                    thirdResponseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.another.com/sessions/55")!) { (data, response, _) in
+                    thirdResponseURL = response?.url
                     }.resume()
                 
                 expect(info).toEventually(beNil())
@@ -816,7 +817,7 @@ class RouterTests: QuickSpec {
                 router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
-                var responseURL: NSURL? = nil
+                var responseURL: URL? = nil
                 let _ = Router.register("http://www.host2.com")
                 
                 router.get("/users/:id") { request in
@@ -825,8 +826,8 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.host2.com/users/1")!) { (data, response, _) in
-                    responseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.host2.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.url
                     }.resume()
                 
                 expect(info).toEventually(beNil())
@@ -837,14 +838,14 @@ class RouterTests: QuickSpec {
                 router = Router.register("http://www.test.com")
                 
                 var info: URLInfo? = nil
-                var responseURL: NSURL? = nil
+                var responseURL: URL? = nil
                 
                 var secondInfo: URLInfo? = nil
-                var secondResponseURL: NSURL? = nil
+                var secondResponseURL: URL? = nil
                 let secondRouter = Router.register("www.host2.com")
                 
                 var thirdInfo: URLInfo? = nil
-                var thirdResponseURL: NSURL? = nil
+                var thirdResponseURL: URL? = nil
                 let thirdRouter = Router.register("www.another.com")
                 
                 router.get("/users/:id") { request in
@@ -867,16 +868,16 @@ class RouterTests: QuickSpec {
                 
                 Router.disableAll()
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.test.com/users/1")!) { (data, response, _) in
-                    responseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (data, response, _) in
+                    responseURL = response?.url
                     }.resume()
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
-                    secondResponseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.host2.com/messages/24")!) { (data, response, _) in
+                    secondResponseURL = response?.url
                     }.resume()
                 
-                NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.another.com/sessions/55")!) { (data, response, _) in
-                    thirdResponseURL = response?.URL
+                URLSession.shared.dataTask(with: URL(string: "http://www.another.com/sessions/55")!) { (data, response, _) in
+                    thirdResponseURL = response?.url
                     }.resume()
                 
                 expect(info).toEventually(beNil())
@@ -914,47 +915,6 @@ class RouterTests: QuickSpec {
                 expect(router2).to(beNil())
                 expect(router3).to(beNil())
                 expect(router4).to(beNil())
-            }
-        }
-        
-        describe("Popular networking libraries compatibility") {
-            var router: Router!
-            var response: [String: String]? = nil
-            let url = NSURL(string: "http://kakapotest.com/users/1")!
-            let configuration: NSURLSessionConfiguration = {
-                let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-                configuration.protocolClasses = [Server.self]
-                return configuration
-            }()
-            
-            beforeEach {
-                response = nil
-                router = Router.register("http://kakapotest.com")
-                router.get("/users/:id") { request in
-                    return ["fine": "true"]
-                }
-            }
-            
-            it("should intercept AFNetworking requests") {
-                let manager = AFURLSessionManager(sessionConfiguration: configuration)
-                let request = NSURLRequest(URL: url)
-                manager.dataTaskWithRequest(request) { (_, responseObject, _) in
-                    response = responseObject as? [String: String]
-                }.resume()
-                
-                expect(response).toNotEventually(beNil())
-                expect(response).to(equal(["fine": "true"]))
-            }
-            
-            it("should intercept Alamofire requests") {
-                let manager = Manager(configuration: configuration)
-                let request = NSURLRequest(URL: url)
-                manager.request(request).responseJSON { (responseObject) in
-                    response = responseObject.result.value as? [String: String]
-                    }
-                
-                expect(response).toNotEventually(beNil())
-                expect(response).to(equal(["fine": "true"]))
             }
         }
     }

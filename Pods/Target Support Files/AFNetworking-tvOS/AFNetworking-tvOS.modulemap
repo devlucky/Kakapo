@@ -1,6 +1,0 @@
-framework module AFNetworking {
-  umbrella header "AFNetworking-tvOS-umbrella.h"
-
-  export *
-  module * { export * }
-}

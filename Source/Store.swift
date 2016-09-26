@@ -26,8 +26,8 @@ public protocol Storable {
     init(id: String, store: Store)
 }
 
-enum StoreError: ErrorType {
-    case InvalidEntity
+enum StoreError: Error {
+    case invalidEntity
 }
 
 /**
@@ -37,11 +37,11 @@ enum StoreError: ErrorType {
  **[See issue #17](https://github.com/devlucky/Kakapo/issues/17)**
 */
 private final class ArrayBox<T> {
-    private init(_ value: [T]) {
+    fileprivate init(_ value: [T]) {
         self.value = value
     }
     
-    private var value: [T]
+    fileprivate var value: [T]
 }
 
 /**
@@ -61,8 +61,8 @@ private final class ArrayBox<T> {
  */
 public final class Store {
     
-    private let queue = dispatch_queue_create("com.Store.queue", DISPATCH_QUEUE_CONCURRENT)
-    private var _uuid = -1
+    private let queue = DispatchQueue(label: "com.store.queue", attributes: .concurrent)
+    private var uuid = -1
     private var store: [String: ArrayBox<Storable>] = [:]
 
     /// Initialize a new in-memory store
@@ -70,21 +70,21 @@ public final class Store {
         // empty but needed to be initialized from other modules.
     }
     
-    private func barrierSync<T>(closure: () -> T) -> T {
+    private func barrierSync<T>(_ closure: () -> T) -> T {
         var object: T!
-        dispatch_barrier_sync(queue) {
+        queue.sync(flags: .barrier) {
             object = closure()
         }
         return object
     }
 
-    private func barrierAsync(closure: () -> ()) {
-        dispatch_barrier_async(queue, closure)
+    private func barrierAsync(_ closure: @escaping () -> ()) {
+        queue.async(flags: .barrier, execute: closure)
     }
 
-    private func sync<T>(closure: () -> T) -> T {
+    private func sync<T>(_ closure: () -> T) -> T {
         var object: T!
-        dispatch_sync(queue) {
+        queue.sync {
             object = closure()
         }
         return object
@@ -98,15 +98,15 @@ public final class Store {
      
      - returns: An array containing the new inserted Storable objects
      */
-    public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
+    @discardableResult public func create<T: Storable>(_: T.Type, number: Int = 1) -> [T] {
         let ids = barrierSync {
-            return (0..<number).map { _ in self.uuid()}
+            return (0..<number).map { _ in self.generateUUID()}
         }
         
         let objects = ids.map { id in T(id: id, store: self) }
         
         barrierAsync {
-            self.lookup(T).value.appendContentsOf(objects.flatMap { $0 as Storable })
+            self.lookup(T.self).value.append(contentsOf: objects.flatMap { $0 as Storable })
         }
         
         return objects
@@ -119,16 +119,16 @@ public final class Store {
      
      - returns: The new inserted Storable object
      */
-    public func insert<T: Storable>(handler: (String) -> T) -> T {
+    @discardableResult public func insert<T: Storable>(_ handler: (String) -> T) -> T {
         let id = barrierSync {
-            return self.uuid()
+            return self.generateUUID()
         }
         
         let object = handler(id)
             
         precondition(object.id == id, "Tried to insert an invalid id")
         barrierAsync {
-            self.lookup(T).value.append(object)
+            self.lookup(T.self).value.append(object)
         }
 
         return object
@@ -139,19 +139,19 @@ public final class Store {
      
      - parameter entity: The Storable object to be updated
      
-     - throws: `StoreError.InvalidEntity` if no Storable object with same `id` was found
+     - throws: `StoreError.invalidEntity` if no Storable object with same `id` was found
      */
-    public func update<T: Storable>(entity: T) throws {
+    public func update<T: Storable>(_ entity: T) throws {
         let updated: Bool = barrierSync {
-            let index = self.lookup(T).value.indexOf { $0.id == entity.id }
+            let index = self.lookup(T.self).value.index { $0.id == entity.id }
             guard let indexToUpdate = index else { return false }
-            self.lookup(T).value[indexToUpdate] = entity
+            self.lookup(T.self).value[indexToUpdate] = entity
             
             return true
         }
         
         if !updated {
-            throw StoreError.InvalidEntity
+            throw StoreError.invalidEntity
         }
     }
     
@@ -160,21 +160,21 @@ public final class Store {
      
      - parameter entity: The Storable object to be deleted, the store will delete any object found with same id and type.
      
-     - throws: `StoreError.InvalidEntity` if no Storable object with same `id` was found
+     - throws: `StoreError.invalidEntity` if no Storable object with same `id` was found
      */
-    public func delete<T: Storable>(entity: T) throws {
+    public func delete<T: Storable>(_ entity: T) throws {
         let deleted: Bool = barrierSync {
-            guard let index = self.lookup(T).value.indexOf({ $0.id == entity.id }) else {
+            guard let index = self.lookup(T.self).value.index(where: { $0.id == entity.id }) else {
                 return false
             }
 
-            self.lookup(T).value.removeAtIndex(index)
+            self.lookup(T.self).value.remove(at: index)
             
             return true
         }
         
         if !deleted {
-            throw StoreError.InvalidEntity
+            throw StoreError.invalidEntity
         }
     }
     
@@ -187,7 +187,7 @@ public final class Store {
      */
     public func findAll<T: Storable>(_: T.Type) -> [T] {
         return sync {
-            self.lookup(T).value.flatMap {$0 as? T}
+            self.lookup(T.self).value.flatMap {$0 as? T}
         }
     }
     
@@ -200,7 +200,7 @@ public final class Store {
      - returns: An array containing the filtered Storable objects
      */
     public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
-        return findAll(T).filter(includeElement)
+        return findAll(T.self).filter(includeElement)
     }
     
     /**
@@ -215,19 +215,19 @@ public final class Store {
         return filter(T.self) { $0.id == id }.first
     }
     
-    private func uuid() -> String {
-        _uuid += 1
-        return String(_uuid)
+    private func generateUUID() -> String {
+        uuid += 1
+        return String(uuid)
     }
     
     private func lookup<T: Storable>(_: T.Type) -> ArrayBox<Storable> {
         var boxedArray: ArrayBox<Storable>
         
-        if let storedBoxedArray = store[String(T)] {
+        if let storedBoxedArray = store[String(describing: T.self)] {
             boxedArray = storedBoxedArray
         } else {
             boxedArray = ArrayBox<Storable>([])
-            store[String(T)] = boxedArray
+            store[String(describing: T.self)] = boxedArray
         }
         
         return boxedArray

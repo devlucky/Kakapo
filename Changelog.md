@@ -3,6 +3,10 @@
 ### HEAD
 --------------
 
+- Swift 3.0 Support
+- Renamed `HTTPBody` to `httpBody` and `HTTPHeader` to `httpHeader`
+- `HTTPMethod` enum cases are now lowercase
+
 ### 1.0.1
 -----------
 

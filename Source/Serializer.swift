@@ -26,7 +26,7 @@ public protocol CustomSerializable: Serializable {
 
      - returns: You should return either another `Serializable` object (also `Array` or `Dictionary`) containing other Serializable objects or property list types that can be serialized into json (primitive types).
      */
-    func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject?
+    func customSerialize(_ keyTransformer: KeyTransformer?) -> Any?
 }
 
 public extension Serializable {
@@ -37,7 +37,7 @@ public extension Serializable {
      
      - returns: The serialized object
      */
-    func serialize(keyTransformer: KeyTransformer? = nil) -> AnyObject? {
+    func serialize(_ keyTransformer: KeyTransformer? = nil) -> Any? {
         if let object = self as? CustomSerializable {
             return object.customSerialize(keyTransformer)
         }
@@ -49,20 +49,20 @@ public extension Serializable {
      
      - returns: The serialized object as `Data`
      */
-    func toData() -> NSData? {
+    func toData() -> Data? {
         guard let object = serialize() else { return nil }
         
-        if !NSJSONSerialization.isValidJSONObject(object) {
+        if !JSONSerialization.isValidJSONObject(object) {
             return nil
         }
-        return try? NSJSONSerialization.dataWithJSONObject(object, options: .PrettyPrinted)
+        return try? JSONSerialization.data(withJSONObject: object, options: .prettyPrinted)
     }
 }
 
 extension Array: CustomSerializable {
     /// `Array` is serialized by returning an `Array` containing its serialized elements
-    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
-        return flatMap { (element) -> AnyObject? in
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+        return flatMap { (element) -> Any? in
             return serializeObject(element, keyTransformer: keyTransformer)
         }
     }
@@ -70,12 +70,12 @@ extension Array: CustomSerializable {
 
 extension Dictionary: CustomSerializable {
     /// `Dictionary` is serialized by creating a Dictionary with the same keys and values serialized
-    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
-        var dictionary = [String: AnyObject]()
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+        var dictionary = [String: Any]()
         for (key, value) in self {
             assert(key is String, "key must be a String to be serialized to JSON")
             if let serialized = serializeObject(value, keyTransformer: keyTransformer), let key = key as? String {
-                let transformedKey = keyTransformer?(key: key) ?? key
+                let transformedKey = keyTransformer?(key) ?? key
                 dictionary[transformedKey] = serialized
             }
         }
@@ -85,9 +85,9 @@ extension Dictionary: CustomSerializable {
 
 extension Optional: CustomSerializable {
     /// `Optional` serializes its inner object or nil if nil
-    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
         switch self {
-        case let .Some(value):
+        case let .some(value):
             return serializeObject(value, keyTransformer: keyTransformer)
         default:
             return nil
@@ -96,27 +96,25 @@ extension Optional: CustomSerializable {
 }
 
 extension PropertyPolicy {
-    /// `PropertyPolicy` serializes as nil when `.None`, as `NSNull` when `.Null` or serialize the object for `.Some`
-    public func customSerialize(keyTransformer: KeyTransformer?) -> AnyObject? {
+    /// `PropertyPolicy` serializes as nil when `.none`, as `NSNull` when `.null` or serialize the object for `.some`
+    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
         switch self {
-        case .None:
+        case .none:
             return nil
-        case .Null:
+        case .null:
             return NSNull()
-        case let .Some(value):
+        case let .some(value):
             return serializeObject(value, keyTransformer: keyTransformer)
         }
     }
 }
 
-private func serializeObject(value: Any, keyTransformer: KeyTransformer?) -> AnyObject? {
+private func serializeObject(_ value: Any, keyTransformer: KeyTransformer?) -> Any? {
     if let value = value as? Serializable {
         return value.serialize(keyTransformer)
     }
     
-    // At this point an object must be an AnyObject and probably also a property list object otherwise the json will fail later.
-    assert((value as? AnyObject) != nil)
-    return value as? AnyObject
+    return value
 }
 
 /**
@@ -128,14 +126,14 @@ private func serializeObject(value: Any, keyTransformer: KeyTransformer?) -> Any
  
  - returns: A serialized object that may be converted to JSON, usually Array or Dictionary
  */
-private func serialize(object: Serializable, keyTransformer: KeyTransformer?) -> AnyObject {
+private func serialize(_ object: Serializable, keyTransformer: KeyTransformer?) -> Any {
     assert((object is CustomSerializable) == false)
 
-    var dictionary = [String: AnyObject]()
+    var dictionary = [String: Any]()
     let mirror = Mirror(reflecting: object)
     for child in mirror.children {
         if let label = child.label, let value = serializeObject(child.value, keyTransformer: keyTransformer) {
-            let key = keyTransformer?(key: label) ?? label
+            let key = keyTransformer?(label) ?? label
             dictionary[key] = value
         }
     }

@@ -2,8 +2,8 @@ import Foundation
 
 extension Array {
 
-  func at(index: Int?) -> Element? {
-    if let index = index where index >= 0 && index < endIndex {
+  func at(_ index: Int?) -> Element? {
+    if let index = index , index >= 0 && index < endIndex {
       return self[index]
     } else {
       return nil
