@@ -124,7 +124,7 @@ private func mockNetwork() {
     }
     
     router.post("post") { (request) -> Serializable? in
-        let body = JSON.parse(String(data: request.HTTPBody!, encoding: .utf8)!)
+        let body = JSON.parse(String(data: request.httpBody!, encoding: .utf8)!)
         return store.insert { (id) -> Post in
             return Post(id: id, text: body["text"].string!, author: loggedInUser)
         }
@@ -144,7 +144,7 @@ private func mockNetwork() {
     // MARK: Comment
     
     router.post("post/:post_id/comment") { (request) -> Serializable? in
-        let body = JSON(request.HTTPBody!)
+        let body = JSON(request.httpBody!)
         var post = store.find(Post.self, id: request.components["post_id"]!)!
         let comment = store.insert { (id) -> Comment in
             return Comment(id: id, author: loggedInUser, text: body["text"].string!)
