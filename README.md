@@ -355,7 +355,7 @@ Even though Kakapo is ready to use, it is not meant to be shipped to the App Sto
 
 ## Examples
 
-### Newsfeed
+### Newsfeed [![BuddyBuild](https://dashboard.buddybuild.com/api/statusImage?appID=57e58ce073e94e0100c34a01&branch=master&build=latest)](https://dashboard.buddybuild.com/apps/57e58ce073e94e0100c34a01/build/latest)
 
 Make sure you check the [demo app](https://github.com/devlucky/Kakapo/tree/master/Examples/NewsFeed) we created using Kakapo: a prototyped newsfeed app which lets the user create new posts and like/unlike them.  
 To quickly try it use: `pod try Kakapo`
