@@ -91,7 +91,7 @@ public final class Server: URLProtocol {
      - returns: true if any of the registered route match the request URL
      */
     override public class func canInit(with request: URLRequest) -> Bool {
-        return routers.index(where: { $0.canInitWithRequest(request) }) != nil
+        return routers.index(where: { $0.canInit(with: request) }) != nil
     }
     
     /// Just returns the given request without changes
@@ -105,7 +105,7 @@ public final class Server: URLProtocol {
             return
         }
 
-        if let routerIndex = Server.routers.index(where: { $0.canInitWithRequest(request) }) {
+        if let routerIndex = Server.routers.index(where: { $0.canInit(with: request) }) {
             Server.routers[routerIndex].startLoading(self)
         }
     }

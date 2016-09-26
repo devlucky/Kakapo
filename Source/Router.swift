@@ -178,7 +178,7 @@ public final class Router {
      
      - returns: true if a route matches the request
      */
-    func canInitWithRequest(_ request: URLRequest) -> Bool {
+    func canInit(with request: URLRequest) -> Bool {
         guard let requestURL = request.url, requestURL.absoluteString.contains(baseURL) else { return false }
         
         for (key, _) in routes where key.method.rawValue == request.httpMethod {
