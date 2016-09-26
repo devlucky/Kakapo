@@ -458,7 +458,7 @@ class RouterTests: QuickSpec {
                 }
                 
                 URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (data, response, _) in
-                    responseDictionary = try! JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? Dictionary
+                    responseDictionary = try! JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? [String: AnyObject]
                     }.resume()
                 
                 expect(responseDictionary).toNotEventually(beNil())
