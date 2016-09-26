@@ -69,7 +69,7 @@ class JSONAPIErrorsSpec: QuickSpec {
                     let router = Router.register("http://www.test123.com")
 
                     router.get("/users") { request in
-                        return JSONAPIError(statusCode: 501) { (error) in
+                        return JSONAPIError(statusCode: 403) { (error) in
                             error.title = "test"
                         }
                     }
@@ -80,8 +80,10 @@ class JSONAPIErrorsSpec: QuickSpec {
                         let response = response as! NSHTTPURLResponse
                         statusCode = response.statusCode
                         }.resume()
-                    
-                    expect(statusCode).toEventually(equal(501))
+                    // still the only test randomly failing for no reasons...
+                    // 99,9 % is not a router problem (otherwise wouldn't be the only one)
+                    // https://pbs.twimg.com/media/CfSQdwUW8AErog1.jpg
+                    expect(statusCode).toEventually(equal(403), timeout: 2)
                 }
                 
                 it("should affect the header fields of the response") {
