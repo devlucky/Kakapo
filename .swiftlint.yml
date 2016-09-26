@@ -47,5 +47,7 @@ variable_name:
     - db
     - HTTPBody
     - HTTPHeaders
-    
+    - lhs
+    - rhs    
+
 reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit)

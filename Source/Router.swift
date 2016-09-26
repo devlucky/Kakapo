@@ -324,7 +324,6 @@ public final class Router {
 
 }
 
-// swiftlint:disable variable_name
-private func ==(lhs: Router.Route, rhs: Router.Route) -> Bool {
+private func == (lhs: Router.Route, rhs: Router.Route) -> Bool {
     return lhs.path == rhs.path && lhs.method == rhs.method
 }
