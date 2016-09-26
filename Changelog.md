@@ -3,6 +3,9 @@
 ### HEAD
 --------------
 
+### 1.0.1
+-----------
+
 - Fix `Router` to handle same url with different HTTP methods
 
 ### 1.0.0
