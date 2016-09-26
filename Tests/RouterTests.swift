@@ -213,7 +213,7 @@ class RouterTests: QuickSpec {
                 expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
             }
             
-            it("should call handlers with same registered url but different http methods") {
+            it("should call handlers with same path but different http methods") {
                 var calledPost = false
                 var calledPut = false
                 var calledDel = false
@@ -252,7 +252,7 @@ class RouterTests: QuickSpec {
                 expect(calledDel).toEventually(beTrue())
             }
             
-            it("should properly replace handlers with same registered url and http methods") {
+            it("should replace handlers with same path and http methods") {
                 var calledFirstPost = false
                 var calledSecondPost = false
                 
