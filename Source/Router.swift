@@ -27,10 +27,10 @@ public struct Request {
     public let queryParameters: [URLQueryItem]
     
     /// An optional request body
-    public let HTTPBody: Data?
+    public let httpBody: Data?
     
     /// An optional dictionary holding the request header fields
-    public let HTTPHeaders: [String: String]?
+    public let httpHeaders: [String: String]?
 }
 
 /**
@@ -185,7 +185,7 @@ public final class Router {
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: server.request) as? Data
 
-                let request = Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields)
+                let request = Request(components: info.components, queryParameters: info.queryParameters, httpBody: dataBody, httpHeaders: server.request.allHTTPHeaderFields)
                 serializableObject = route.handler(request)
                 break
             }

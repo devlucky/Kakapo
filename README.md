@@ -181,7 +181,7 @@ router.get("/users/:id") { request in
 }
 ```
 
-When a request is matched, the RouteHandler receives a `Request` object that represents your request including components, query parameters, HTTPBody and HTTPHeaders. The `Request` object can be useful when building dynamic responses.
+When a request is matched, the RouteHandler receives a `Request` object that represents your request including components, query parameters, httpBody and httpHeaders. The `Request` object can be useful when building dynamic responses.
 
 #### Third-Party Libraries
 

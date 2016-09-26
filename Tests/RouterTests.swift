@@ -326,7 +326,7 @@ class RouterTests: QuickSpec {
                 
                 router.post("/users/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
-                    bodyData = request.HTTPBody
+                    bodyData = request.httpBody
                     bodyDictionary = try! JSONSerialization.jsonObject(with: bodyData!, options: .mutableLeaves) as? [String: AnyObject]
                     
                     return nil
@@ -355,7 +355,7 @@ class RouterTests: QuickSpec {
                 
                 router.put("/user_equipment/:id") { request in
                     info = (components: request.components, queryParameters: request.queryParameters)
-                    bodyData = request.HTTPBody
+                    bodyData = request.httpBody
                     bodyDictionary = try! JSONSerialization.jsonObject(with: bodyData!, options: .mutableLeaves) as? Dictionary
                     
                     return nil
@@ -370,7 +370,7 @@ class RouterTests: QuickSpec {
                 expect(bodyDictionary!["token"] as? String).toEventually(equal("power"))
             }
             
-            it("should give back the HTTPHeaders in the handler when a URLSession request has it") {
+            it("should give back the httpHeaders in the handler when a URLSession request has it") {
                 var contentType: String? = nil
                 var accept: String? = nil
                 
@@ -380,8 +380,8 @@ class RouterTests: QuickSpec {
                 request.addValue("application/json", forHTTPHeaderField: "Accept")
                 
                 router.post("/users/:id") { request in
-                    contentType = request.HTTPHeaders!["Content-Type"]
-                    accept = request.HTTPHeaders!["Accept"]
+                    contentType = request.httpHeaders!["Content-Type"]
+                    accept = request.httpHeaders!["Accept"]
                     return nil
                 }
                 
@@ -391,14 +391,14 @@ class RouterTests: QuickSpec {
                 expect(accept).toEventually(equal("application/json"))
             }
             
-            it("shouldn't give back HTTPHeaders in the handler when the request doesn't provide headers") {
+            it("shouldn't give back httpHeaders in the handler when the request doesn't provide headers") {
                 var count: Int? = nil
                 
                 var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
                 request.httpMethod = "POST"
                 
                 router.post("/users/:id") { request in
-                    count = request.HTTPHeaders!.count
+                    count = request.httpHeaders!.count
                     return nil
                 }
                 

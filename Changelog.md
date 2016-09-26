@@ -4,6 +4,7 @@
 --------------
 
 - Swift 3.0 Support
+- Renamed `HTTPBody` to `httpBody` and `HTTPData` to `httpData`
 
 ### 1.0.0
 ------------
