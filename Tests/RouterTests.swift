@@ -283,6 +283,34 @@ class RouterTests: QuickSpec {
                 expect(responseError).toEventually(beNil())
             }
             
+            it("should call handlers with same registered url but different http methods") {
+                
+                var calledPost = false
+                var calledPut = false
+                
+                router.post("/users/:user_id") { (request) -> Serializable? in
+                    calledPost = true
+                    return nil
+                }
+                
+                router.put("/users/:user_id") { (request) -> Serializable? in
+                    calledPut = true
+                    return nil
+                }
+                
+                var request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
+                request.HTTPMethod = "POST"
+                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                
+                expect(calledPost).toEventually(beTrue())
+                
+                request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
+                request.HTTPMethod = "PUT"
+                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                
+                expect(calledPut).toEventually(beTrue())
+            }
+            
             it("should not call the handler when requesting a registered url but using a different HTTPMethod") {
                 var info: URLInfo? = nil
                 var responseURL: NSURL? = NSURL(string: "")

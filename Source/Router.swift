@@ -95,13 +95,25 @@ public struct Response: ResponseFieldsProvider {
  */
 public final class Router {
     
-    private typealias Route = (method: HTTPMethod, handler: RouteHandler)
+    private class Route: Hashable {
+        let path: String
+        let method: HTTPMethod
+        
+        init(path: String, method: HTTPMethod) {
+            self.path = path
+            self.method = method
+        }
+        
+        private var hashValue: Int {
+            return path.hashValue ^ method.hashValue
+        }
+    }
     
     private enum HTTPMethod: String {
         case GET, POST, PUT, DELETE
     }
     
-    private var routes: [String : Route] = [:]
+    private var routes: [Route : RouteHandler] = [:]
 
     /// The `baseURL` of the Router
     public let baseURL: String
@@ -163,8 +175,8 @@ public final class Router {
         guard let requestURL = request.URL
             where requestURL.absoluteString?.containsString(baseURL) ?? false else { return false }
         
-        for (key, route) in routes where route.method.rawValue == request.HTTPMethod {
-            if  matchRoute(baseURL, path: key, requestURL: requestURL) != nil {
+        for (key, _) in routes where key.method.rawValue == request.HTTPMethod {
+            if  matchRoute(baseURL, path: key.path, requestURL: requestURL) != nil {
                 return true
             }
         }
@@ -180,14 +192,14 @@ public final class Router {
         var headerFields: [String : String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
         
-        for (key, route) in routes {
-            if let info = matchRoute(baseURL, path: key, requestURL: requestURL) {
+        for (key, handler) in routes where key.method.rawValue == server.request.HTTPMethod {
+            if let info = matchRoute(baseURL, path: key.path, requestURL: requestURL) {
                 // If the request body is nil use `NSURLProtocol` property see swizzling in `NSMutableURLRequest.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.HTTPBody ?? NSURLProtocol.propertyForKey("kkp_requestHTTPBody", inRequest: server.request) as? NSData
 
                 let request = Request(components: info.components, queryParameters: info.queryParameters, HTTPBody: dataBody, HTTPHeaders: server.request.allHTTPHeaderFields)
-                serializableObject = route.handler(request)
+                serializableObject = handler(request)
                 break
             }
         }
@@ -217,6 +229,10 @@ public final class Router {
             }
         }
     }
+    
+    private func addRoute(with path: String, method: HTTPMethod, handler: RouteHandler) {
+        routes[Route(path: path, method: method)] = handler
+    }
 
     /**
      Registers a GET request with the given path.
@@ -237,7 +253,7 @@ public final class Router {
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
     public func get(path: String, handler: RouteHandler) {
-        routes[path] = (.GET, handler)
+        addRoute(with: path, method: .GET, handler: handler)
     }
     
     /**
@@ -259,7 +275,7 @@ public final class Router {
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
     public func post(path: String, handler: RouteHandler) {
-        routes[path] = (.POST, handler)
+        addRoute(with: path, method: .POST, handler: handler)
     }
     
     /**
@@ -281,7 +297,7 @@ public final class Router {
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
     public func del(path: String, handler: RouteHandler) {
-        routes[path] = (.DELETE, handler)
+        addRoute(with: path, method: .DELETE, handler: handler)
     }
     
     /**
@@ -303,7 +319,12 @@ public final class Router {
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
     public func put(path: String, handler: RouteHandler) {
-        routes[path] = (.PUT, handler)
+        addRoute(with: path, method: .PUT, handler: handler)
     }
 
+}
+
+// swiftlint:disable variable_name
+private func ==(lhs: Router.Route, rhs: Router.Route) -> Bool {
+    return lhs.path == rhs.path && lhs.method == rhs.method
 }
