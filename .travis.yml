@@ -28,6 +28,7 @@ matrix:
         - pod lib lint --quick
       after_success:
         - bash <(curl -s https://codecov.io/bash) -J 'Kakapo'
+        - sleep 5
 
 script:
   - set -o pipefail
@@ -35,8 +36,8 @@ script:
 
 podfile: Podfile
 
+after_success:
+  - sleep 5 # workaround https://github.com/travis-ci/travis-ci/issues/4725
+
 after_failure:
   - cat -n ~/Library/Logs/scan/*
-  - cat -n $TMPDIR/com.apple.dt.XCTest-status/Session*.log
-  - cat -n ~/Library/Logs/DiagnosticReports/xctest*.crash
-
