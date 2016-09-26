@@ -38,29 +38,29 @@ class PostTableViewCell: UITableViewCell {
         avatarImage.hnk_cancelSetImage()
     }
     
-    func configure(with post: Post, likeHandler: () -> ()) {
-        if let url = NSURL(string: post.author.avatar) {
+    func configure(with post: Post, likeHandler: @escaping () -> ()) {
+        if let url = URL(string: post.author.avatar) {
             avatarImage.hnk_setImageFromURL(url, placeholder: PostTableViewCell.AvatarPlaceholder, format: Format<UIImage>(name: ""))
         }
         authorLabel.text = "\(post.author.firstName) \(post.author.lastName)"
         postLabel.text = post.text
         likeCountLabel.text = "\(post.likes.count)"
-        likeButton.tintColor = post.isLikedByMe ? .blueColor() : .grayColor()
+        likeButton.tintColor = post.isLikedByMe ? .blue : .gray
         commentCountLabel.text = "\(post.comments.count)"
         self.likeHandler = likeHandler
     }
     
     private func styleUI() {
-        authorLabel.font = UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)
-        commentButton.setImage(UIImage(named: "comment")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
-        commentButton.tintColor = .grayColor()
-        likeButton.setImage(UIImage(named: "thumbUp")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
-        likeButton.addTarget(self, action: #selector(likeButtonPressed), forControlEvents: .TouchUpInside)
-        backgroundColor = UIColor.whiteColor()
+        authorLabel.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)
+        commentButton.setImage(UIImage(named: "comment")?.withRenderingMode(.alwaysTemplate), for: UIControlState())
+        commentButton.tintColor = .gray
+        likeButton.setImage(UIImage(named: "thumbUp")?.withRenderingMode(.alwaysTemplate), for: UIControlState())
+        likeButton.addTarget(self, action: #selector(likeButtonPressed), for: .touchUpInside)
+        backgroundColor = UIColor.white
         postLabel.numberOfLines = 0
         avatarImage.clipsToBounds = true
-        avatarImage.contentMode = .ScaleAspectFill
-        avatarImage.layer.borderColor = UIColor.lightGrayColor().CGColor
+        avatarImage.contentMode = .scaleAspectFill
+        avatarImage.layer.borderColor = UIColor.lightGray.cgColor
         avatarImage.layer.borderWidth = 0.5
         avatarImage.layer.cornerRadius = CGFloat(PostTableViewCell.AvatarSize / 2)
     }
@@ -73,42 +73,42 @@ class PostTableViewCell: UITableViewCell {
         let margin = 10
         let biggerMargin = 20
         
-        avatarImage.snp_makeConstraints { (make) in
+        avatarImage.snp.makeConstraints { (make) in
             make.leading.top.equalTo(margin)
             make.width.height.equalTo(PostTableViewCell.AvatarSize)
         }
         
-        authorLabel.snp_makeConstraints { (make) in
-            make.leading.equalTo(avatarImage.snp_trailing).offset(margin)
+        authorLabel.snp.makeConstraints { (make) in
+            make.leading.equalTo(avatarImage.snp.trailing).offset(margin)
             make.centerY.equalTo(avatarImage)
             make.trailing.equalTo(self).inset(margin)
         }
         
-        postLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(avatarImage.snp_bottom).offset(margin)
-            make.leading.equalTo(avatarImage.snp_centerX)
+        postLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(avatarImage.snp.bottom).offset(margin)
+            make.leading.equalTo(avatarImage.snp.centerX)
             make.trailing.equalTo(authorLabel)
         }
         
-        likeButton.snp_makeConstraints { (make) in
-            make.top.equalTo(postLabel.snp_bottom).offset(biggerMargin)
+        likeButton.snp.makeConstraints { (make) in
+            make.top.equalTo(postLabel.snp.bottom).offset(biggerMargin)
             make.leading.equalTo(postLabel)
             make.bottom.equalTo(self).inset(margin)
         }
         
-        likeCountLabel.snp_makeConstraints { (make) in
+        likeCountLabel.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(likeButton)
-            make.leading.equalTo(likeButton.snp_trailing).offset(margin)
+            make.leading.equalTo(likeButton.snp.trailing).offset(margin)
         }
         
-        commentButton.snp_makeConstraints { (make) in
+        commentButton.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(likeButton)
-            make.leading.equalTo(likeCountLabel.snp_trailing).offset(biggerMargin)
+            make.leading.equalTo(likeCountLabel.snp.trailing).offset(biggerMargin)
         }
         
-        commentCountLabel.snp_makeConstraints { (make) in
+        commentCountLabel.snp.makeConstraints { (make) in
             make.top.bottom.equalTo(likeButton)
-            make.leading.equalTo(commentButton.snp_trailing).offset(margin)
+            make.leading.equalTo(commentButton.snp.trailing).offset(margin)
         }
     }
     

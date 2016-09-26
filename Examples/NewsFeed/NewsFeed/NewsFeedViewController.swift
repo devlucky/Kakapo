@@ -32,14 +32,14 @@ class NewsFeedViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
 
         title = "NewsFeed"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(composePost))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(composePost))
         
-        tableView.registerClass(PostTableViewCell.self, forCellReuseIdentifier: String(PostTableViewCell))
+        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: String(describing: PostTableViewCell.self))
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
         
-        tableView.snp_makeConstraints { (make) in
+        tableView.snp.makeConstraints { (make) in
             make.edges.equalTo(view)
         }
         
@@ -53,17 +53,17 @@ class NewsFeedViewController: UIViewController, UITableViewDelegate, UITableView
     @objc private func composePost() {
         let vc = ComposeViewController(networkManager: networkManager)
         let navigationController = UINavigationController(rootViewController: vc)
-        presentViewController(navigationController, animated: true, completion: nil)
+        present(navigationController, animated: true, completion: nil)
     }
     
     // MARK: UITableViewDataSource
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(String(PostTableViewCell), forIndexPath: indexPath) as! PostTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: PostTableViewCell.self), for: indexPath) as! PostTableViewCell
         let post = posts[indexPath.row]
         cell.configure(with: post) { [weak self] in
             self?.networkManager.toggleLikeForPost(at: indexPath.row)
@@ -74,8 +74,8 @@ class NewsFeedViewController: UIViewController, UITableViewDelegate, UITableView
     
     // MARK: UITableViewDelegate
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

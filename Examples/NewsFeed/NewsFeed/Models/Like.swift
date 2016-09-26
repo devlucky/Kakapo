@@ -27,7 +27,7 @@ struct Like: Serializable, Storable, JSONInitializable {
     
     init(id: String, store: Store) {
         self.id = id
-        author = store.create(User).first!
+        author = store.create(User.self).first!
     }
     
     init(json: JSON) {
