@@ -211,6 +211,70 @@ class RouterTests: QuickSpec {
                 expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
             }
             
+            it("should call handlers with same path but different http methods") {
+                var calledPost = false
+                var calledPut = false
+                var calledDel = false
+                
+                router.post("/users/:user_id") { (request) -> Serializable? in
+                    calledPost = true
+                    return nil
+                }
+                
+                router.put("/users/:user_id") { (request) -> Serializable? in
+                    calledPut = true
+                    return nil
+                }
+                
+                router.del("/users/:user_id") { (request) -> Serializable? in
+                    calledDel = true
+                    return nil
+                }
+                
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "POST"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledPost).toEventually(beTrue())
+                
+                request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "PUT"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledPut).toEventually(beTrue())
+                
+                request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "DELETE"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledDel).toEventually(beTrue())
+            }
+            
+            it("should replace handlers with same path and http methods") {
+                var calledFirstPost = false
+                var calledSecondPost = false
+                
+                router.post("/users/:user_id") { (request) -> Serializable? in
+                    calledFirstPost = true
+                    return nil
+                }
+                
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "POST"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledFirstPost).toEventually(beTrue())
+                
+                router.post("/users/:user_id") { (request) -> Serializable? in
+                    calledSecondPost = true
+                    return nil
+                }
+                
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledSecondPost).toEventually(beTrue())
+            }
+            
             context("when the Router has latency") {
                 it("should delay the mocked response") {
                     var responseData: Data? = nil

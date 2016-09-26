@@ -34,7 +34,7 @@ public struct JSONAPIError: ResponseFieldsProvider {
     }
     
     /// A builder for JSONAPIError
-    public struct Builder: Serializable {
+    public class Builder: Serializable {
         
         /// A unique identifier for this particular occurrence of the problem.
         public var id: String?
@@ -96,9 +96,9 @@ public struct JSONAPIError: ResponseFieldsProvider {
      
      - returns: An error that conforms to JSON API specifications and it's ready to be serialized
      */
-    public init(statusCode: Int, headerFields: [String: String]? = nil, errorBuilder: (_ error: inout Builder) -> ()) {
-        var builder = Builder(statusCode: statusCode)
-        errorBuilder(&builder)
+    public init(statusCode: Int, headerFields: [String: String]? = nil, errorBuilder: (_ error: Builder) -> ()) {
+        let builder = Builder(statusCode: statusCode)
+        errorBuilder(builder)
         self.builder = builder
         self.headerFields = headerFields
     }

@@ -95,13 +95,32 @@ public struct Response: ResponseFieldsProvider {
  */
 public final class Router {
     
-    private typealias Route = (method: HTTPMethod, handler: RouteHandler)
-    
-    private enum HTTPMethod: String {
-        case GET, POST, PUT, DELETE
+    private class Route: Hashable {
+        let path: String
+        let method: HTTPMethod
+        
+        static func == (lhs: Router.Route, rhs: Router.Route) -> Bool {
+            return lhs.path == rhs.path && lhs.method == rhs.method
+        }
+        
+        init(path: String, method: HTTPMethod) {
+            self.path = path
+            self.method = method
+        }
+        
+        var hashValue: Int {
+            return path.hashValue ^ method.hashValue
+        }
     }
     
-    private var routes: [String : Route] = [:]
+    private enum HTTPMethod: String {
+        case get = "GET"
+        case post = "POST"
+        case put = "PUT"
+        case delete = "DELETE"
+    }
+    
+    private var routes: [Route : RouteHandler] = [:]
 
     /// The `baseURL` of the Router
     public let baseURL: String
@@ -162,8 +181,8 @@ public final class Router {
     func canInitWithRequest(_ request: URLRequest) -> Bool {
         guard let requestURL = request.url, requestURL.absoluteString.contains(baseURL) else { return false }
         
-        for (key, route) in routes where route.method.rawValue == request.httpMethod {
-            if  matchRoute(baseURL, path: key, requestURL: requestURL) != nil {
+        for (key, _) in routes where key.method.rawValue == request.httpMethod {
+            if  matchRoute(baseURL, path: key.path, requestURL: requestURL) != nil {
                 return true
             }
         }
@@ -179,14 +198,14 @@ public final class Router {
         var headerFields: [String : String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
         
-        for (key, route) in routes {
-            if let info = matchRoute(baseURL, path: key, requestURL: requestURL) {
+        for (key, handler) in routes where key.method.rawValue == server.request.httpMethod {
+            if let info = matchRoute(baseURL, path: key.path, requestURL: requestURL) {
                 // If the request body is nil use `URLProtocol` property see swizzling in `NSMutableURLRequest+FixCopy.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: server.request) as? Data
 
                 let request = Request(components: info.components, queryParameters: info.queryParameters, httpBody: dataBody, httpHeaders: server.request.allHTTPHeaderFields)
-                serializableObject = route.handler(request)
+                serializableObject = handler(request)
                 break
             }
         }
@@ -216,6 +235,10 @@ public final class Router {
             }
         }
     }
+    
+    private func addRoute(with path: String, method: HTTPMethod, handler: @escaping RouteHandler) {
+        routes[Route(path: path, method: method)] = handler
+    }
 
     /**
      Registers a GET request with the given path.
@@ -236,7 +259,7 @@ public final class Router {
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
     public func get(_ path: String, handler: @escaping RouteHandler) {
-        routes[path] = Route(method: .GET, handler: handler)
+        addRoute(with: path, method: .get, handler: handler)
     }
     
     /**
@@ -258,7 +281,7 @@ public final class Router {
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
     public func post(_ path: String, handler: @escaping RouteHandler) {
-        routes[path] =  Route(method: .POST, handler: handler)
+        addRoute(with: path, method: .post, handler: handler)
     }
     
     /**
@@ -280,7 +303,7 @@ public final class Router {
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
     public func del(_ path: String, handler: @escaping RouteHandler) {
-        routes[path] = Route(method: .DELETE, handler: handler)
+        addRoute(with: path, method: .delete, handler: handler)
     }
     
     /**
@@ -302,7 +325,7 @@ public final class Router {
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
     public func put(_ path: String, handler: @escaping RouteHandler) {
-        routes[path] = Route(method: .PUT, handler: handler)
+        addRoute(with: path, method: .put, handler: handler)
     }
 
 }
