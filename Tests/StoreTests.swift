@@ -10,6 +10,10 @@ import Quick
 import Nimble
 @testable import Kakapo
 
+func random() -> Int {
+    return Int(arc4random() % 100)
+}
+
 struct User: Storable, Serializable {
     let id: String
     let firstName: String
@@ -17,7 +21,7 @@ struct User: Storable, Serializable {
     let age: Int
     
     init(id: String, store: Store) {
-        self.init(firstName: "tmp", lastName: "tmp", age: Int(arc4random()), id: id)
+        self.init(firstName: "tmp", lastName: "tmp", age: random(), id: id)
     }
     
     init(firstName: String, lastName: String, age: Int, id: String) {
@@ -34,7 +38,7 @@ struct Comment: Storable {
     let likes: Int
     
     init(id: String, store: Store) {
-        self.init(text: "tmp", likes: Int(arc4random()), id: id)
+        self.init(text: "tmp", likes: random(), id: id)
     }
     
     init(text: String, likes: Int, id: String) {
