@@ -5,8 +5,9 @@ notifications:
 
 env:
   global:
-  - WORKSPACE=Kakapo.xcworkspace
-  - COVERAGE=NO
+    - WORKSPACE=Kakapo.xcworkspace
+    - COVERAGE=NO
+
 podfile: Podfile
 
 osx_image: xcode8
