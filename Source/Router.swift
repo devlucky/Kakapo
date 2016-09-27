@@ -53,7 +53,7 @@ extension ResponseFieldsProvider {
     
     /// The default implementation just return the serialized body.
     public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
-        return body.serialize(keyTransformer)
+        return body.serialized(transformingKeys: keyTransformer)
     }
 }
 

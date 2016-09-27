@@ -43,7 +43,7 @@ extension SerializationTransformer {
      - returns: The serialized wrapped object with transformed keys.
      */
     public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
-        return wrapped.serialize { (string) in
+        return wrapped.serialized { (string) in
             let transformed = self.transform(key: string)
             return keyTransformer?(transformed) ?? transformed
         }

@@ -12,7 +12,7 @@ struct Parrot: Serializable {
 }
 
 let kakapo = Parrot(name: "Kakapo")
-kakapo.serialize()
+kakapo.serialized()
 
 /*:
  All properties are recursively serialized when needed. Only primitive values, arrays, dictionaries and string are allowed to be converted to json so other values must also be `Serializable`
@@ -36,7 +36,7 @@ struct CustomZoo: CustomSerializable {
             return keyTransformer?(key) ?? key
         }
         
-        let species = [key("parrot"): parrots.serialize() ?? []]
+        let species = [key("parrot"): parrots.serialized() ?? []]
         return [key("species"): species]
     }
 }

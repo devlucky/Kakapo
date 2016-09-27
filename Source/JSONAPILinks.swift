@@ -41,7 +41,7 @@ public enum JSONAPILink: CustomSerializable {
         switch self {
         case let .object(href, meta):
             var serializedObject: [String: Any] = ["href" : href]
-            serializedObject["meta"] = meta.serialize(keyTransformer)
+            serializedObject["meta"] = meta.serialized(transformingKeys: keyTransformer)
             
             return serializedObject
         case let .simple(value):

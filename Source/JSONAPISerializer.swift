@@ -293,7 +293,7 @@ public extension JSONAPIEntity {
         var relationships = [String: Any]()
         
         if let entityLinks = (self as? JSONAPILinkedEntity)?.links, !entityLinks.isEmpty {
-            data["links"] = entityLinks.serialize(keyTransformer)
+            data["links"] = entityLinks.serialized(transformingKeys: keyTransformer)
         }
         
         let excludedKeys: Set<String> = ["id", "links", "relationshipsLinks"]
@@ -307,14 +307,14 @@ public extension JSONAPIEntity {
                         
                         if let linkedEntity = self as? JSONAPILinkedEntity,
                             let relationshipsLinks = linkedEntity.relationshipsLinks?[label], !relationshipsLinks.isEmpty {
-                            relationship["links"] = relationshipsLinks.serialize(keyTransformer)
+                            relationship["links"] = relationshipsLinks.serialized(transformingKeys: keyTransformer)
                         }
                         
                         relationships[transformed(label)] = relationship
                     }
                 } else if includeAttributes && !excludedKeys.contains(label) {
                     if let value = child.value as? Serializable {
-                        attributes[transformed(label)] = value.serialize(keyTransformer)
+                        attributes[transformed(label)] = value.serialized(transformingKeys: keyTransformer)
                     } else {
                         attributes[transformed(label)] = child.value
                     }

@@ -70,7 +70,7 @@ class JSONAPISpec: QuickSpec {
         let user = User(id: "11", name: "Alex", dog: dog, cats: cats)
         
         func json(_ object: Serializable) -> JSON {
-            return JSON(object.serialize()!)
+            return JSON(object.serialized()!)
         }
         
         describe("JSON API serializer") {

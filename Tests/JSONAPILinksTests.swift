@@ -56,7 +56,7 @@ class JSONAPILinksSpec: QuickSpec {
     override func spec() {
 
         func json(_ object: Serializable) -> JSON {
-            return JSON(object.serialize()!)
+            return JSON(object.serialized()!)
         }
         
         describe("JSON API serializer") {

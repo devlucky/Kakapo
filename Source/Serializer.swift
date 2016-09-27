@@ -37,7 +37,7 @@ public extension Serializable {
      
      - returns: The serialized object
      */
-    func serialize(_ keyTransformer: KeyTransformer? = nil) -> Any? {
+    func serialized(transformingKeys keyTransformer: KeyTransformer? = nil) -> Any? {
         if let object = self as? CustomSerializable {
             return object.customSerialize(keyTransformer)
         }
@@ -50,7 +50,7 @@ public extension Serializable {
      - returns: The serialized object as `Data`
      */
     func toData() -> Data? {
-        guard let object = serialize() else { return nil }
+        guard let object = serialized() else { return nil }
         
         if !JSONSerialization.isValidJSONObject(object) {
             return nil
@@ -111,7 +111,7 @@ extension PropertyPolicy {
 
 private func serializeObject(_ value: Any, keyTransformer: KeyTransformer?) -> Any? {
     if let value = value as? Serializable {
-        return value.serialize(keyTransformer)
+        return value.serialized(transformingKeys: keyTransformer)
     }
     
     return value
