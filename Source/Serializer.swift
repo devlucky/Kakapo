@@ -26,7 +26,7 @@ public protocol CustomSerializable: Serializable {
 
      - returns: You should return either another `Serializable` object (also `Array` or `Dictionary`) containing other Serializable objects or property list types that can be serialized into json (primitive types).
      */
-    func customSerialize(_ keyTransformer: KeyTransformer?) -> Any?
+    func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any?
 }
 
 public extension Serializable {
@@ -39,7 +39,7 @@ public extension Serializable {
      */
     func serialized(transformingKeys keyTransformer: KeyTransformer? = nil) -> Any? {
         if let object = self as? CustomSerializable {
-            return object.customSerialize(keyTransformer)
+            return object.customSerialized(transformingKeys: keyTransformer)
         }
         return Kakapo.serialize(self, keyTransformer: keyTransformer)
     }
@@ -61,7 +61,7 @@ public extension Serializable {
 
 extension Array: CustomSerializable {
     /// `Array` is serialized by returning an `Array` containing its serialized elements
-    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+    public func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
         return flatMap { (element) -> Any? in
             return serializeObject(element, keyTransformer: keyTransformer)
         }
@@ -70,7 +70,7 @@ extension Array: CustomSerializable {
 
 extension Dictionary: CustomSerializable {
     /// `Dictionary` is serialized by creating a Dictionary with the same keys and values serialized
-    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+    public func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
         var dictionary = [String: Any]()
         for (key, value) in self {
             assert(key is String, "key must be a String to be serialized to JSON")
@@ -85,7 +85,7 @@ extension Dictionary: CustomSerializable {
 
 extension Optional: CustomSerializable {
     /// `Optional` serializes its inner object or nil if nil
-    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+    public func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
         switch self {
         case let .some(value):
             return serializeObject(value, keyTransformer: keyTransformer)
@@ -97,7 +97,7 @@ extension Optional: CustomSerializable {
 
 extension PropertyPolicy {
     /// `PropertyPolicy` serializes as nil when `.none`, as `NSNull` when `.null` or serialize the object for `.some`
-    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+    public func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
         switch self {
         case .none:
             return nil

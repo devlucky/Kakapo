@@ -195,12 +195,12 @@ public final class Store {
      Filter all the objects in the store of a given Storable Type that satisfy the a given handler
      
      - parameter (unnamed): The Storable Type to be filtered
-     - parameter includeElement: The predicate to satisfy the filtering
+     - parameter isIncluded: The predicate to satisfy the filtering
      
      - returns: An array containing the filtered Storable objects
      */
-    public func filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T] {
-        return findAll(T.self).filter(includeElement)
+    public func filter<T: Storable>(_: T.Type, isIncluded: (T) -> Bool) -> [T] {
+        return findAll(T.self).filter(isIncluded)
     }
     
     /**

@@ -36,7 +36,7 @@ public struct Request {
 /**
  A protocol to adopt when a `Serializable object needs to also provide response status code and/or headerFields
  For example you may use `Response` to wrap your `Serializable` object to just achieve the result or directly implement the protocol.
- For example `JSONAPISerializer` implement the protocol in order to be able to provide custom status code in the response.
+ For example `JSONAPIError` implement the protocol in order to be able to provide custom status code in the response.
  */
 public protocol ResponseFieldsProvider: CustomSerializable {
     /// The response status code
@@ -52,7 +52,7 @@ public protocol ResponseFieldsProvider: CustomSerializable {
 extension ResponseFieldsProvider {
     
     /// The default implementation just return the serialized body.
-    public func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+    public func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
         return body.serialized(transformingKeys: keyTransformer)
     }
 }

@@ -28,7 +28,7 @@ class SerializeSpec: QuickSpec {
     struct CustomUser: CustomSerializable {
         let name: String
         
-        func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+        func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
             let key = keyTransformer?("customName") ?? "customName"
             return [key: name]
         }

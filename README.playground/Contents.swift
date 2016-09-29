@@ -30,7 +30,7 @@ struct CustomZoo: CustomSerializable {
     
     // this is a really simple `CustomSerializable` that could be achieved with `Serializable` by just using a property "species" (dictionary). 
     // See JSONAPI implementation for more complex, real life, examples.
-    func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+    func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
         // transformer will be not nill when this object is wrapped into a `SerializationTransformer` (e.g. `SnakeCaseTransformer`)... if the object doesn't need key transformation just ignore it
         let key: (String) -> (String) = { (key) in
             return keyTransformer?(key) ?? key
