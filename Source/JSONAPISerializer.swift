@@ -25,7 +25,7 @@ public protocol JSONAPISerializable {
     /**
      Creates the `included` field by aggregating and unifying the attributes of the relationships recursively
      
-     - parameter includeChildren: Include relationships of relationships recursively, by default `JSONAPISerializer` won't include children
+     - parameter includingChildren: Include relationships of relationships recursively, by default `JSONAPISerializer` won't include children
      - parameter keyTransformer:  The keyTransformer to be used, if not nil, to transform the keys of the json
 
      - returns: An array of included relationsips or nil if no relationsips are incldued.
