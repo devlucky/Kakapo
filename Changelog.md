@@ -3,9 +3,29 @@
 ### HEAD
 --------------
 
-- Swift 3.0 Support
+#### Breaking
+
+- ***Swift 3.0 Support***
 - Renamed `HTTPBody` to `httpBody` and `HTTPHeader` to `httpHeader`
 - `HTTPMethod` enum cases are now lowercase
+- Updated APIs to follow Swift 3 new naming guidelines:
+
+  #### Serializable
+  - `serialize(_ keyTransformer: KeyTransformer? = nil) -> Any?` -> `serialized(transformingKeys keyTransformer: KeyTransformer? = nil) -> Any?`
+
+  #### CustomSerializable
+  - `customSerialize(_ keyTransformer: KeyTransformer?) -> Any?` -> `customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any?`
+
+  #### Store
+  - `filter<T: Storable>(_: T.Type, includeElement: (T) -> Bool) -> [T]` -> `filter<T: Storable>(_: T.Type, isIncluded: (T) -> Bool) -> [T]`
+
+  #### JSONAPISerializable
+  - `data(includeRelationships: Bool, includeAttributes: Bool, keyTransformer: KeyTransformer?) -> Any?` -> `data(includingRelationships: Bool, includingAttributes: Bool, transformingKeys keyTransformer: KeyTransformer?) -> Any?`
+  - `includedRelationships(includeChildren: Bool, keyTransformer: KeyTransformer?) -> [Any]?` -> `includedRelationships(includingChildren: Bool, transformingKeys keyTransformer: KeyTransformer?) -> [Any]?`
+
+  #### JSONAPISerializer
+  - `init(_ object: T, topLevelLinks: [String: JSONAPILink]? = nil, topLevelMeta: Serializable? = nil, includeChildren: Bool = false)` -> `init(_ object: T, topLevelLinks: [String: JSONAPILink]? = nil, topLevelMeta: Serializable? = nil, includingChildren: Bool = false)`
+
 
 ### 1.0.1
 -----------
@@ -32,4 +52,3 @@
 ------------
 
 - Initial release 🎉
-

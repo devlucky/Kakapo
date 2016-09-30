@@ -117,16 +117,16 @@ struct User: Serializable {
 }
 
 let user = User(name: "Alex")
-let serializedUser = user.serialize()
+let serializedUser = user.serialized()
 //  -> ["name": "Alex"]
 ```
 
 Also, standard library types are supported: this means that `Array`, `Dictionary` or `Optional` can be serialized:
 
 ```Swift
-let serializedUserArray = [user].serialize()
+let serializedUserArray = [user].serialized()
 // -> [["name": "Alex"]]
-let serializedUserDictionary = ["test": user].serialize()
+let serializedUserDictionary = ["test": user].serialized()
 // -> ["test": ["name": "Alex"]]
 ```
 
@@ -305,9 +305,9 @@ It's only purpose is to be serialized in 3 different ways, to cover all possible
 The additional case ,`.null`, is serialized as `null` when converted to json.
 
 ```Swift
-PropertyPolicy<Int>.none.serialize() // nil
-PropertyPolicy<Int>.null.serialize() // NSNull
-PropertyPolicy<Int>.some(1).serialize() // 1
+PropertyPolicy<Int>.none.serialized() // nil
+PropertyPolicy<Int>.null.serialized() // NSNull
+PropertyPolicy<Int>.some(1).serialized() // 1
 ```
 
 ### Key customization - Serialization Transformer
@@ -319,7 +319,7 @@ For a concrete implementation, check `SnakecaseTransformer`: a struct that imple
 
 ```Swift
 let user = User(userName: "Alex")
-let serialized = SnakecaseTransformer(user).serialize()
+let serialized = SnakecaseTransformer(user).serialized()
 print(serialized) // [ "user_name" : "Alex" ]
 ```
 

@@ -188,7 +188,7 @@ class StoreTests: QuickSpec {
                     return User(firstName: "Hector", lastName: "Zarco", age:25, id: id)
                 }
                 
-                let userArray = sut.filter(User.self, includeElement: { (item) -> Bool in
+                let userArray = sut.filter(User.self, isIncluded: { (item) -> Bool in
                     return item.lastName == "Manzella"
                 })
                 
@@ -381,7 +381,7 @@ class StoreTests: QuickSpec {
             }
             
             it("should not deadlock when writing into the store during a reading operation") {
-                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
                     sut.create(User.self)
                     return true
                 })
@@ -390,7 +390,7 @@ class StoreTests: QuickSpec {
             }
             
             it("should not deadlock when synchronously writing from another queue into the store during a reading operation") {
-                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
                     let _ = queue.sync {
                         sut.create(User.self)
                     }
@@ -401,7 +401,7 @@ class StoreTests: QuickSpec {
             }
             
             it("should not deadlock when reading the store during a read operation") {
-                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
                     let _ = sut.findAll(User.self)
                     return true
                 })
@@ -410,7 +410,7 @@ class StoreTests: QuickSpec {
             }
             
             it("should not deadlock when synchronously reading the store from another queue during a reading operation") {
-                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
                     let _ = queue.sync {
                         sut.findAll(User.self)
                     }
@@ -463,7 +463,7 @@ class StoreTests: QuickSpec {
             }
             
             it("should not deadlock when deleting into store during a reading operation") {
-                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
                     try! sut.delete(sut.find(User.self, id: "0")!)
                     return true
                 })
@@ -475,7 +475,7 @@ class StoreTests: QuickSpec {
             }
             
             it("should not deadlock when updating into store during a reading operation") {
-                let result = sut.filter(User.self, includeElement: { (_) -> Bool in
+                let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
                     try! sut.update(User(firstName: "Alex", lastName: "Manzella", age: 30, id: "0"))
                     return true
                 })

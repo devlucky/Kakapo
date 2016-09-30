@@ -58,7 +58,7 @@ class JSONAPISpec: QuickSpec {
         let id: String
         let title: String
         
-        func customSerialize(_ keyTransformer: KeyTransformer?) -> Any? {
+        func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
             return ["foo": "bar"]
         }
     }
@@ -70,7 +70,7 @@ class JSONAPISpec: QuickSpec {
         let user = User(id: "11", name: "Alex", dog: dog, cats: cats)
         
         func json(_ object: Serializable) -> JSON {
-            return JSON(object.serialize()!)
+            return JSON(object.serialized()!)
         }
         
         describe("JSON API serializer") {
@@ -345,7 +345,7 @@ class JSONAPISpec: QuickSpec {
                 let dog = Dog(id: "22", name: "Joan", cat: Cat(id: "55", name: "Max"))
                 let user = User(id: "11", name: "Alex", dog: dog, cats: cats)
 
-                let object = json(JSONAPISerializer(user, includeChildren: true))
+                let object = json(JSONAPISerializer(user, includingChildren: true))
                 let included = object["included"].arrayValue
                 expect(included.count).to(equal(4))
             }
@@ -417,19 +417,19 @@ class JSONAPISpec: QuickSpec {
             context("included PropertyPolicies") {
                 
                 it("should handle PropertyPolicy.none") {
-                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .none), includeChildren: true))
+                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .none), includingChildren: true))
                     let included = includedRelationshipsById(object)
                     expect(included.count).to(equal(0))
                 }
                 
                 it("should handle PropertyPolicy.null") {
-                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .null), includeChildren: true))
+                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .null), includingChildren: true))
                     let included = includedRelationshipsById(object)
                     expect(included.count).to(equal(0))
                 }
                 
                 it("should handle PropertyPolicy.some(T)") {
-                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .some(user)), includeChildren: true))
+                    let object = json(JSONAPISerializer(Policy<User>(id: "1111", policy: .some(user)), includingChildren: true))
                     let included = includedRelationshipsById(object)
                     let dog = included["22"]
                     
@@ -438,7 +438,7 @@ class JSONAPISpec: QuickSpec {
                 }
                 
                 it("should be empty if PropertyPolicy is not a JSONAPIEntity") {
-                    let object = json(JSONAPISerializer(Policy<Int>(id: "1111", policy: .some(1)), includeChildren: true))
+                    let object = json(JSONAPISerializer(Policy<Int>(id: "1111", policy: .some(1)), includingChildren: true))
                     let included = includedRelationshipsById(object)
                     expect(included.count).to(equal(0))
                 }
