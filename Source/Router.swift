@@ -91,7 +91,7 @@ public struct Response: ResponseFieldsProvider {
 /**
  A Router object is an object in charge of intercepting outgoing network calls in order to return custom objects. You register new Router objects by using the `register` class methods.
  
- After that, the router can be used to register different HTTP methods (GET, POST, DEL, PUT) with custom `RouteHandlers`
+ After that, the router can be used to register different HTTP methods (GET, POST, PATCH, DEL, PUT) with custom `RouteHandlers`
  */
 public final class Router {
     
@@ -118,6 +118,7 @@ public final class Router {
         case post = "POST"
         case put = "PUT"
         case delete = "DELETE"
+		case patch = "PATCH"
     }
     
     private var routes: [Route : RouteHandler] = [:]
@@ -283,10 +284,31 @@ public final class Router {
     public func post(_ path: String, handler: @escaping RouteHandler) {
         addRoute(with: path, method: .post, handler: handler)
     }
-    
+
+	/**
+	Registers a PATCH request with the given path
+
+	The path is used together with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retrieve the components of the request:
+
+	- "/users/:userid" and "/users/1234" will produce [userid: 1234]
+
+	Other than wildcards the components must be matched by the request.
+	The path should not contain paths that are already contained in the baseURL:
+
+	- base: "http://kakapo.com/api" -> path "/users/1234" ✅
+	- base: "http://kakapo.com/api" -> path "api/users/1234" ❌
+
+	Trailing and leading slashes are not important for the route matching.
+
+	- parameter path: The path used to match URL requests.
+	- parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
+	*/
+	public func patch(_ path: String, handler: @escaping RouteHandler) {
+		addRoute(with: path, method: .patch, handler: handler)
+	}
     /**
      Registers a DEL request with the given path
-     
+
      The path is used together with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retrieve the components of the request:
      
      - "/users/:userid" and "/users/1234" will produce [userid: 1234]
