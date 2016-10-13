@@ -285,27 +285,27 @@ public final class Router {
         addRoute(with: path, method: .post, handler: handler)
     }
 
-	/**
-	Registers a PATCH request with the given path
+    /**
+    Registers a PATCH request with the given path
 
-	The path is used together with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retrieve the components of the request:
+    The path is used together with the `Router.baseURL` to match requests. It can contain wildcard components prefixed by ":" that are later used to retrieve the components of the request:
 
-	- "/users/:userid" and "/users/1234" will produce [userid: 1234]
+    - "/users/:userid" and "/users/1234" will produce [userid: 1234]
 
-	Other than wildcards the components must be matched by the request.
-	The path should not contain paths that are already contained in the baseURL:
+    Other than wildcards the components must be matched by the request.
+    The path should not contain paths that are already contained in the baseURL:
 
-	- base: "http://kakapo.com/api" -> path "/users/1234" ✅
-	- base: "http://kakapo.com/api" -> path "api/users/1234" ❌
+    - base: "http://kakapo.com/api" -> path "/users/1234" ✅
+    - base: "http://kakapo.com/api" -> path "api/users/1234" ❌
 
-	Trailing and leading slashes are not important for the route matching.
+    Trailing and leading slashes are not important for the route matching.
 
-	- parameter path: The path used to match URL requests.
-	- parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
-	*/
-	public func patch(_ path: String, handler: @escaping RouteHandler) {
-		addRoute(with: path, method: .patch, handler: handler)
-	}
+    - parameter path: The path used to match URL requests.
+    - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
+    */
+    public func patch(_ path: String, handler: @escaping RouteHandler) {
+        addRoute(with: path, method: .patch, handler: handler)
+    }
     /**
      Registers a DEL request with the given path
 
