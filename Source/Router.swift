@@ -306,6 +306,7 @@ public final class Router {
     public func patch(_ path: String, handler: @escaping RouteHandler) {
         addRoute(with: path, method: .patch, handler: handler)
     }
+    
     /**
      Registers a DEL request with the given path
 
