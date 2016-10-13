@@ -260,7 +260,7 @@ class RouterTests: QuickSpec {
                 URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
 
                 expect(calledPatch).toEventually(beTrue())
-			}
+            }
 
             it("should replace handlers with same path and http methods") {
                 var calledFirstPost = false
