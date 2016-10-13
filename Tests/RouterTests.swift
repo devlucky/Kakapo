@@ -215,7 +215,7 @@ class RouterTests: QuickSpec {
                 var calledPost = false
                 var calledPut = false
                 var calledDel = false
-				var calledPatch = false
+                var calledPatch = false
                 
                 router.post("/users/:user_id") { (request) -> Serializable? in
                     calledPost = true
@@ -232,10 +232,10 @@ class RouterTests: QuickSpec {
                     return nil
                 }
 
-				router.patch("/users/:user_id") { (request) -> Serializable? in
-					calledPatch = true
-					return nil
-				}
+                router.patch("/users/:user_id") { (request) -> Serializable? in
+                    calledPatch = true
+                    return nil
+                }
 
                 var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
                 request.httpMethod = "POST"
@@ -255,11 +255,11 @@ class RouterTests: QuickSpec {
                 
                 expect(calledDel).toEventually(beTrue())
 
-				request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
-				request.httpMethod = "PATCH"
-				URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "PATCH"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
 
-				expect(calledPatch).toEventually(beTrue())
+                expect(calledPatch).toEventually(beTrue())
 			}
 
             it("should replace handlers with same path and http methods") {
