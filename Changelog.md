@@ -3,6 +3,8 @@
 ### HEAD
 --------------
 
+- Added `PATCH` method support
+
 ### 2.0.0
 -----------
 
