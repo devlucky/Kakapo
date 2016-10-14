@@ -217,9 +217,15 @@ class RouterTests: QuickSpec {
                 var calledPost = false
                 var calledPut = false
                 var calledDel = false
+                var calledPatch = false
                 
                 router.post("/users/:user_id") { (request) -> Serializable? in
                     calledPost = true
+                    return nil
+                }
+                
+                router.patch("/users/:user_id") { (request) -> Serializable? in
+                    calledPatch = true
                     return nil
                 }
                 
@@ -250,6 +256,12 @@ class RouterTests: QuickSpec {
                 NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
                 
                 expect(calledDel).toEventually(beTrue())
+                
+                request = NSMutableURLRequest(URL: NSURL(string: "http://www.test.com/users/1")!)
+                request.HTTPMethod = "PATCH"
+                NSURLSession.sharedSession().dataTaskWithRequest(request) { (_, _, _) in }.resume()
+                    
+                expect(calledPatch).toEventually(beTrue())
             }
             
             it("should replace handlers with same path and http methods") {
