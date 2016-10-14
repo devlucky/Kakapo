@@ -3,7 +3,10 @@
 ### HEAD
 --------------
 
-- Added `PATCH` method support
+### 1.1.0
+-----------
+
+- Added `PATCH` method support [Hernan Gonzalez](https://github.com/hernangonzalez)
 
 ### 1.0.1
 -----------
