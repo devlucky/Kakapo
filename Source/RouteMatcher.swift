@@ -42,9 +42,14 @@ func matchRoute(baseURL: String, path: String, requestURL: NSURL) -> URLInfo? {
     // remove the baseURL and the params, if baseURL is not in the string the result will be nil
     guard let relevantURL: String = {
         let string = requestURL.absoluteString // http://kakapo.com/api/users/1234?a=b
+        #if swift(>=2.3)
         let stringWithoutParams = string?.substring(.To, string: "?") ?? string // http://kakapo.com/api/users/1234
         return stringWithoutParams?.substring(.From, string: baseURL) // `/api/users`
-        }() else { return nil }
+        #else
+        let stringWithoutParams = string.substring(.To, string: "?") ?? string // http://kakapo.com/api/users/1234
+        return stringWithoutParams.substring(.From, string: baseURL) // `/api/users`
+        #endif
+    }() else { return nil }
     
     let routePathComponents = path.split("/") // e.g. [users, :userid]
     let requestPathComponents = relevantURL.split("/") // e.g. [users, 1234]
