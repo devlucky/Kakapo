@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name             = "Kakapo"
-  s.version          = "0.1.0"
+  s.version          = "2.1.0"
   s.summary          = "Dynamically Mock server behaviors and responses."
 
-  s.description      = <<-DESC 
+  s.description      = <<-DESC
 							Dynamically Mock server behaviors and responses.
-  							Kakapo allows you to replicate your backend APIs and logic.  
+  							Kakapo allows you to replicate your backend APIs and logic.
   							With Kakapo you can easily prototype your application based on your API specifications.
   							While usually network mocks involve using static json files Kakapo let you create Swift structs/classes/enums that are automatically serialized to JSON.
                        DESC
@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target = '2.0'
 
   s.source_files = 'Source/**/*'
-  
+
 end

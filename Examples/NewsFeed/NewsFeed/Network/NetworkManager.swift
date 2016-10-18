@@ -21,18 +21,18 @@ class NetworkManager {
         }
     }
     
-    private lazy var manager: Manager = {
-        let configuration: NSURLSessionConfiguration = {
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            configuration.protocolClasses = [KakapoServer.self]
+    private lazy var manager: SessionManager = {
+        let configuration: URLSessionConfiguration = {
+            let configuration = URLSessionConfiguration.default
+            configuration.protocolClasses = [Server.self]
             return configuration
         }()
         
-        return Manager(configuration: configuration)
+        return SessionManager(configuration: configuration)
     }()
     
     func requestNewsFeed() {
-        manager.request(.GET, "https://kakapobook.com/api/users/\(loggedInUser.id)/newsfeed").responseJSON { [weak self] (response) in
+        manager.request("https://kakapobook.com/api/users/\(loggedInUser.id)/newsfeed", method: .get).responseJSON { [weak self] (response) in
             guard let data = response.data else { return }
             let json = JSON(data: data)
             self?.posts = json.arrayValue.map { (post) -> Post in
@@ -42,16 +42,13 @@ class NetworkManager {
     }
     
     func createPost(with text: String) {
-        manager.request(.POST, "https://kakapobook.com/api/post", parameters: [:], encoding: .Custom({
-            (convertible, params) in
-            let mutableRequest = convertible.URLRequest.copy() as! NSMutableURLRequest
-            mutableRequest.HTTPBody = JSON(["text": text]).rawString()?.dataUsingEncoding(NSUTF8StringEncoding)
-            return (mutableRequest, nil)
-        })).responseJSON { [weak self] (response) in
+        let body = JSON(["text": text]).rawString()
+        
+        manager.request("https://kakapobook.com/api/post", method: .post, parameters: nil, encoding: body!).responseJSON { [weak self] (response) in
             guard let data = response.data else { return }
             let json = JSON(data: data)
             if var posts = self?.posts {
-                posts.insert(Post(json: json), atIndex: 0)
+                posts.insert(Post(json: json), at: 0)
                 self?.posts = posts
             }
         }
@@ -70,7 +67,7 @@ class NetworkManager {
     func likePost(at index: Int) {
         let post = posts[index]
         
-        manager.request(.POST, "https://kakapobook.com/api/entity/post/\(post.id)/like").responseJSON{ [weak self] (response) in
+        manager.request("https://kakapobook.com/api/entity/post/\(post.id)/like", method: .post).responseJSON { [weak self] (response) in
             guard let data = response.data else { return }
             
             let post = Post(json: JSON(data: data))
@@ -83,7 +80,7 @@ class NetworkManager {
         let post = posts[index]
         let like = post.myLike
         
-        manager.request(.DELETE, "https://kakapobook.com/api/entity/post/\(post.id)/like/\(like!.id)").responseJSON{ [weak self] (response) in
+        manager.request("https://kakapobook.com/api/entity/post/\(post.id)/like/\(like!.id)", method: .delete).responseJSON { [weak self] (response) in
             guard let data = response.data else { return }
             
             let post = Post(json: JSON(data: data))
@@ -91,4 +88,13 @@ class NetworkManager {
             self?.posts[index] = post
         }
     }
+}
+
+extension String: ParameterEncoding {
+    
+    public func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
+        var request = try urlRequest.asURLRequest()
+        request.httpBody = data(using: .utf8, allowLossyConversion: false)
+        return request
+    }    
 }

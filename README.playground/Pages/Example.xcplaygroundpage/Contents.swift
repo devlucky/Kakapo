@@ -11,7 +11,7 @@ struct Parrot: Serializable {
 }
 
 let kakapo = Parrot(name: "Kakapo")
-kakapo.serialize() // ["name" : "Kakapo"]
+kakapo.serialized() // ["name" : "Kakapo"]
 
 /*:
  All properties are recursively serialized when needed. Only primitive types, arrays, dictionaries and strings are allowed to be converted to json so other types must also be `Serializable`
@@ -21,7 +21,7 @@ struct Zoo: Serializable {
 }
 
 let zoo = Zoo(parrots: [kakapo])
-zoo.serialize() // ["parrots" : [["name" : "Kakapo"]]]
+zoo.serialized() // ["parrots" : [["name" : "Kakapo"]]]
 //: ## Router
 let router = Router.register("https://kakapo.com/api")
 
@@ -37,15 +37,15 @@ router.get("zoo/:animal") { (request) -> Serializable? in
 //: request **GET** `https://kakapo.com/api/zoo/parrot`
 //: will return `{"name": "Kakapo"}`
 
-//: ## KakapoDB
-let db = KakapoDB()
+//: ## Store
+let store = Store()
 
 struct Author: Storable, Serializable {
     let id: String
     let name: String
     
     // required by Storable
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
         self.name = String(arc4random())
     }
@@ -56,33 +56,33 @@ struct Article: Storable, Serializable {
     let text: String
     let author: Author
     
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
         self.text = String(arc4random())
-        self.author = db.insert { (id) -> Author in
-            return Author(id: id, db: db)
+        self.author = store.insert { (id) -> Author in
+            return Author(id: id, store: store)
         }
     }
 }
 
 //: Create 10 random article
-db.create(Article.self, number: 10)
+store.create(Article.self, number: 10)
 //: Get all articles
 router.get("articles") { (request) -> Serializable? in
-    return db.findAll(Article.self)
+    return store.findAll(Article.self)
 }
 
 //: Get all articles from the given author
 router.get("articles/:author_id") { (request) -> Serializable? in
-    return db.filter(Article.self) { (article) -> Bool in
+    return store.filter(Article.self) { (article) -> Bool in
         return article.author.id == request.components["author_id"]
     }
 }
 
 //: Create an article
 router.post("article") { (request) -> Serializable? in
-    return db.insert { (id) -> Article in
-        return Article(id: id, db: db)
+    return store.insert { (id) -> Article in
+        return Article(id: id, store: store)
     }
 }
 

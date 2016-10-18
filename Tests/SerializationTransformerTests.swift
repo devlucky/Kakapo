@@ -16,8 +16,8 @@ struct UppercaseTransformer<Wrapped: Serializable>: SerializationTransformer {
     
     let wrapped: Wrapped
     
-    func transform(key key: String) -> String {
-        return key.uppercaseString
+    func transform(key: String) -> String {
+        return key.uppercased()
     }
 }
 
@@ -25,9 +25,9 @@ struct LowercaseFirstCharacterTransformer<Wrapped: Serializable>: SerializationT
     
     let wrapped: Wrapped
     
-    func transform(key key: String) -> String {
+    func transform(key: String) -> String {
         let characters = key.characters
-        let first = String(characters.prefix(1)).lowercaseString
+        let first = String(characters.prefix(1)).lowercased()
         let other = String(characters.dropFirst())
         return first + other
     }
@@ -69,7 +69,7 @@ class SerializationTransformerSpec: QuickSpec {
         
         describe("Serialization Transformers") {
             it("transforms the keys of a Serializable objects") {
-                let serialized = UppercaseTransformer(wrapped: friend).serialize() as! [String: AnyObject]
+                let serialized = UppercaseTransformer(wrapped: friend).serialized() as! [String: AnyObject]
                 let friends = serialized["FRIENDS"] as? [AnyObject]
                 let first = friends?.first as? [String: AnyObject]
                 expect(first?.keys.first).to(equal("NAME"))
@@ -78,7 +78,7 @@ class SerializationTransformerSpec: QuickSpec {
             it("should apply transformations in the right order") {
                 do {
                     let wrapped = UppercaseTransformer(wrapped: friend)
-                    let serialized = LowercaseFirstCharacterTransformer(wrapped: wrapped).serialize() as! [String: AnyObject]
+                    let serialized = LowercaseFirstCharacterTransformer(wrapped: wrapped).serialized() as! [String: AnyObject]
                     let friends = serialized["fRIENDS"] as? [AnyObject]
                     let first = friends?.first as? [String: AnyObject]
                     expect(first?.keys.first).to(equal("nAME"))
@@ -86,7 +86,7 @@ class SerializationTransformerSpec: QuickSpec {
                 
                 do {
                     let wrapped = LowercaseFirstCharacterTransformer(wrapped: friend)
-                    let serialized = UppercaseTransformer(wrapped: wrapped).serialize() as! [String: AnyObject]
+                    let serialized = UppercaseTransformer(wrapped: wrapped).serialized() as! [String: AnyObject]
                     let friends = serialized["FRIENDS"] as? [AnyObject]
                     let first = friends?.first as? [String: AnyObject]
                     expect(first?.keys.first).to(equal("NAME"))
@@ -120,7 +120,7 @@ class SerializationTransformerSpec: QuickSpec {
             
             it("should transform correctly the wrapped object's keys") {
                 let snake = Snake(theSnakeCamelFriend: "abc")
-                let serialized = SnakecaseTransformer(snake).serialize() as? [String: AnyObject]
+                let serialized = SnakecaseTransformer(snake).serialized() as? [String: AnyObject]
                 expect(serialized?.keys.first).to(equal("the_snake_camel_friend"))
             }
         }
@@ -131,16 +131,16 @@ class SerializationTransformerSpec: QuickSpec {
             
             context("Optional") {
                 it("should transform the keys") {
-                    let object = Optional.Some(friend)
-                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
+                    let object = Optional.some(friend)
+                    let serialized = UppercaseTransformer(wrapped: object).serialized() as! [String: AnyObject]
                     expect(serialized["FRIENDS"]).toNot(beNil())
                 }
             }
             
             context("PropertyPolicy") {
                 it("should transform the keys") {
-                    let object = PropertyPolicy.Some(friend)
-                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
+                    let object = PropertyPolicy.some(friend)
+                    let serialized = UppercaseTransformer(wrapped: object).serialized() as! [String: AnyObject]
                     expect(serialized["FRIENDS"]).toNot(beNil())
                 }
             }
@@ -148,7 +148,7 @@ class SerializationTransformerSpec: QuickSpec {
             context("ResponseFieldsProvider") {
                 it("should transform the keys") {
                     let object = Response(statusCode: 200, body: friend)
-                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
+                    let serialized = UppercaseTransformer(wrapped: object).serialized() as! [String: AnyObject]
                     expect(serialized["FRIENDS"]).toNot(beNil())
                 }
             }
@@ -156,7 +156,7 @@ class SerializationTransformerSpec: QuickSpec {
             context("Array") {
                 it("should transform the keys") {
                     let object = [friend]
-                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [[String: AnyObject]]
+                    let serialized = UppercaseTransformer(wrapped: object).serialized() as! [[String: AnyObject]]
                     expect(serialized.first?["FRIENDS"]).toNot(beNil())
                 }
             }
@@ -164,7 +164,7 @@ class SerializationTransformerSpec: QuickSpec {
             context("Dictionary") {
                 it("should transform the keys") {
                     let object = ["lowercase": friend]
-                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: [String: AnyObject]]
+                    let serialized = UppercaseTransformer(wrapped: object).serialized() as! [String: [String: AnyObject]]
                     expect(serialized["LOWERCASE"]?["FRIENDS"]).toNot(beNil())
                 }
             }
@@ -173,7 +173,7 @@ class SerializationTransformerSpec: QuickSpec {
                 it("should transform the keys") {
                     let dog = Dog(id: "22", dogName: "Joan")
                     let user = JUser(id: "11", userName: "Alex", doggyDog: dog)
-                    let serialized = SnakecaseTransformer(JSONAPISerializer(user)).serialize() as! [String: AnyObject]
+                    let serialized = SnakecaseTransformer(JSONAPISerializer(user)).serialized() as! [String: AnyObject]
                     let json = JSON(serialized)
                     
                     let data = json["data"].dictionaryValue
@@ -205,8 +205,8 @@ class SerializationTransformerSpec: QuickSpec {
             
             context("JSON API Links") {
                 it("should transform the keys") {
-                    let object = JSONAPILink.Object(href: "test", meta: friend)
-                    let serialized = UppercaseTransformer(wrapped: object).serialize() as! [String: AnyObject]
+                    let object = JSONAPILink.object(href: "test", meta: friend)
+                    let serialized = UppercaseTransformer(wrapped: object).serialized() as! [String: AnyObject]
                     expect(serialized["href"]).toNot(beNil())
                     let meta = serialized["meta"] as? [String: AnyObject]
                     expect(meta?["FRIENDS"]).toNot(beNil())

@@ -1,23 +1,28 @@
-#SwiftyJSON [中文介绍](http://tangplin.github.io/swiftyjson/)
+#SwiftyJSON
 
 [![Travis CI](https://travis-ci.org/SwiftyJSON/SwiftyJSON.svg?branch=master)](https://travis-ci.org/SwiftyJSON/SwiftyJSON)
 
 SwiftyJSON makes it easy to deal with JSON data in Swift.
 
 1. [Why is the typical JSON handling in Swift NOT good](#why-is-the-typical-json-handling-in-swift-not-good)
-1. [Requirements](#requirements)
-1. [Integration](#integration)
-1. [Usage](#usage)
-	- [Initialization](#initialization)
-	- [Subscript](#subscript)
-	- [Loop](#loop)
-	- [Error](#error)
-	- [Optional getter](#optional-getter)
-	- [Non-optional getter](#non-optional-getter)
-	- [Setter](#setter)
-	- [Raw object](#raw-object)
-	- [Literal convertibles](#literal-convertibles)
-1. [Work with Alamofire](#work-with-alamofire)
+2. [Requirements](#requirements)
+3. [Integration](#integration)
+4. [Usage](#usage)
+   - [Initialization](#initialization)
+   - [Subscript](#subscript)
+   - [Loop](#loop)
+   - [Error](#error)
+   - [Optional getter](#optional-getter)
+   - [Non-optional getter](#non-optional-getter)
+   - [Setter](#setter)
+   - [Raw object](#raw-object)
+   - [Literal convertibles](#literal-convertibles)
+5. [Work with Alamofire](#work-with-alamofire)
+
+> For Legacy Swift support, take a look at the [swift2 branch](https://github.com/SwiftyJSON/SwiftyJSON/tree/swift2)
+
+> [中文介绍](http://tangplin.github.io/swiftyjson/)
+
 
 ##Why is the typical JSON handling in Swift NOT good?
 Swift is very strict about types. But although explicit typing is good for saving us from mistakes, it becomes painful when dealing with JSON and other areas that are, by nature, implicit about types.
@@ -77,8 +82,8 @@ if let userName = json[999999]["wrong_key"]["wrong_name"].string {
 
 ## Requirements
 
-- iOS 7.0+ / Mac OS X 10.9+
-- Xcode 7
+- iOS 7.0+ / OS X 10.9+
+- Xcode 8
 
 ##Integration
 
@@ -89,16 +94,33 @@ platform :ios, '8.0'
 use_frameworks!
 
 target 'MyApp' do
-	pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
+	pod 'SwiftyJSON'
 end
 ```
 Note that this requires CocoaPods version 36, and your iOS deployment target to be at least 8.0:
+
 
 ####Carthage (iOS 8+, OS X 10.9+)
 You can use [Carthage](https://github.com/Carthage/Carthage) to install `SwiftyJSON` by adding it to your `Cartfile`:
 ```
 github "SwiftyJSON/SwiftyJSON"
 ```
+
+####Swift Package Manager
+You can use [The Swift Package Manager](https://swift.org/package-manager) to install `SwiftyJSON` by adding the proper description to your `Package.swift` file:
+```swift
+import PackageDescription
+
+let package = Package(
+    name: "YOUR_PROJECT_NAME",
+    targets: [],
+    dependencies: [
+        .Package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", versions: "2.3.3" ..< Version.max)
+    ]
+)
+```
+
+Note that the [Swift Package Manager](https://swift.org/package-manager) is still in early design and development, for more infomation checkout its [GitHub Page](https://github.com/apple/swift-package-manager)
 
 ####Manually (iOS 7+, OS X 10.9+)
 

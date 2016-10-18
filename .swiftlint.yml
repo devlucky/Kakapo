@@ -1,12 +1,13 @@
 disabled_rules:
   - trailing_whitespace # xcode add it by default, we might enable it and use autocorrect
   - valid_docs # has some problems with init (don't want a returns) and other stuff
-  - conditional_binding_cascade
   
 opt_in_rules:
   - empty_count
   - force_unwrapping
-  - missing_docs
+  - private_outlet
+  - vertical_whitespace
+# ADD missing_docs once is fixed
   
 included:
   - Source
@@ -46,5 +47,7 @@ variable_name:
     - db
     - HTTPBody
     - HTTPHeaders
-    
+    - lhs
+    - rhs    
+
 reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit)

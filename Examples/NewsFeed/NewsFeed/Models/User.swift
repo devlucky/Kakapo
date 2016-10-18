@@ -18,7 +18,7 @@ struct User: Serializable, Storable, JSONInitializable {
     let lastName: String
     let avatar: String
     
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
         firstName = sharedFaker.name.firstName()
         lastName = sharedFaker.name.lastName()

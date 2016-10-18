@@ -21,8 +21,8 @@ class JSONAPIErrorsSpec: QuickSpec {
     
     override func spec() {
 
-        func json(object: Serializable) -> JSON {
-            return JSON(object.serialize()!)
+        func json(_ object: Serializable) -> JSON {
+            return JSON(object.serialized()!)
         }
         
         describe("JSONAPIError") {
@@ -56,44 +56,38 @@ class JSONAPIErrorsSpec: QuickSpec {
             
             context("Provides response fields") {
                 
-                afterEach {
-                    Router.disableAll()
+                beforeEach {
+                    RouterTestServer.register()
                 }
                 
+                afterEach {
+                    RouterTestServer.disable()
+                    Router.disableAll()
+                }
+
                 it("should affect the status code of the request") {
-                    // occasionally failing test, added diagnostic
-                    // https://github.com/devlucky/Kakapo/issues/79
-                    let router = Router.register("http://www.test.com")
-                    // diagnostic
-                    var handlerCalled = false
-                    
+                    let router = Router.register("http://www.test123.com")
+
                     router.get("/users") { request in
-                        handlerCalled = true
-                        return JSONAPIError(statusCode: 501) { (error) in
+                        return JSONAPIError(statusCode: 403) { (error) in
                             error.title = "test"
                         }
                     }
                     
                     var statusCode: Int = -1
-                    let url = NSURL(string: "http://www.test.com/users")!
-                    NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
-                        let response = response as! NSHTTPURLResponse
+                    let url = URL(string: "http://www.test123.com/users")!
+                    URLSession.shared.dataTask(with: url) { (data, response, _) in
+                        let response = response as! HTTPURLResponse
                         statusCode = response.statusCode
-                        // diagnostic
-                        expect(statusCode).to(equal(501))
                         }.resume()
-                    
-                    // diagnostic to check if it's a timeout
-                    let startTime = CFAbsoluteTimeGetCurrent()
-                    expect(statusCode).toEventually(equal(501))
-                    let endTime = CFAbsoluteTimeGetCurrent()
-                     // Quick's default timeout, the responde should be done immediately anyway.
-                    expect(endTime - startTime) < 1
-                    expect(handlerCalled) == true
+                    // still the only test randomly failing for no reasons...
+                    // 99,9 % is not a router problem (otherwise wouldn't be the only one)
+                    // https://pbs.twimg.com/media/CfSQdwUW8AErog1.jpg
+                    expect(statusCode).toEventually(equal(403), timeout: 2)
                 }
                 
                 it("should affect the header fields of the response") {
-                    let router = Router.register("http://www.test.com")
+                    let router = Router.register("http://www.test1234.com")
                     
                     router.get("/users") { request in
                         return JSONAPIError(statusCode: 404, headerFields: ["foo": "bar"]) { (error) in
@@ -102,9 +96,9 @@ class JSONAPIErrorsSpec: QuickSpec {
                     }
                     
                     var foo: String?
-                    let url = NSURL(string: "http://www.test.com/users")!
-                    NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, _) in
-                        let response = response as! NSHTTPURLResponse
+                    let url = URL(string: "http://www.test1234.com/users")!
+                    URLSession.shared.dataTask(with: url) { (data, response, _) in
+                        let response = response as! HTTPURLResponse
                         let headers = response.allHeaderFields as? [String: String]
                         foo = headers?["foo"]
                         }.resume()

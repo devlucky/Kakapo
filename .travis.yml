@@ -5,39 +5,28 @@ notifications:
 
 env:
   global:
-    - FASTLANE_LANE=ci_commit
+    - WORKSPACE=Kakapo.xcworkspace
+    - COVERAGE=NO
 
-before_install:
-  - gem uninstall json -v 2.0.1 # workaround for Fastlane conflict https://github.com/travis-ci/travis-ci/issues/6325
-  - gem update fastlane
-  - gem install danger --no-ri --no-doc
-  - gem install danger-swiftlint --no-ri --no-doc
+podfile: Podfile
 
-before_script:
-  - danger
+osx_image: xcode8
 
 matrix:
   include:
-    - osx_image: xcode7.3
-      env: FASTLANE_ENV=ios83
-    - osx_image: xcode7.3
-      env: FASTLANE_ENV=tvos
-    - osx_image: xcode7.3
-      env: FASTLANE_ENV=osx1011
-    - osx_image: xcode7.3
-      env: FASTLANE_ENV=ios93 KKP_CODECOV=true
+    - env: DESTINATION="arch=x86_64" SCHEME=macOS SDK="macosx10.12"
+    - env: DESTINATION="OS=10.0,name=Apple TV 1080p" SCHEME=tvOS SDK="appletvsimulator10.0"
+    - env: DESTINATION="OS=9.0,name=iPhone 5" SCHEME=iOS SDK="iphonesimulator10.0"
+    - env: DESTINATION="OS=10.0,name=iPhone SE" SCHEME=iOS SDK="iphonesimulator10.0" COVERAGE=YES
+      before_install:
+        - gem install danger --no-ri --no-doc
+        - gem install danger-swiftlint --no-ri --no-doc
+      before_script:
+        - danger
+        - pod lib lint --quick
       after_success:
         - bash <(curl -s https://codecov.io/bash) -J 'Kakapo'
 
 script:
   - set -o pipefail
-  - fastlane $FASTLANE_LANE configuration:Debug --env $FASTLANE_ENV
-  - pod lib lint --quick
-
-podfile: Podfile
-
-after_failure:
-  - cat -n ~/Library/Logs/scan/*
-  - cat -n $TMPDIR/com.apple.dt.XCTest-status/Session*.log
-  - cat -n ~/Library/Logs/DiagnosticReports/xctest*.crash
-
+  - xcodebuild -workspace $WORKSPACE -scheme Kakapo\ $SCHEME -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ENABLE_TESTABILITY=YES -enableCodeCoverage $COVERAGE test | xcpretty;

@@ -11,7 +11,7 @@ import Foundation
 /**
  A tuple holding components and query parameters, check `matchRoute` for more details
  */
-public typealias URLInfo = (components: [String : String], queryParameters: [NSURLQueryItem])
+public typealias URLInfo = (components: [String : String], queryParameters: [URLQueryItem])
 
 /**
  Match a route and a requestURL. A route is composed by a baseURL and a path, together they should match the given requestURL.
@@ -37,13 +37,13 @@ public typealias URLInfo = (components: [String : String], queryParameters: [NSU
  
  - returns: A URL info object containing `components` and `queryParameters` or nil if `requestURL`doesn't match the route.
  */
-func matchRoute(baseURL: String, path: String, requestURL: NSURL) -> URLInfo? {
+func matchRoute(_ baseURL: String, path: String, requestURL: URL) -> URLInfo? {
     
     // remove the baseURL and the params, if baseURL is not in the string the result will be nil
     guard let relevantURL: String = {
         let string = requestURL.absoluteString // http://kakapo.com/api/users/1234?a=b
-        let stringWithoutParams = string.substring(.To, string: "?") ?? string // http://kakapo.com/api/users/1234
-        return stringWithoutParams.substring(.From, string: baseURL) // `/api/users`
+        let stringWithoutParams = string.substring(.to, string: "?") ?? string // http://kakapo.com/api/users/1234
+        return stringWithoutParams.substring(.from, string: baseURL) // `/api/users`
         }() else { return nil }
     
     let routePathComponents = path.split("/") // e.g. [users, :userid]
@@ -63,55 +63,52 @@ func matchRoute(baseURL: String, path: String, requestURL: NSURL) -> URLInfo? {
         if routeComponent == requestComponent {
             continue // not a wildcard, no need to insert it in components
         } else {
-            guard let firstChar = routeComponent.characters.first where firstChar == ":" else {
+            guard let firstChar = routeComponent.characters.first, firstChar == ":" else {
                 return nil // not equal nor a wildcard
             }
         }
         
-        let relevantKeyIndex = routeComponent.characters.startIndex.successor() // second position
-        let key = routeComponent.substringFromIndex(relevantKeyIndex) // :key -> key
+        let relevantKeyIndex = routeComponent.characters.index(after: routeComponent.characters.startIndex) // second position
+        let key = routeComponent.substring(from: relevantKeyIndex) // :key -> key
         components[key] = requestComponent
     }
 
     // get the parameters [a:b]
-    let queryItems = NSURLComponents(URL: requestURL, resolvingAgainstBaseURL: false)?.queryItems
+    let queryItems = URLComponents(url: requestURL, resolvingAgainstBaseURL: false)?.queryItems
 
     return (components, queryItems ?? [])
 }
 
 private extension String {
     
-    func split(separator: Character) -> [String] {
-        return characters.split(separator).map { String($0) }
+    func split(_ separator: Character) -> [String] {
+        return characters.split(separator: separator).map { String($0) }
     }
     
     enum SplitMode {
-        case From
-        case To
+        case from
+        case to
     }
     
     /**
      Return the substring From/To a given string or nil if the string is not contained.
-     - **From**: return the substring following the given string (e.g. `kakapo.com/users`, `kakapo.com` -> `/users`)
-     - **To**: return the substring preceding the given string (e.g. `kakapo.com/users?a=b`, `?` -> `kakapo.com/users`)
+     - **from**: return the substring following the given string (e.g. `kakapo.com/users`, `kakapo.com` -> `/users`)
+     - **to**: return the substring preceding the given string (e.g. `kakapo.com/users?a=b`, `?` -> `kakapo.com/users`)
      */
-    func substring(mode: SplitMode, string: String) -> String? {
+    func substring(_ mode: SplitMode, string: String) -> String? {
         guard !string.characters.isEmpty else {
             return self
         }
         
-        guard let range = rangeOfString(string) else {
+        guard let range = range(of: string) else {
             return nil
         }
         
         switch mode {
-        case .From:
-            return substringFromIndex(range.endIndex)
-        case .To:
-            return substringToIndex(range.startIndex)
+        case .from:
+            return substring(from: range.upperBound)
+        case .to:
+            return substring(to: range.lowerBound)
         }
     }
 }
-
-
-    

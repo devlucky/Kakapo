@@ -18,11 +18,11 @@ struct Comment: Serializable, Storable, JSONInitializable, Likeable {
     let text: String
     var likes: [Like]
     
-    init(id: String, db: KakapoDB) {
+    init(id: String, store: Store) {
         self.id = id
-        author = db.create(User).first!
+        author = store.create(User.self).first!
         text = sharedFaker.lorem.paragraph(sentencesAmount: random(3) + 1)
-        likes = db.create(Like.self, number: random(5))
+        likes = store.create(Like.self, number: random(5))
     }
     
     init(json: JSON) {

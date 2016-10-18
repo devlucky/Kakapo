@@ -9,17 +9,17 @@
 import Foundation
 
 /**
- `PropertyPolicy` is an enum similar to `Optional` but with an additional case `.Null`. It's only purpose is to be serialized in 3 different ways to cover all possible behaviors of an Optional property.
+ `PropertyPolicy` is an enum similar to `Optional` but with an additional case `.null`. It's only purpose is to be serialized in 3 different ways to cover all possible behaviors of an Optional property.
  
- - None:     Same behavior of `Optional.None`, the property is not included in the JSON
+ - None:     Same behavior of `Optional.none`, the property is not included in the JSON
  - Null:     `Null` when serialized is `NSNull` that will result as a `null` property in the JSON
  - Some:     Serialize the associated object
  */
 public enum PropertyPolicy<Wrapped>: CustomSerializable {
-    /// Same behavior of `Optional.None`, the property is not included in the JSON
-    case None
-    /// `Null` when serialized is `NSNull` that will result as a `null` property in the JSON
-    case Null
+    /// Same behavior of `Optional.none`, the property is not included in the JSON
+    case none
+    /// `null` when serialized is `NSNull` that will result as a `null` property in the JSON
+    case null
     /// Serialize the associated object
-    case Some(Wrapped)
+    case some(Wrapped)
 }
