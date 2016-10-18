@@ -3,6 +3,9 @@
 ### HEAD
 --------------
 
+### 1.1.1
+-----------
+
 - Restore Swift 2.2 support [Antoine Marcadet](https://github.com/amarcadet)
 
 ### 1.1.0
