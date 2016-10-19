@@ -1,5 +1,5 @@
 import Foundation
-import Kakapo // NOTE: Build "Kakapo iOS" for a 64 bit simulator to successfully import the dynamic framework
+import Kakapo
 
 /*:
  # Kakapo
@@ -23,50 +23,17 @@ struct Zoo: Serializable {
 
 let zoo = Zoo(parrots: [kakapo])
 let json = String(data: zoo.toData()!, encoding: .utf8)!
-
-//: ## CustomSerializable
-struct CustomZoo: CustomSerializable {
-    let parrots: [Parrot]
-    
-    // this is a really simple `CustomSerializable` that could be achieved with `Serializable` by just using a property "species" (dictionary). 
-    // See JSONAPI implementation for more complex, real life, examples.
-    func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
-        // transformer will be not nill when this object is wrapped into a `SerializationTransformer` (e.g. `SnakeCaseTransformer`)... if the object doesn't need key transformation just ignore it
-        let key: (String) -> (String) = { (key) in
-            return keyTransformer?(key) ?? key
-        }
-        
-        let species = [key("parrot"): parrots.serialized() ?? []]
-        return [key("species"): species]
-    }
-}
-
-let customZoo = CustomZoo(parrots: [kakapo])
-let customZooJson = String(data: customZoo.toData()!, encoding: .utf8)!
-
-//: ## JSON API
-struct Dog: JSONAPIEntity {
-    let id: String
-    let name: String
-}
-
-struct Person: JSONAPIEntity {
-    let id: String
-    let name: String
-    let dog: Dog
-}
-
-let person = Person(id: "1", name: "Alex", dog: Dog(id: "2", name: "Joan"))
-let serializable = JSONAPISerializer(person, topLevelMeta: ["foo": "bar"])
-let personJson = String(data: serializable.toData()!, encoding: .utf8)!
-
 //: ## Router
 let router = Router.register("https://kakapo.com/api/v1")
 router.get("zoo/:animal") { (request) -> Serializable? in
     if let animal = request.components["animal"], animal == "parrot" {
-        return Parrot(name: "Kakapo") // or use Store for dynamic stuff!
+        return Parrot(name: "Kakapo")
     }
-    return Response(statusCode: 404, body: ["error": "Animal not found"])
+    
+    return Response(
+        statusCode: 404,
+        body: ["error": "Animal not found"]
+    )
 }
 
 //: request **GET** `https://kakapo.com/api/v1/parrot`
@@ -77,11 +44,11 @@ let store = Store()
 
 struct Author: Storable, Serializable {
     let id: String
-    let name: String
+    let firstName: String
     
     init(id: String, store: Store) {
         self.id = id
-        self.name = String(arc4random()) // use Fakery!
+        self.firstName = String(arc4random()) // use Fakery!
     }
 }
 
@@ -94,7 +61,7 @@ struct Article: Storable, Serializable {
         self.id = id
         self.text = String(arc4random()) // use Fakery!
         author = store.insert { (id) -> Author in
-            return Author(id: id, store: store) // id must always come from the store
+            return Author(id: id, store: store)
         }
     }
 }
@@ -119,3 +86,40 @@ router.post("article") { (request) -> Serializable? in
         return Article(id: id, store: store)
     }
 }
+
+
+//: ## CustomSerializable
+struct CustomZoo: CustomSerializable {
+    let parrots: [Parrot]
+    
+    func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
+        let species = ["parrot": parrots.serialized() ?? []]
+        return ["species": species]
+    }
+}
+
+let customZoo = CustomZoo(parrots: [kakapo])
+let customZooJson = String(data: customZoo.toData()!, encoding: .utf8)!
+
+//: ## JSON API
+struct Dog: JSONAPIEntity {
+    let id: String
+    let name: String
+}
+
+struct Person: JSONAPIEntity {
+    let id: String
+    let name: String
+    let dog: Dog
+}
+
+let dog = Dog(id: "2", name: "Joan")
+let person = Person(id: "1", name: "Alex", dog: dog)
+let serializable = JSONAPISerializer(person,
+                                     topLevelMeta: ["foo": "bar"])
+let personJson = String(data: serializable.toData()!, encoding: .utf8)!
+
+//: ## KeyTransformer
+
+
+
