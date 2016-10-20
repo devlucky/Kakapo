@@ -24,7 +24,7 @@
   - [JSONAPI](#jsonapi)
   - [Expanding Null values with Property Policy](#expanding-null-values-with-property-policy)
   - [Key customization - Serialization Transformer](#key-customization---serialization-transformer)
-  - [Full responses on ResponseFieldsProvider](#full-responses-on-responsefieldsprovider)
+  - [Customize responses with ResponseFieldsProvider](#customize-responses-with-responsefieldsprovider)
 - [Roadmap](#roadmap)
 - [Examples](#examples)
 - [Authors](#authors)
