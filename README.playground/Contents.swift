@@ -12,7 +12,7 @@ struct Parrot: Serializable {
 }
 
 let kakapo = Parrot(name: "Kakapo")
-kakapo.serialized()
+kakapo.serialized() // ["name" : "Kakapo"]
 
 /*:
  All properties are recursively serialized when needed. Only primitive values, arrays, dictionaries and string are allowed to be converted to json so other values must also be `Serializable`
@@ -22,9 +22,11 @@ struct Zoo: Serializable {
 }
 
 let zoo = Zoo(parrots: [kakapo])
+zoo.serialized() // ["parrots" : [["name" : "Kakapo"]]]
 let json = String(data: zoo.toData()!, encoding: .utf8)!
 //: ## Router
 let router = Router.register("https://kakapo.com/api/v1")
+// handlers with wildcards
 router.get("zoo/:animal") { (request) -> Serializable? in
     if let animal = request.components["animal"], animal == "parrot" {
         return Parrot(name: "Kakapo")
