@@ -119,7 +119,37 @@ let serializable = JSONAPISerializer(person,
                                      topLevelMeta: ["foo": "bar"])
 let personJson = String(data: serializable.toData()!, encoding: .utf8)!
 
-//: ## KeyTransformer
+//: ## SerializationTransformer
+let authors = store.findAll(Author.self)
+let snakes = SnakecaseTransformer(authors).serialized()
+
+struct UppercaseTransformer<T: Serializable>: SerializationTransformer {
+    
+    let wrapped: T
+    
+    init(_ wrapped: T) {
+        self.wrapped = wrapped
+    }
+    
+    func transform(key: String) -> String {
+        return key.uppercased()
+    }
+}
+
+let bigAuthors = UppercaseTransformer(authors).serialized()
+//: `SerializationTransformer`s can also be composed
+let bigSnakes = UppercaseTransformer(SnakecaseTransformer(authors)).serialized()
 
 
+//: ## Expanding Optional properties
+//: nil won't be included in the JSON
+Optional<Int>.none.serialized()
+
+Optional<Int>.some(2).serialized()
+
+PropertyPolicy<Int>.none.serialized()
+
+PropertyPolicy<Int>.some(2).serialized()
+//: NSNull, will be included in the JSON
+PropertyPolicy<Int>.null.serialized()
 
