@@ -179,6 +179,24 @@ class RouterTests: QuickSpec {
                 expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1?onlyifqueryparam=true"))
             }
             
+            it("should call the handler when requesting a url ONLY with query parameters") {
+                var info: URLInfo? = nil
+                var responseURL: URL? = nil
+                
+                router.get("?onlyifqueryparam=:param") { request in
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com?onlyifqueryparam=true")!) { (data, response, _) in
+                    responseURL = response?.url
+                    }.resume()
+                
+                expect(info?.components).toEventually(equal(["param" : "true"]))
+                expect(info?.queryParameters).toEventually(equal([URLQueryItem(name: "onlyifqueryparam", value: "true")]))
+                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com?onlyifqueryparam=true"))
+            }
+            
             it("should call the handler when requesting multiple registered urls") {
                 var usersInfo: URLInfo? = nil
                 var usersResponseURL: URL? = nil
@@ -215,7 +233,13 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                router.get("/users/:id/posts/:post_id?author=:auth") { request in
+                router.get("?author=:auth") { request in
+                    XCTFail("Shouldn't reach here")
+                    usersPostsParamInfo = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                router.get("/posts/:post_id?author=:auth") { request in
                     usersPostsParamInfo = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }
@@ -228,7 +252,7 @@ class RouterTests: QuickSpec {
                     usersCommentsResponseURL = response?.url
                 }.resume()
                 
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1/posts/5?page=2&author=hector")!) { (_, response, _) in
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/posts/5?page=2&author=hector")!) { (_, response, _) in
                     usersPostsResponseURL = response?.url
                 }.resume()
                 
@@ -238,9 +262,9 @@ class RouterTests: QuickSpec {
                 expect(usersCommentsInfo?.components).toEventually(equal(["id": "1", "comment_id": "2"]))
                 expect(usersCommentsInfo?.queryParameters).toEventually(equal([URLQueryItem(name: "page", value: "2"), URLQueryItem(name: "author", value: "hector")]))
                 expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
-                expect(usersPostsParamInfo?.components).toEventually(equal(["id": "1", "post_id": "5", "auth" : "hector"]))
+                expect(usersPostsParamInfo?.components).toEventually(equal(["post_id": "5", "auth" : "hector"]))
                 expect(usersPostsParamInfo?.queryParameters).toEventually(equal([URLQueryItem(name: "page", value: "2"), URLQueryItem(name: "author", value: "hector")]))
-                expect(usersPostsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/posts/5?page=2&author=hector"))
+                expect(usersPostsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/posts/5?page=2&author=hector"))
             }
             
             it("should call handlers with same path but different http methods") {
@@ -298,6 +322,9 @@ class RouterTests: QuickSpec {
                 var calledAuthor = false
                 var calledLocation = false
                 
+                var calledAuthor2 = false
+                var calledLocation2 = false
+                
                 router.get("/users/:user_id?author=max") { (request) -> Serializable? in
                     calledAuthor = true
                     return nil
@@ -305,6 +332,16 @@ class RouterTests: QuickSpec {
                 
                 router.get("/users/:user_id?location=austria") { (request) -> Serializable? in
                     calledLocation = true
+                    return nil
+                }
+                
+                router.get("?author=max") { (request) -> Serializable? in
+                    calledAuthor2 = true
+                    return nil
+                }
+                
+                router.get("?location=austria") { (request) -> Serializable? in
+                    calledLocation2 = true
                     return nil
                 }
                 
@@ -317,11 +354,23 @@ class RouterTests: QuickSpec {
                 URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(calledLocation).toEventually(beTrue())
+                
+                request = URLRequest(url: URL(string: "http://www.test.com?author=max")!)
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledAuthor2).toEventually(beTrue())
+                
+                request = URLRequest(url: URL(string: "http://www.test.com?location=austria")!)
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledLocation2).toEventually(beTrue())
             }
 
-            it("should replace handlers with same path and http methods") {
+            it("should replace handlers with same path, http methods and query params") {
                 var calledFirstPost = false
                 var calledSecondPost = false
+                var calledFirstPatch = false
+                var calledSecondPatch = false
                 
                 router.post("/users/:user_id") { (request) -> Serializable? in
                     calledFirstPost = true
@@ -342,6 +391,27 @@ class RouterTests: QuickSpec {
                 URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(calledSecondPost).toEventually(beTrue())
+                
+                
+                router.patch("/users/:user_id?called=:called&author=max") { (request) -> Serializable? in
+                    calledFirstPatch = true
+                    return nil
+                }
+                
+                request = URLRequest(url: URL(string: "http://www.test.com/users/1?called=true&author=max")!)
+                request.httpMethod = "PATCH"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledFirstPatch).toEventually(beTrue())
+                
+                router.patch("/users/:user_id?author=max&called=:called") { (request) -> Serializable? in
+                    calledSecondPatch = true
+                    return nil
+                }
+                
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledSecondPatch).toEventually(beTrue())
             }
             
             context("when the Router has latency") {
