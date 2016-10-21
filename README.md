@@ -163,14 +163,13 @@ session.dataTask(with: url) { (data, _, _) in
 }.resume()
 ```
 
-> Note: If query parameters are provided in the route, they are also affecting the route match and can contain wildcard components!
+If query parameters are provided in the route, they are also affecting the route match and can contain wildcard components too:
 
-For instance:
 ```Swift
 let router = Router.register("http://www.test.com")
 
 // Will match http://www.test.com/users?country=spain
-router.get("/users?country=:country") { request in ... } // request.components["country"] will contain "spain"
+router.get("/users?country=:country") { request in ... } // request.components["country"] => "spain"
 ```
 
 
