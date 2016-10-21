@@ -62,8 +62,43 @@ func matchRoute(_ baseURL: String, path: String, queryParameters: [URLQueryItem]
         return nil
     }
     
-    var components: [String : String] = [:]
     let requestQueryParameters = URLComponents(url: requestURL, resolvingAgainstBaseURL: false)?.queryItems
+    
+    var components: [String : String] = [:]
+    let routeCompMatch = routeComponentsMatch(routePathComponents: routePathComponents, requestPathComponents: requestPathComponents)
+    let queryCompMatch = queryComponentsMatch(queryParameters: queryParameters, requestQueryParameters: requestQueryParameters)
+    
+    guard let routeComp = routeCompMatch, let queryComp = queryCompMatch else {
+        return nil // if either method returns nil, matching fails
+    }
+    
+    routeComp.forEach { (key, value) in
+        components.updateValue(value, forKey: key)
+    }
+    
+    queryComp.forEach { (key, value) in
+        components.updateValue(value, forKey: key)
+    }
+    
+    return (components, requestQueryParameters ?? [])
+}
+
+fileprivate func componentKey(routeComponent: String, requestComponent: String) -> String? {
+    // if they are not equal then it must be a key prefixed by ":" otherwise the route is not matched
+    if routeComponent == requestComponent {
+        return routeComponent // not a wildcard, return the original string
+    } else {
+        guard let firstChar = routeComponent.characters.first, firstChar == ":" else {
+            return nil // not equal nor a wildcard
+        }
+    }
+    
+    let relevantKeyIndex = routeComponent.characters.index(after: routeComponent.characters.startIndex) // second position
+    return routeComponent.substring(from: relevantKeyIndex) // :key -> key
+}
+
+fileprivate func routeComponentsMatch(routePathComponents: [String], requestPathComponents: [String]) -> [String : String]? {
+    var components: [String : String] = [:]
     
     for (routeComponent, requestComponent) in zip(routePathComponents, requestPathComponents) {
         // [users, users], [:userid, 1234]
@@ -71,7 +106,7 @@ func matchRoute(_ baseURL: String, path: String, queryParameters: [URLQueryItem]
         guard let componentKey = componentKey(routeComponent: routeComponent, requestComponent: requestComponent) else {
             return nil // if no componentKey can be found, we cannot match as it's not equal nor a wildcard
         }
-
+        
         // if the key is equal to the requestComponent then its not a wildcard, no need to insert it in components
         if componentKey == requestComponent {
             continue
@@ -80,9 +115,15 @@ func matchRoute(_ baseURL: String, path: String, queryParameters: [URLQueryItem]
         components[componentKey] = requestComponent
     }
     
+    return components
+}
+
+fileprivate func queryComponentsMatch(queryParameters: [URLQueryItem], requestQueryParameters: [URLQueryItem]?) -> [String : String]? {
+    var components: [String : String] = [:]
+    
     // also check for query items for route matching and component extraction
-    if queryParameters.count > 0 {
-        guard let requestQueryParameters = requestQueryParameters, Set(queryParameters.map{ $0.name }).isSubset(of: Set(requestQueryParameters.map{ $0.name })) else {
+    if !queryParameters.isEmpty {
+        guard let requestQueryParameters = requestQueryParameters, Set(queryParameters.map { $0.name }).isSubset(of: Set(requestQueryParameters.map { $0.name })) else {
             // if query parameters are provided for route matching, all query parameters must be included in the request for it to match
             return nil
         }
@@ -108,21 +149,7 @@ func matchRoute(_ baseURL: String, path: String, queryParameters: [URLQueryItem]
         }
     }
 
-    return (components, requestQueryParameters ?? [])
-}
-
-fileprivate func componentKey(routeComponent: String, requestComponent: String) -> String? {
-    // if they are not equal then it must be a key prefixed by ":" otherwise the route is not matched
-    if routeComponent == requestComponent {
-        return routeComponent // not a wildcard, return the original string
-    } else {
-        guard let firstChar = routeComponent.characters.first, firstChar == ":" else {
-            return nil // not equal nor a wildcard
-        }
-    }
-    
-    let relevantKeyIndex = routeComponent.characters.index(after: routeComponent.characters.startIndex) // second position
-    return routeComponent.substring(from: relevantKeyIndex) // :key -> key
+    return components
 }
 
 internal extension String {
