@@ -240,7 +240,13 @@ public final class Router {
     }
     
     private func addRoute(with path: String, method: HTTPMethod, handler: @escaping RouteHandler) {
-        routes[Route(path: path, method: method)] = handler
+        let route = path.substring(.to, string: "?") ?? path
+        var queryParameters: [URLQueryItem]? = nil
+        if let url = URL(string: baseURL.appending(path)) {
+            queryParameters = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+        }
+        
+        routes[Route(path: route, method: method, queryParameters: queryParameters ?? [])] = handler
     }
 
     /**

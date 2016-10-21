@@ -161,11 +161,31 @@ class RouterTests: QuickSpec {
                 expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
             }
             
+            it("should call the handler when requesting a url with query parameters") {
+                var info: URLInfo? = nil
+                var responseURL: URL? = nil
+                
+                router.get("/users/:id?onlyifqueryparam=:param") { request in
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1?onlyifqueryparam=true")!) { (data, response, _) in
+                    responseURL = response?.url
+                    }.resume()
+                
+                expect(info?.components).toEventually(equal(["id" : "1", "param" : "true"]))
+                expect(info?.queryParameters).toEventually(equal([URLQueryItem(name: "onlyifqueryparam", value: "true")]))
+                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1?onlyifqueryparam=true"))
+            }
+            
             it("should call the handler when requesting multiple registered urls") {
                 var usersInfo: URLInfo? = nil
                 var usersResponseURL: URL? = nil
                 var usersCommentsInfo: URLInfo? = nil
                 var usersCommentsResponseURL: URL? = nil
+                var usersPostsParamInfo: URLInfo? = nil
+                var usersPostsResponseURL: URL? = nil
                 
                 router.get("/comments/:id") { request in
                     XCTFail("Shouldn't reach here")
@@ -195,6 +215,11 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
+                router.get("/users/:id/posts/:post_id?author=:auth") { request in
+                    usersPostsParamInfo = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
                 URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (_, response, _) in
                     usersResponseURL = response?.url
                 }.resume()
@@ -203,12 +228,19 @@ class RouterTests: QuickSpec {
                     usersCommentsResponseURL = response?.url
                 }.resume()
                 
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1/posts/5?page=2&author=hector")!) { (_, response, _) in
+                    usersPostsResponseURL = response?.url
+                }.resume()
+                
                 expect(usersInfo?.components).toEventually(equal(["id" : "1"]))
                 expect(usersInfo?.queryParameters).toEventually(equal([]))
                 expect(usersResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
                 expect(usersCommentsInfo?.components).toEventually(equal(["id": "1", "comment_id": "2"]))
                 expect(usersCommentsInfo?.queryParameters).toEventually(equal([URLQueryItem(name: "page", value: "2"), URLQueryItem(name: "author", value: "hector")]))
                 expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
+                expect(usersPostsParamInfo?.components).toEventually(equal(["id": "1", "post_id": "5", "auth" : "hector"]))
+                expect(usersPostsParamInfo?.queryParameters).toEventually(equal([URLQueryItem(name: "page", value: "2"), URLQueryItem(name: "author", value: "hector")]))
+                expect(usersPostsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/posts/5?page=2&author=hector"))
             }
             
             it("should call handlers with same path but different http methods") {
@@ -260,6 +292,31 @@ class RouterTests: QuickSpec {
                 URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
 
                 expect(calledPatch).toEventually(beTrue())
+            }
+            
+            it("should call handlers with same path but different query parameters") {
+                var calledAuthor = false
+                var calledLocation = false
+                
+                router.get("/users/:user_id?author=max") { (request) -> Serializable? in
+                    calledAuthor = true
+                    return nil
+                }
+                
+                router.get("/users/:user_id?location=austria") { (request) -> Serializable? in
+                    calledLocation = true
+                    return nil
+                }
+                
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1?author=max")!)
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledAuthor).toEventually(beTrue())
+                
+                request = URLRequest(url: URL(string: "http://www.test.com/users/1?location=austria")!)
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledLocation).toEventually(beTrue())
             }
 
             it("should replace handlers with same path and http methods") {
@@ -370,6 +427,34 @@ class RouterTests: QuickSpec {
                 
                 var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
                 request.httpMethod = "PUT"
+                URLSession.shared.dataTask(with: request) { (_, response, error) in
+                    responseURL = response?.url
+                    responseError = error
+                    }.resume()
+                
+                expect(info).toEventually(beNil())
+                expect(responseURL?.host).toEventually(equal("www.test.com"))
+                expect(responseError).toEventually(beNil())
+            }
+            
+            it("should not call the handler when requesting a registered url but using different/incomplete query parameters") {
+                var info: URLInfo? = nil
+                var responseURL: URL? = URL(string: "")
+                var responseError: Error? = NSError(domain: "", code: 1, userInfo: nil)
+                
+                router.get("/users?location=:country") { request in
+                    XCTFail("Shouldn't reach here")
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                router.get("/users?language=:lng&region=:reg") { request in
+                    XCTFail("Shouldn't reach here")
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                let request = URLRequest(url: URL(string: "http://www.test.com/users?language=de")!)
                 URLSession.shared.dataTask(with: request) { (_, response, error) in
                     responseURL = response?.url
                     responseError = error
