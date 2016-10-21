@@ -163,8 +163,16 @@ session.dataTask(with: url) { (data, _, _) in
 }.resume()
 ```
 
-> Note: query parameters are not affecting the route match
-> `http://www.test.com/users/1?foo=bar` would also be matched
+> Note: If query parameters are provided in the route, they are also affecting the route match and can contain wildcard components!
+
+For instance:
+```Swift
+let router = Router.register("http://www.test.com")
+
+// Will match http://www.test.com/users?country=spain
+router.get("/users?country=:country") { request in ... } // request.components["country"] will contain "spain"
+```
+
 
 In the previous example the handler was returning a simple `Dictionary`; while this works because `Dictionary` is already `Serializable`, you can also create your own entities that conform to `Serializable`:
 
