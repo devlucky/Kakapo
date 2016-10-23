@@ -179,7 +179,7 @@ class RouterTests: QuickSpec {
                 expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1?onlyifqueryparam=true"))
             }
             
-            it("should call the handler when requesting a url ONLY with query parameters") {
+            it("should call the handler when requesting a url only with query parameters") {
                 var info: URLInfo? = nil
                 var responseURL: URL? = nil
                 
@@ -366,11 +366,9 @@ class RouterTests: QuickSpec {
                 expect(calledLocation2).toEventually(beTrue())
             }
 
-            it("should replace handlers with same path, http methods and query params") {
+            it("should replace handlers with same path and http methods") {
                 var calledFirstPost = false
                 var calledSecondPost = false
-                var calledFirstPatch = false
-                var calledSecondPatch = false
                 
                 router.post("/users/:user_id") { (request) -> Serializable? in
                     calledFirstPost = true
@@ -391,14 +389,18 @@ class RouterTests: QuickSpec {
                 URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 
                 expect(calledSecondPost).toEventually(beTrue())
-                
+            }
+            
+            it("should replace handlers with same query params") {
+                var calledFirstPatch = false
+                var calledSecondPatch = false
                 
                 router.patch("/users/:user_id?called=:called&author=max") { (request) -> Serializable? in
                     calledFirstPatch = true
                     return nil
                 }
                 
-                request = URLRequest(url: URL(string: "http://www.test.com/users/1?called=true&author=max")!)
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1?called=true&author=max")!)
                 request.httpMethod = "PATCH"
                 URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
                 

@@ -98,20 +98,20 @@ public final class Router {
     private class Route: Hashable {
         let path: String
         let method: HTTPMethod
-        let queryParameters: [URLQueryItem]
+        let queryParameters: Set<URLQueryItem>
         
         static func == (lhs: Router.Route, rhs: Router.Route) -> Bool {
             return lhs.path == rhs.path && lhs.method == rhs.method && lhs.queryParameters == rhs.queryParameters
         }
         
-        init(path: String, method: HTTPMethod, queryParameters: [URLQueryItem] = []) {
+        init(path: String, method: HTTPMethod, queryParameters: Set<URLQueryItem> = []) {
             self.path = path
             self.method = method
             self.queryParameters = queryParameters
         }
         
         var hashValue: Int {
-            return queryParameters.reduce(path.hashValue ^ method.hashValue) { $0.0 ^ $0.1.hashValue} << 8
+            return queryParameters.reduce(path.hashValue ^ method.hashValue) { $0.0 ^ $0.1.hashValue }
         }
     }
     
@@ -246,7 +246,7 @@ public final class Router {
             queryParameters = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
         }
         
-        routes[Route(path: route, method: method, queryParameters: queryParameters ?? [])] = handler
+        routes[Route(path: route, method: method, queryParameters: Set(queryParameters ?? []))] = handler
     }
 
     /**

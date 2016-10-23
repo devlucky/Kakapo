@@ -45,7 +45,7 @@ public typealias URLInfo = (components: [String : String], queryParameters: [URL
  
  - returns: A URL info object containing `components` and `queryParameters` or nil if `requestURL`doesn't match the route.
  */
-func matchRoute(_ baseURL: String, path: String, queryParameters: [URLQueryItem] = [], requestURL: URL) -> URLInfo? {
+func matchRoute(_ baseURL: String, path: String, queryParameters: Set<URLQueryItem> = [], requestURL: URL) -> URLInfo? {
     
     // remove the baseURL and the params, if baseURL is not in the string the result will be nil
     guard let relevantURL: String = {
@@ -118,7 +118,7 @@ fileprivate func routeComponentsMatch(routePathComponents: [String], requestPath
     return components
 }
 
-fileprivate func queryComponentsMatch(queryParameters: [URLQueryItem], requestQueryParameters: [URLQueryItem]?) -> [String : String]? {
+fileprivate func queryComponentsMatch(queryParameters: Set<URLQueryItem>, requestQueryParameters: [URLQueryItem]?) -> [String : String]? {
     var components: [String : String] = [:]
     
     // also check for query items for route matching and component extraction
