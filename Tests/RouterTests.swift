@@ -197,6 +197,24 @@ class RouterTests: QuickSpec {
                 expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com?onlyifqueryparam=true"))
             }
             
+            it("should call the handler without the components of query params if not a wildcard ") {
+                var info: URLInfo? = nil
+                var responseURL: URL? = nil
+                
+                router.get("?component=false") { request in
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com?component=false")!) { (data, response, _) in
+                    responseURL = response?.url
+                    }.resume()
+                
+                expect(info?.components).toEventually(beNil())
+                expect(info?.queryParameters).toEventually(equal([URLQueryItem(name: "component", value: "false")]))
+                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com?component=false"))
+            }
+            
             it("should call the handler when requesting multiple registered urls") {
                 var usersInfo: URLInfo? = nil
                 var usersResponseURL: URL? = nil
@@ -522,6 +540,12 @@ class RouterTests: QuickSpec {
                 
                 router.get("/users?language=:lng&region=:reg") { request in
                     XCTFail("Shouldn't reach here")
+                    info = (components: request.components, queryParameters: request.queryParameters)
+                    return nil
+                }
+                
+                router.get("/users?language=en") { request in
+                    XCTFail("Shouldn't reach here, wrong param value")
                     info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
                 }

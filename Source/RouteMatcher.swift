@@ -139,11 +139,6 @@ fileprivate func queryComponentsMatch(queryParameters: Set<URLQueryItem>, reques
                     return nil // if no componentKey can be found, we cannot match as it's not equal nor a wildcard
                 }
                 
-                // if the key is equal to the requestComponent then its not a wildcard, no need to insert it in components
-                if componentKey == requestValue {
-                    continue
-                }
-                
                 components[componentKey] = requestValue
             }
         }
