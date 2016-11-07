@@ -381,39 +381,37 @@ class RouterTests: QuickSpec {
             }
         }
         
-        describe("Filtering") {
+        fdescribe("Filtering") {
             var router: Router!
             
             beforeEach {
                 router = Router.register("http://www.test.com")
             }
             
-            fit("Should not call the handler when filter returns false") {
-                var calledDel = false
+            it("should not call the handler when filter returns false") {
                 
-                router.del("/users/:user_id", { (request) -> Serializable? in
-                    calledDel = true
-                    return nil
-                }, { (request) -> Bool in
-                    return false
-                })
+                router.del("/users/:user_id") { (request) -> Serializable? in
+                    return Response(statusCode: 404, body: ["foo": "bar"])
+                    }.when { _ in false }
                 
+                var statusCode: Int = 0
                 var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
                 request.httpMethod = "DELETE"
-                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                URLSession.shared.dataTask(with: request) { (_, response, _) in
+                    let response = response as! HTTPURLResponse
+                    statusCode = response.statusCode
+                }.resume()
                 
-                expect(calledDel).toEventually(beFalse())
+                expect(statusCode).toEventually(equal(200)) // RouterTestServer will handle the requests
             }
             
-            fit("Should not call the handler when filter returns true") {
+            it("should call the handler when filter returns true") {
                 var calledDel = false
                 
-                router.del("/users/:user_id", { (request) -> Serializable? in
+                router.del("/users/:user_id") { (request) -> Serializable? in
                     calledDel = true
                     return nil
-                }, { (request) -> Bool in
-                    return true
-                })
+                }.when { _ in true }
                 
                 var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
                 request.httpMethod = "DELETE"

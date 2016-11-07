@@ -16,10 +16,24 @@ import Foundation
  */
 public typealias RouteHandler = (Request) -> Serializable?
 
-/**
- A RouteFilter used when matching/intercepting requests, in order to provide an additional filtering that is set by the user.
- */
-public typealias RouteFilter = ((Request) -> (Bool))?
+public class RouteDescriptor {
+
+    /**
+     A RouteFilter used when matching/intercepting requests, in order to provide an additional filtering that is set by the user.
+     */
+    public typealias RouteFilter = (Request) -> Bool
+    
+    fileprivate let handler: RouteHandler
+    fileprivate var filter: RouteFilter?
+    
+    init(handler: @escaping RouteHandler) {
+        self.handler = handler
+    }
+    
+    func when(_ filter: @escaping RouteFilter) {
+        self.filter = filter
+    }
+}
 
 /**
  A Request struct used in `RouteHandlers` to provide valid requests.
@@ -126,7 +140,7 @@ public final class Router {
         case patch = "PATCH"
     }
     
-    private var routes: [Route : (handler: RouteHandler, filter: RouteFilter)] = [:]
+    private var routes: [Route : RouteDescriptor] = [:]
 
     /// The `baseURL` of the Router
     public let baseURL: String
@@ -214,14 +228,14 @@ public final class Router {
         var headerFields: [String : String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
         
-        for (key, closures) in routes where key.method.rawValue == server.request.httpMethod {
+        for (key, descriptor) in routes where key.method.rawValue == server.request.httpMethod {
             if let info = matchRoute(baseURL, path: key.path, requestURL: requestURL) {
                 // If the request body is nil use `URLProtocol` property see swizzling in `NSMutableURLRequest+FixCopy.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: server.request) as? Data
 
                 let request = Request(components: info.components, queryParameters: info.queryParameters, httpBody: dataBody, httpHeaders: server.request.allHTTPHeaderFields)
-                serializableObject = closures.handler(request)
+                serializableObject = descriptor.handler(request)
                 break
             }
         }
@@ -252,8 +266,10 @@ public final class Router {
         }
     }
     
-    private func addRoute(with path: String, method: HTTPMethod, handler: @escaping RouteHandler, filter: RouteFilter = nil) {
-        routes[Route(path: path, method: method)] = (handler, filter)
+    private func addRoute(with path: String, method: HTTPMethod, handler: @escaping RouteHandler) -> RouteDescriptor {
+        let descriptor = RouteDescriptor(handler: handler)
+        routes[Route(path: path, method: method)] = descriptor
+        return descriptor
     }
 
     /**
@@ -274,8 +290,9 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func get(_ path: String, handler: @escaping RouteHandler) {
-        addRoute(with: path, method: .get, handler: handler)
+    @discardableResult
+    public func get(_ path: String, handler: @escaping RouteHandler) -> RouteDescriptor {
+        return addRoute(with: path, method: .get, handler: handler)
     }
     
     /**
@@ -296,8 +313,9 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func post(_ path: String, handler: @escaping RouteHandler) {
-        addRoute(with: path, method: .post, handler: handler)
+    @discardableResult
+    public func post(_ path: String, handler: @escaping RouteHandler) -> RouteDescriptor {
+        return addRoute(with: path, method: .post, handler: handler)
     }
 
     /**
@@ -318,8 +336,9 @@ public final class Router {
     - parameter path: The path used to match URL requests.
     - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
     */
-    public func patch(_ path: String, handler: @escaping RouteHandler) {
-        addRoute(with: path, method: .patch, handler: handler)
+    @discardableResult
+    public func patch(_ path: String, handler: @escaping RouteHandler) -> RouteDescriptor {
+        return addRoute(with: path, method: .patch, handler: handler)
     }
     
     /**
@@ -340,8 +359,9 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func del(_ path: String, _ handler: @escaping RouteHandler, _ filter: RouteFilter = nil) {
-        addRoute(with: path, method: .delete, handler: handler, filter: filter)
+    @discardableResult
+    public func del(_ path: String, _ handler: @escaping RouteHandler) -> RouteDescriptor {
+        return addRoute(with: path, method: .delete, handler: handler)
     }
     
     /**
@@ -362,8 +382,9 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func put(_ path: String, handler: @escaping RouteHandler) {
-        addRoute(with: path, method: .put, handler: handler)
+    @discardableResult
+    public func put(_ path: String, handler: @escaping RouteHandler) -> RouteDescriptor {
+        return addRoute(with: path, method: .put, handler: handler)
     }
 
 }
