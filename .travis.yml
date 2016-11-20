@@ -29,4 +29,4 @@ matrix:
 
 script:
   - set -o pipefail
-  - xcodebuild -workspace $WORKSPACE -scheme Kakapo\ $SCHEME -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ENABLE_TESTABILITY=YES -enableCodeCoverage $COVERAGE test | xcpretty;
+  - travis_retry xcodebuild -workspace $WORKSPACE -scheme Kakapo\ $SCHEME -sdk "$SDK" -destination "$DESTINATION" -configuration Debug ENABLE_TESTABILITY=YES -enableCodeCoverage $COVERAGE test | xcpretty;
