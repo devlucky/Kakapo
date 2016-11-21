@@ -299,7 +299,6 @@ class RouterTests: QuickSpec {
                         responseData = data
                         }.resume()
                     
-                    
                     let startTime = CFAbsoluteTimeGetCurrent()
                     expect(responseData).toNotEventually(beNil(), timeout: 1.5)
                     let endTime = CFAbsoluteTimeGetCurrent()
@@ -318,7 +317,6 @@ class RouterTests: QuickSpec {
                     URLSession.shared.dataTask(with: URL(string: "http://www.test2.com/users/1")!) { (data, response, _) in
                         responseData = data
                         }.resume()
-                    
                     
                     let startTime = CFAbsoluteTimeGetCurrent()
                     expect(responseData).toNotEventually(beNil())
