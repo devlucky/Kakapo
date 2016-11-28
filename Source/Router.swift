@@ -98,18 +98,20 @@ public final class Router {
     private class Route: Hashable {
         let path: String
         let method: HTTPMethod
+        let queryParameters: Set<URLQueryItem>
         
         static func == (lhs: Router.Route, rhs: Router.Route) -> Bool {
-            return lhs.path == rhs.path && lhs.method == rhs.method
+            return lhs.path == rhs.path && lhs.method == rhs.method && lhs.queryParameters == rhs.queryParameters
         }
         
-        init(path: String, method: HTTPMethod) {
+        init(path: String, method: HTTPMethod, queryParameters: Set<URLQueryItem> = []) {
             self.path = path
             self.method = method
+            self.queryParameters = queryParameters
         }
         
         var hashValue: Int {
-            return path.hashValue ^ method.hashValue
+            return queryParameters.reduce(path.hashValue ^ method.hashValue) { $0.0 ^ $0.1.hashValue }
         }
     }
     
@@ -183,7 +185,7 @@ public final class Router {
         guard let requestURL = request.url, requestURL.absoluteString.contains(baseURL) else { return false }
         
         for (key, _) in routes where key.method.rawValue == request.httpMethod {
-            if  matchRoute(baseURL, path: key.path, requestURL: requestURL) != nil {
+            if  matchRoute(baseURL, path: key.path, queryParameters: key.queryParameters, requestURL: requestURL) != nil {
                 return true
             }
         }
@@ -200,7 +202,7 @@ public final class Router {
         var serializableObject: Serializable?
         
         for (key, handler) in routes where key.method.rawValue == server.request.httpMethod {
-            if let info = matchRoute(baseURL, path: key.path, requestURL: requestURL) {
+            if let info = matchRoute(baseURL, path: key.path, queryParameters: key.queryParameters, requestURL: requestURL) {
                 // If the request body is nil use `URLProtocol` property see swizzling in `NSMutableURLRequest+FixCopy.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: server.request) as? Data
@@ -238,7 +240,13 @@ public final class Router {
     }
     
     private func addRoute(with path: String, method: HTTPMethod, handler: @escaping RouteHandler) {
-        routes[Route(path: path, method: method)] = handler
+        let route = path.substring(.to, string: "?") ?? path
+        var queryParameters: [URLQueryItem]? = nil
+        if let url = URL(string: baseURL.appending(path)) {
+            queryParameters = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+        }
+        
+        routes[Route(path: route, method: method, queryParameters: Set(queryParameters ?? []))] = handler
     }
 
     /**

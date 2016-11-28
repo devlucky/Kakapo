@@ -3,6 +3,8 @@
 ### HEAD
 --------------
 
+- Added support for query parameter routing [Landsi](https://github.com/landsi)
+
 ### 2.1.0
 -----------
 
