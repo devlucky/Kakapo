@@ -155,6 +155,7 @@ class StoreTests: QuickSpec {
                 expect(user?.id) == "0"
             }
             
+            #if arch(x86_64) && _runtime(_ObjC)
             it("should fail a precondition when inserting invalid id") {
                 sut.insert { (id) -> User in
                     return User(firstName: "Joan", lastName: "Romano", age: 25, id: id)
@@ -168,6 +169,7 @@ class StoreTests: QuickSpec {
                 
                 expect(preconditionTrigger()).to(throwAssertion())
             }
+            #endif
 
             it("should return the expected filtered element with valid id") {
                 sut.insert { (id) -> User in
