@@ -155,7 +155,6 @@ class JSONAPILinksSpec: QuickSpec {
                     return false
                 }.first!
                 
-                
                 let links = cat2["links"].dictionaryValue
                 expect(links).toNot(beNil())
                 expect(links["test"]).to(equal("hello"))

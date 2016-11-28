@@ -146,7 +146,7 @@ class StoreTests: QuickSpec {
             
             it("shoud return the expected object after inserting it") {
                 sut.insert { (id) -> User in
-                    return User(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                    return User(firstName: "Hector", lastName: "Zarco", age: 25, id: id)
                 }
                 
                 let user = sut.find(User.self, id: "0")
@@ -155,21 +155,25 @@ class StoreTests: QuickSpec {
                 expect(user?.id) == "0"
             }
             
+            #if arch(x86_64) && _runtime(_ObjC)
             it("should fail a precondition when inserting invalid id") {
                 sut.insert { (id) -> User in
-                    return User(firstName: "Joan", lastName: "Romano", age:25, id: id)
+                    return User(firstName: "Joan", lastName: "Romano", age: 25, id: id)
                 }
 
-                self.expectPrecondition("Tried to insert an invalid id") {
+                let preconditionTrigger: () -> Void = {
                     sut.insert { (id) -> User in
-                        return User(firstName: "Joan", lastName: "Romano", age:25, id: String(Int(id)! - 1))
+                        return User(firstName: "Joan", lastName: "Romano", age: 25, id: String(Int(id)! - 1))
                     }
                 }
+                
+                expect(preconditionTrigger()).to(throwAssertion())
             }
+            #endif
 
             it("should return the expected filtered element with valid id") {
                 sut.insert { (id) -> User in
-                    User(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                    User(firstName: "Hector", lastName: "Zarco", age: 25, id: id)
                 }
                 
                 let userArray = sut.filter(User.self) { (item) -> Bool in
@@ -185,7 +189,7 @@ class StoreTests: QuickSpec {
             it("should return no objects for some inexisting filtering") {
                 sut.create(User.self, number: 2)
                 sut.insert { (id) -> User in
-                    return User(firstName: "Hector", lastName: "Zarco", age:25, id: id)
+                    return User(firstName: "Hector", lastName: "Zarco", age: 25, id: id)
                 }
                 
                 let userArray = sut.filter(User.self, isIncluded: { (item) -> Bool in
