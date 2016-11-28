@@ -101,12 +101,15 @@ public final class Server: URLProtocol {
     
     /// Start loading the matched requested, the route handler will be called and the returned object will be serialized.
     override public func startLoading() {
-        if requestCancelled {
-            return
-        }
-
         if let routerIndex = Server.routers.index(where: { $0.canInit(with: request) }) {
-            Server.routers[routerIndex].startLoading(self)
+            let router = Server.routers[routerIndex]
+            let deadline = DispatchTime.now() + router.latency
+            
+            DispatchQueue.main.asyncAfter(deadline: deadline) {
+                if !self.requestCancelled {
+                    router.startLoading(self)
+                }
+            }
         }
     }
     

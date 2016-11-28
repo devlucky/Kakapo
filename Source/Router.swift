@@ -228,12 +228,8 @@ public final class Router {
             client.urlProtocolDidFinishLoading(server)
         }
 
-        let deadline = DispatchTime.now() + latency
-        DispatchQueue.main.asyncAfter(deadline: deadline) {
-            // before reporting "finished", check if request has been canceled in the meantime
-            if server.requestCancelled == false {
-                didFinishLoading(server)
-            }
+        if !server.requestCancelled {
+            didFinishLoading(server)
         }
     }
     
