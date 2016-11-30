@@ -3,6 +3,8 @@
 ### HEAD
 --------------
 
+- Fix handler was called even when the request was cancelled
+
 ### 1.1.1
 -----------
 
