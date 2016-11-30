@@ -107,12 +107,15 @@ public final class Server: NSURLProtocol {
     
     /// Start loading the matched requested, the route handler will be called and the returned object will be serialized.
     override public func startLoading() {
-        if requestCancelled {
-            return
-        }
-
         if let routerIndex = Server.routers.indexOf({ $0.canInitWithRequest(request) }) {
-            Server.routers[routerIndex].startLoading(self)
+            let router = Server.routers[routerIndex]
+            let latency = router.latency
+            let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
+            dispatch_after(delayTime, dispatch_get_main_queue()) {
+                if !self.requestCancelled {
+                    router.startLoading(self)
+                }
+            }
         }
     }
     
