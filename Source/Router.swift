@@ -226,12 +226,8 @@ public final class Router {
             client.URLProtocolDidFinishLoading(server)
         }
 
-        let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(latency * Double(NSEC_PER_SEC)))
-        dispatch_after(delayTime, dispatch_get_main_queue()) {
-            // before reporting "finished", check if request has been canceled in the meantime
-            if server.requestCancelled == false {
-                didFinishLoading(server)
-            }
+        if !server.requestCancelled {
+            didFinishLoading(server)
         }
     }
     
