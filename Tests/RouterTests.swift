@@ -229,10 +229,10 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                router.del("/users/:user_id") { (request) -> Serializable? in
+                router.del("/users/:user_id", { (request) -> Serializable? in
                     calledDel = true
                     return nil
-                }
+                })
 
                 router.patch("/users/:user_id") { (request) -> Serializable? in
                     calledPatch = true
@@ -362,11 +362,11 @@ class RouterTests: QuickSpec {
                 var responseURL: URL? = URL(string: "")
                 var responseError: Error? = NSError(domain: "", code: 1, userInfo: nil)
                 
-                router.del("/users/:id") { request in
+                router.del("/users/:id", { (request) in
                     XCTFail("Shouldn't reach here")
                     info = (components: request.components, queryParameters: request.queryParameters)
                     return nil
-                }
+                })
                 
                 var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
                 request.httpMethod = "PUT"
@@ -378,6 +378,46 @@ class RouterTests: QuickSpec {
                 expect(info).toEventually(beNil())
                 expect(responseURL?.host).toEventually(equal("www.test.com"))
                 expect(responseError).toEventually(beNil())
+            }
+        }
+        
+        fdescribe("Filtering") {
+            var router: Router!
+            
+            beforeEach {
+                router = Router.register("http://www.test.com")
+            }
+            
+            it("should not call the handler when filter returns false") {
+                
+                router.del("/users/:user_id") { (request) -> Serializable? in
+                    return Response(statusCode: 404, body: ["foo": "bar"])
+                    }.when { _ in false }
+                
+                var statusCode: Int = 0
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "DELETE"
+                URLSession.shared.dataTask(with: request) { (_, response, _) in
+                    let response = response as! HTTPURLResponse
+                    statusCode = response.statusCode
+                }.resume()
+                
+                expect(statusCode).toEventually(equal(200)) // RouterTestServer will handle the requests
+            }
+            
+            it("should call the handler when filter returns true") {
+                var calledDel = false
+                
+                router.del("/users/:user_id") { (request) -> Serializable? in
+                    calledDel = true
+                    return nil
+                }.when { _ in true }
+                
+                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
+                request.httpMethod = "DELETE"
+                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
+                
+                expect(calledDel).toEventually(beTrue())
             }
         }
         
