@@ -17,6 +17,11 @@ import Foundation
 public typealias RouteHandler = (Request) -> Serializable?
 
 /**
+ A RouteFilter used when matching/intercepting requests, in order to provide an additional filtering that is set by the user.
+ */
+public typealias RouteFilter = ((Request) -> (Bool))?
+
+/**
  A Request struct used in `RouteHandlers` to provide valid requests.
  */
 public struct Request {
@@ -121,7 +126,7 @@ public final class Router {
         case patch = "PATCH"
     }
     
-    private var routes: [Route : RouteHandler] = [:]
+    private var routes: [Route : (handler: RouteHandler, filter: RouteFilter)] = [:]
 
     /// The `baseURL` of the Router
     public let baseURL: String
@@ -182,8 +187,18 @@ public final class Router {
     func canInit(with request: URLRequest) -> Bool {
         guard let requestURL = request.url, requestURL.absoluteString.contains(baseURL) else { return false }
         
-        for (key, _) in routes where key.method.rawValue == request.httpMethod {
-            if  matchRoute(baseURL, path: key.path, requestURL: requestURL) != nil {
+        for (key, closures) in routes where key.method.rawValue == request.httpMethod {
+            if let info = matchRoute(baseURL, path: key.path, requestURL: requestURL) {
+                
+                if let filter = closures.filter {
+                    // If the request body is nil use `URLProtocol` property see swizzling in `NSMutableURLRequest+FixCopy.m`
+                    // using a literal string because a bridging header in the podspec will be more problematic.
+                    let dataBody = request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: request) as? Data
+                    let request = Request(components: info.components, queryParameters: info.queryParameters, httpBody: dataBody, httpHeaders: request.allHTTPHeaderFields)
+                    
+                    return filter(request)
+                }
+                
                 return true
             }
         }
@@ -199,14 +214,14 @@ public final class Router {
         var headerFields: [String : String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
         
-        for (key, handler) in routes where key.method.rawValue == server.request.httpMethod {
+        for (key, closures) in routes where key.method.rawValue == server.request.httpMethod {
             if let info = matchRoute(baseURL, path: key.path, requestURL: requestURL) {
                 // If the request body is nil use `URLProtocol` property see swizzling in `NSMutableURLRequest+FixCopy.m`
                 // using a literal string because a bridging header in the podspec will be more problematic.
                 let dataBody = server.request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: server.request) as? Data
 
                 let request = Request(components: info.components, queryParameters: info.queryParameters, httpBody: dataBody, httpHeaders: server.request.allHTTPHeaderFields)
-                serializableObject = handler(request)
+                serializableObject = closures.handler(request)
                 break
             }
         }
@@ -233,8 +248,8 @@ public final class Router {
         }
     }
     
-    private func addRoute(with path: String, method: HTTPMethod, handler: @escaping RouteHandler) {
-        routes[Route(path: path, method: method)] = handler
+    private func addRoute(with path: String, method: HTTPMethod, handler: @escaping RouteHandler, filter: RouteFilter = nil) {
+        routes[Route(path: path, method: method)] = (handler, filter)
     }
 
     /**
@@ -321,8 +336,8 @@ public final class Router {
      - parameter path: The path used to match URL requests.
      - parameter handler: A `RouteHandler` handler that will be used when the route is matched for a GET request
      */
-    public func del(_ path: String, handler: @escaping RouteHandler) {
-        addRoute(with: path, method: .delete, handler: handler)
+    public func del(_ path: String, _ handler: @escaping RouteHandler, _ filter: RouteFilter = nil) {
+        addRoute(with: path, method: .delete, handler: handler, filter: filter)
     }
     
     /**
