@@ -4,6 +4,7 @@
 --------------
 
 - Fix handler was called even when the request was cancelled
+- Allow `Data` as Serialized object even if is not valid json #150
 
 ### 2.1.0
 -----------
