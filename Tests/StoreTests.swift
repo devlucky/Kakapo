@@ -60,11 +60,11 @@ class StoreTests: QuickSpec {
         
         describe("Creation and Insertion") {
             it("should create a large number of elements") {
-                DispatchQueue.concurrentPerform(iterations: 1000) { (i) in
+                DispatchQueue.concurrentPerform(iterations: 1000) { (_) in
                     sut.create(User.self)
                 }
                 
-                DispatchQueue.concurrentPerform(iterations: 5000) { (i) in
+                DispatchQueue.concurrentPerform(iterations: 5000) { (_) in
                     sut.create(Comment.self)
                 }
                 
@@ -92,7 +92,7 @@ class StoreTests: QuickSpec {
             }
             
             it("should create a large number of elements respecting the previous ones") {
-                DispatchQueue.concurrentPerform(iterations: 1000) { (i) in
+                DispatchQueue.concurrentPerform(iterations: 1000) { (_) in
                     sut.create(User.self)
                 }
                 
@@ -104,7 +104,7 @@ class StoreTests: QuickSpec {
             }
             
             it("should insert a large number of elements") {
-                DispatchQueue.concurrentPerform(iterations: 1000) { (i) in
+                DispatchQueue.concurrentPerform(iterations: 1000) { (_) in
                     sut.insert { (id) -> (User) in
                         return User(firstName: "Name " + id, lastName: "Last Name " + id, age: 10, id: id)
                     }
@@ -444,7 +444,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously updating the store from another queue during a write operation") {
                 let user = sut.insert { (id) -> User in
-                    queue.sync() {
+                    queue.sync {
                         try! sut.update(User(id: "0", store: sut))
                     }
                     return User(id: id, store: sut)
@@ -454,7 +454,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously deleting the store from another queue during a write operation") {
                 let user = sut.insert { (id) -> User in
-                    queue.sync() {
+                    queue.sync {
                         try! sut.delete(sut.find(User.self, id: "0")!)
                     }
                     return User(id: id, store: sut)

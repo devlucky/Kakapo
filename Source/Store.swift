@@ -78,7 +78,7 @@ public final class Store {
         return object
     }
 
-    private func barrierAsync(_ closure: @escaping () -> ()) {
+    private func barrierAsync(_ closure: @escaping () -> Void) {
         queue.async(flags: .barrier, execute: closure)
     }
 

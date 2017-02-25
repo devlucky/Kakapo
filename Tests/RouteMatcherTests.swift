@@ -63,25 +63,25 @@ class RouteMatcherTests: QuickSpec {
                 }
                 
                 it("should match a path containing a wildcard") {
-                    expect(match("/users/:id", requestURL: "/users/1")?.components) == ["id" : "1"]
+                    expect(match("/users/:id", requestURL: "/users/1")?.components) == ["id": "1"]
                 }
                 
                 it("should match a path with equal components except for wildcard") {
-                    expect(match("/users/:id/comments", requestURL: "/users/1/comments")?.components) == ["id" : "1"]
+                    expect(match("/users/:id/comments", requestURL: "/users/1/comments")?.components) == ["id": "1"]
                 }
                 
                 it("should match a path with multiple wildcards") {
-                    expect(match("/users/:user_id/comments/:comment_id", requestURL: "/users/1/comments/2")?.components) == ["user_id" : "1", "comment_id": "2"]
+                    expect(match("/users/:user_id/comments/:comment_id", requestURL: "/users/1/comments/2")?.components) == ["user_id": "1", "comment_id": "2"]
                 }
                 
                 it("should match a path with only wildcards") {
-                    expect(match("/:user_id/:comment_id", requestURL: "/1/2/")?.components) == ["user_id" : "1", "comment_id": "2"]
+                    expect(match("/:user_id/:comment_id", requestURL: "/1/2/")?.components) == ["user_id": "1", "comment_id": "2"]
                 }
                 
                 context("when the request contains query parameters") {
                     
                     it("should match a path") {
-                        expect(match("/users/:id/comments", requestURL: "/users/1/comments?page=2")?.components) == ["id" : "1"]
+                        expect(match("/users/:id/comments", requestURL: "/users/1/comments?page=2")?.components) == ["id": "1"]
                     }
                     
                     it("should match a path when there are not actual parameters") {
@@ -112,7 +112,7 @@ class RouteMatcherTests: QuickSpec {
                     let result = matchRoute("http://test.com/",
                                             path: "/users/:id",
                                             requestURL: URL(string: "http://test.com/users/1")!)
-                    expect(result?.components) == ["id" : "1"]
+                    expect(result?.components) == ["id": "1"]
 
                 }
                 
@@ -127,14 +127,14 @@ class RouteMatcherTests: QuickSpec {
                     let result = matchRoute("test.com/",
                                             path: "/users/:id",
                                             requestURL: URL(string: "ssh://test.com/users/1")!)
-                    expect(result?.components) == ["id" : "1"]
+                    expect(result?.components) == ["id": "1"]
                 }
                 
                 it("shoud match if the base url contains components") {
                     let result = matchRoute("http://test.com/api/v3/",
                                             path: "/users/:id",
                                             requestURL: URL(string: "http://test.com/api/v3/users/1")!)
-                    expect(result?.components) == ["id" : "1"]
+                    expect(result?.components) == ["id": "1"]
                 }
                 
                 it("shoud not match if the base url contains wildcard") {
@@ -148,7 +148,7 @@ class RouteMatcherTests: QuickSpec {
                     let result = matchRoute("test.com/",
                                             path: "/users/:id",
                                             requestURL: URL(string: "http://api.test.com/users/1")!)
-                    expect(result?.components) == ["id" : "1"]
+                    expect(result?.components) == ["id": "1"]
                 }
             }
 
@@ -159,28 +159,28 @@ class RouteMatcherTests: QuickSpec {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "users/:id",
                                                 requestURL: URL(string: "http://test.com/api/v3/users/1")!)
-                        expect(result?.components) == ["id" : "1"]
+                        expect(result?.components) == ["id": "1"]
                     }
                     
                     it("should match when base url contains a trailing slash and the path contains a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id",
                                                 requestURL: URL(string: "http://test.com/api/v3/users/1")!)
-                        expect(result?.components) == ["id" : "1"]
+                        expect(result?.components) == ["id": "1"]
                     }
                     
                     it("should match when base url doesn't contain a trailing slash and the path contains a leading slash") {
                         let result = matchRoute("http://test.com/api/v3",
                                                 path: "/users/:id",
                                                 requestURL: URL(string: "http://test.com/api/v3/users/1")!)
-                        expect(result?.components) == ["id" : "1"]
+                        expect(result?.components) == ["id": "1"]
                     }
                     
                     it("should match when base url doesn't contain a trailing slash and the path doesn't contain a leading slash") {
                         let result = matchRoute("http://test.com/api/v3",
                                                 path: "users/:id",
                                                 requestURL: URL(string: "http://test.com/api/v3/users/1")!)
-                        expect(result?.components) == ["id" : "1"]
+                        expect(result?.components) == ["id": "1"]
                     }
                 }
                 
@@ -189,28 +189,28 @@ class RouteMatcherTests: QuickSpec {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id/",
                                                 requestURL: URL(string: "http://test.com/api/v3/users/1")!)
-                        expect(result?.components) == ["id" : "1"]
+                        expect(result?.components) == ["id": "1"]
                     }
                     
                     it("should match when path contains a trailing slash and the requestURL contains a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id/",
                                                 requestURL: URL(string: "http://test.com/api/v3/users/1/")!)
-                        expect(result?.components) == ["id" : "1"]
+                        expect(result?.components) == ["id": "1"]
                     }
                     
                     it("should match when path doesn't contain a trailing slash and the requestURL contains a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id",
                                                 requestURL: URL(string: "http://test.com/api/v3/users/1/")!)
-                        expect(result?.components) == ["id" : "1"]
+                        expect(result?.components) == ["id": "1"]
                     }
                     
                     it("should match when path doesn't contain a trailing slash and the requestURL doesn't contain a leading slash") {
                         let result = matchRoute("http://test.com/api/v3/",
                                                 path: "/users/:id",
                                                 requestURL: URL(string: "http://test.com/api/v3/users/1")!)
-                        expect(result?.components) == ["id" : "1"]
+                        expect(result?.components) == ["id": "1"]
                     }
                 }
             }

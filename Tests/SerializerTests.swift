@@ -118,7 +118,7 @@ class SerializeSpec: QuickSpec {
             }
             
             it("serialize dictionary and entities inside it") {
-                let dictionary = MaybeEmpty(["1":user, "2":user, "3":user])
+                let dictionary = MaybeEmpty(["1": user, "2": user, "3": user])
                 let serialized = dictionary.serialized() as! [String: AnyObject]
                 for (key, value) in serialized["value"] as! [String: AnyObject] {
                     expect(key).notTo(beNil())
@@ -127,7 +127,7 @@ class SerializeSpec: QuickSpec {
             }
             
             it("recursively serialize dictionaries") {
-                let dictionary = MaybeEmpty(["1":["1":user]])
+                let dictionary = MaybeEmpty(["1": ["1": user]])
                 let serialized = dictionary.serialized() as! [String: AnyObject]
                 let value = serialized["value"] as! [String: AnyObject]
                 let innerDict = value["1"] as! [String: AnyObject]
