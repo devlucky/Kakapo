@@ -303,7 +303,7 @@ public extension JSONAPIEntity {
                 if let value = child.value as? JSONAPISerializable,
                     let data = value.data(includingRelationships: false, includingAttributes: false, transformingKeys: keyTransformer) {
                     if includingRelationships {
-                        var relationship: [String: Any] = ["data" : data]
+                        var relationship: [String: Any] = ["data": data]
                         
                         if let linkedEntity = self as? JSONAPILinkedEntity,
                             let relationshipsLinks = linkedEntity.relationshipsLinks?[label], !relationshipsLinks.isEmpty {
@@ -331,7 +331,7 @@ public extension JSONAPIEntity {
     /// returns the `included` relationships field conforming to JSON API
     public func includedRelationships(includingChildren: Bool, transformingKeys keyTransformer: KeyTransformer?) -> [Any]? {
         let mirror = Mirror(reflecting: self)
-        let includedRelationships = mirror.children.flatMap { (label, value) -> [Any] in
+        let includedRelationships = mirror.children.flatMap { (_, value) -> [Any] in
             
             guard let value = value as? JSONAPISerializable,
                 let include = value.data(includingRelationships: false, includingAttributes: true, transformingKeys: keyTransformer) else {

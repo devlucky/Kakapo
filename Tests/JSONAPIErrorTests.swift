@@ -68,7 +68,7 @@ class JSONAPIErrorsSpec: QuickSpec {
                 it("should affect the status code of the request") {
                     let router = Router.register("http://www.test123.com")
 
-                    router.get("/users") { request in
+                    router.get("/users") { _ in
                         return JSONAPIError(statusCode: 403) { (error) in
                             error.title = "test"
                         }
@@ -76,7 +76,7 @@ class JSONAPIErrorsSpec: QuickSpec {
                     
                     var statusCode: Int = -1
                     let url = URL(string: "http://www.test123.com/users")!
-                    URLSession.shared.dataTask(with: url) { (data, response, _) in
+                    URLSession.shared.dataTask(with: url) { (_, response, _) in
                         let response = response as! HTTPURLResponse
                         statusCode = response.statusCode
                         }.resume()
@@ -89,7 +89,7 @@ class JSONAPIErrorsSpec: QuickSpec {
                 it("should affect the header fields of the response") {
                     let router = Router.register("http://www.test1234.com")
                     
-                    router.get("/users") { request in
+                    router.get("/users") { _ in
                         return JSONAPIError(statusCode: 404, headerFields: ["foo": "bar"]) { (error) in
                             error.title = "test"
                         }
@@ -97,7 +97,7 @@ class JSONAPIErrorsSpec: QuickSpec {
                     
                     var foo: String?
                     let url = URL(string: "http://www.test1234.com/users")!
-                    URLSession.shared.dataTask(with: url) { (data, response, _) in
+                    URLSession.shared.dataTask(with: url) { (_, response, _) in
                         let response = response as! HTTPURLResponse
                         let headers = response.allHeaderFields as? [String: String]
                         foo = headers?["foo"]

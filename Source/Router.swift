@@ -224,7 +224,7 @@ public final class Router {
             client.urlProtocol(server, didLoad: data)
         }
         
-        let didFinishLoading: (URLProtocol) -> () = { (server) in
+        let didFinishLoading: (URLProtocol) -> Void = { (server) in
             client.urlProtocolDidFinishLoading(server)
         }
 

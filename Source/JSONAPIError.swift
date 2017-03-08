@@ -96,7 +96,7 @@ public struct JSONAPIError: ResponseFieldsProvider {
      
      - returns: An error that conforms to JSON API specifications and it's ready to be serialized
      */
-    public init(statusCode: Int, headerFields: [String: String]? = nil, errorBuilder: (_ error: Builder) -> ()) {
+    public init(statusCode: Int, headerFields: [String: String]? = nil, errorBuilder: (_ error: Builder) -> Void) {
         let builder = Builder(statusCode: statusCode)
         errorBuilder(builder)
         self.builder = builder
