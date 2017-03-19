@@ -9,7 +9,7 @@
 import Foundation
 
 /// A convenience error object that conform to JSON API
-public struct JSONAPIError: ResponseFieldsProvider {
+public struct JSONAPIError: CustomSerializable {
     
     /// An object containing references to the source of the error, optionally including any of the following members
     public struct Source: Serializable {
@@ -78,29 +78,22 @@ public struct JSONAPIError: ResponseFieldsProvider {
     public var statusCode: Int {
         return builder.status
     }
-    
-    /// A `JSONAPIError.Builder` instance contains all the fields.
-    public var body: Serializable {
-        return builder
-    }
-    
-    /// The headerFields that will be returned by the HTTP response.
-    public let headerFields: [String : String]?
 
     /**
      Initialize a `JSONAPIError` and build it with `JSONAPIError.Builder`
      
      - parameter statusCode:   The status code of the response, will be used also to provide a statusCode for your request
-     - parameter headerFields: The headerFields that will be returned by the HTTP response.
      - parameter errorBuilder: A builder that can be used to fill the error objects, it contains all you need to provide an error object confiorming to JSON API (**see `JSONAPIError.Builder`**)
      
      - returns: An error that conforms to JSON API specifications and it's ready to be serialized
      */
-    public init(statusCode: Int, headerFields: [String: String]? = nil, errorBuilder: (_ error: Builder) -> Void) {
+    public init(statusCode: Int, errorBuilder: (_ error: Builder) -> Void) {
         let builder = Builder(statusCode: statusCode)
         errorBuilder(builder)
         self.builder = builder
-        self.headerFields = headerFields
     }
-    
+
+    public func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any? {
+        return builder.serialized()
+    }
 }

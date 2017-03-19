@@ -15,12 +15,16 @@ import Nimble
 
 struct CustomResponse: ResponseFieldsProvider {
     let statusCode: Int
-    let body: Serializable
+    let wrapped: Serializable
     let headerFields: [String : String]?
+
+    var body: Data? {
+        return wrapped.body
+    }
     
-    init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
+    init(statusCode: Int, wrapped: Serializable, headerFields: [String : String]? = nil) {
         self.statusCode = statusCode
-        self.body = body
+        self.wrapped = wrapped
         self.headerFields = headerFields
     }
 }
@@ -548,7 +552,8 @@ class RouterTests: QuickSpec {
                 var responseDictionary: [String: AnyObject]?
                 
                 router.get("/users/:id") { request in
-                    return Response(statusCode: 200, body: store.find(User.self, id: request.components["id"]!)!)
+                    let user = store.find(User.self, id: request.components["id"]!)
+                    return Response(statusCode: 200, body: user.body)
                 }
                 
                 URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -568,7 +573,7 @@ class RouterTests: QuickSpec {
                 
                 router.get("/users/:id") { _ in
                     // Optional.some("none") -> not valid JSON object
-                    return Response(statusCode: 400, body: Optional.some("none"))
+                    return Response(statusCode: 400, body: Optional.some("none").body)
                 }
                 
                 URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (data, response, _) in
@@ -585,7 +590,7 @@ class RouterTests: QuickSpec {
                 var allHeaders: [String : String]? = nil
                 
                 router.get("/users/:id") { _ in
-                    let body = ["id": "foo", "type": "User"]
+                    let body = ["id": "foo", "type": "User"].body
                     let headerFields = ["access_token": "094850348502", "user_id": "124"]
                     return Response(statusCode: 400, body: body, headerFields: headerFields)
                 }
@@ -606,7 +611,7 @@ class RouterTests: QuickSpec {
                 var statusCode: Int? = nil
                 
                 router.get("/users/:id") { _ in
-                    return CustomResponse(statusCode: 400, body: ["id": 2], headerFields: ["access_token": "094850348502"])
+                    return CustomResponse(statusCode: 400, wrapped: ["id": 2], headerFields: ["access_token": "094850348502"])
                 }
                 
                 URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (data, response, _) in
