@@ -14,7 +14,7 @@ import Foundation
  By default, though, the Router will return a 200 status code and `["Content-Type": "application/json"]` header fields when only returning a Serializable object.
  In order to customize that behavior, check `ResponseFieldsProvider` to provide custom status code and header fields.
  */
-public typealias RouteHandler = (Request) -> Serializable?
+public typealias RouteHandler = (Request) -> ResponseFieldsProvider?
 
 /**
  A Request struct used in `RouteHandlers` to provide valid requests.
@@ -43,7 +43,7 @@ public struct Response: ResponseFieldsProvider {
     public let statusCode: Int
     
     /// The Serializable body object
-    public let body: Serializable
+    public let body: Data?
     
     /// An optional dictionary holding the response header fields
     public let headerFields: [String : String]?
@@ -57,7 +57,7 @@ public struct Response: ResponseFieldsProvider {
      
      - returns: A wrapper `Serializable` object that affect http requests.
      */
-    public init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
+    public init(statusCode: Int, body: Data?, headerFields: [String : String]? = nil) {
         self.statusCode = statusCode
         self.body = body
         self.headerFields = headerFields
@@ -170,10 +170,8 @@ public final class Router {
     func startLoading(_ server: Server) {
         guard let requestURL = server.request.url,
                   let client = server.client else { return }
-        
-        var statusCode = 200
-        var headerFields: [String : String]? = ["Content-Type": "application/json"]
-        var serializableObject: Serializable?
+
+        var responseFieldsProvider: ResponseFieldsProvider?
         
         for (key, handler) in routes where key.method.rawValue == server.request.httpMethod {
             if let info = matchRoute(baseURL, path: key.path, requestURL: requestURL) {
@@ -182,24 +180,28 @@ public final class Router {
                 let dataBody = server.request.httpBody ?? URLProtocol.property(forKey: "kkp_requestHTTPBody", in: server.request) as? Data
 
                 let request = Request(components: info.components, queryParameters: info.queryParameters, httpBody: dataBody, httpHeaders: server.request.allHTTPHeaderFields)
-                serializableObject = handler(request)
+                responseFieldsProvider = handler(request)
                 break
             }
         }
-        
-        if let serializableObject = serializableObject as? ResponseFieldsProvider {
-            statusCode = serializableObject.statusCode
-            headerFields = serializableObject.headerFields
-        }
-        
-        if let response = HTTPURLResponse(url: requestURL, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: headerFields) {
+
+        // In case we don't have a statusCode and headerFields
+        // we fallback on // https://tools.ietf.org/html/rfc2324
+        let response = HTTPURLResponse(
+            url: requestURL,
+            statusCode: responseFieldsProvider?.statusCode ?? 418,
+            httpVersion: "HTTP/1.1",
+            headerFields: responseFieldsProvider?.headerFields ?? ["Content-Type": "application/coffee-pot-command"]
+        )
+
+        if let response = response {
             client.urlProtocol(server, didReceive: response, cacheStoragePolicy: .allowedInMemoryOnly)
         }
-        
-        if let data = serializableObject?.toData() {
+
+        if let data = responseFieldsProvider?.body {
             client.urlProtocol(server, didLoad: data)
         }
-        
+
         let didFinishLoading: (URLProtocol) -> Void = { (server) in
             client.urlProtocolDidFinishLoading(server)
         }

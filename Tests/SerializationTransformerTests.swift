@@ -145,14 +145,6 @@ class SerializationTransformerSpec: QuickSpec {
                 }
             }
             
-            context("ResponseFieldsProvider") {
-                it("should transform the keys") {
-                    let object = Response(statusCode: 200, body: friend)
-                    let serialized = UppercaseTransformer(wrapped: object).serialized() as! [String: AnyObject]
-                    expect(serialized["FRIENDS"]).toNot(beNil())
-                }
-            }
-            
             context("Array") {
                 it("should transform the keys") {
                     let object = [friend]

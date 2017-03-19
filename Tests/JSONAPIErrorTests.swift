@@ -80,30 +80,8 @@ class JSONAPIErrorsSpec: QuickSpec {
                         let response = response as! HTTPURLResponse
                         statusCode = response.statusCode
                         }.resume()
-                    // still the only test randomly failing for no reasons...
-                    // 99,9 % is not a router problem (otherwise wouldn't be the only one)
-                    // https://pbs.twimg.com/media/CfSQdwUW8AErog1.jpg
+
                     expect(statusCode).toEventually(equal(403), timeout: 2)
-                }
-                
-                it("should affect the header fields of the response") {
-                    let router = Router.register("http://www.test1234.com")
-                    
-                    router.get("/users") { _ in
-                        return JSONAPIError(statusCode: 404, headerFields: ["foo": "bar"]) { (error) in
-                            error.title = "test"
-                        }
-                    }
-                    
-                    var foo: String?
-                    let url = URL(string: "http://www.test1234.com/users")!
-                    URLSession.shared.dataTask(with: url) { (_, response, _) in
-                        let response = response as! HTTPURLResponse
-                        let headers = response.allHeaderFields as? [String: String]
-                        foo = headers?["foo"]
-                        }.resume()
-                    
-                    expect(foo).toEventually(equal("bar"))
                 }
             }
         }

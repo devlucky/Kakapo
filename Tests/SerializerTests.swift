@@ -156,7 +156,7 @@ class SerializeSpec: QuickSpec {
             it("produces nil data and serialized object when nil") {
                 let nilInt: Int? = nil
                 expect(nilInt.serialized()).to(beNil())
-                expect(nilInt.toData()).to(beNil())
+                expect(nilInt.body).to(beNil())
             }
             
             it("serialize an optional") {

@@ -11,8 +11,30 @@ import Foundation
 /**
  *  A protocol to serialize types into JSON representations, the object will be Mirrored to be serialized. Use `CustomReflectable` if you need different behaviors or use `CustomSerializable`if it's not a valid option.
  */
-public protocol Serializable {
+public protocol Serializable: ResponseFieldsProvider {
     // empty protocol, marks that the object should be Mirrored to be serialized.
+}
+
+extension Serializable {
+    public var statusCode: Int {
+        return 200
+    }
+
+    public var headerFields: [String : String]? {
+        return ["Content-Type": "application/json"]
+    }
+
+    /**
+     Serialize a `Serializable` object and convert the serialized object to `Data`. Unless it is nil the return value is representing a JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
+     */
+    public var body: Data? {
+        guard let object = serialized() else { return nil }
+
+        if !JSONSerialization.isValidJSONObject(object) {
+            return nil
+        }
+        return try? JSONSerialization.data(withJSONObject: object, options: .prettyPrinted)
+    }
 }
 
 /**
@@ -44,20 +66,6 @@ public extension Serializable {
         return serialize(self, keyTransformer: keyTransformer)
     }
 
-    /**
-     Serialize a `Serializable` object and convert the serialized object to `Data`. Unless it is nil the return value is representing a JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
-     
-     - returns: The serialized object as `Data`
-     */
-    func toData() -> Data? {
-        guard let object = serialized() else { return nil }
-        
-        if !JSONSerialization.isValidJSONObject(object) {
-            return nil
-        }
-        return try? JSONSerialization.data(withJSONObject: object, options: .prettyPrinted)
-    }
-    
     fileprivate func serializeObject(_ value: Any, keyTransformer: KeyTransformer?) -> Any? {
         if let value = value as? Serializable {
             return value.serialized(transformingKeys: keyTransformer)
