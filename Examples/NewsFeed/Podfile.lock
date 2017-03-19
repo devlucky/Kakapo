@@ -3,7 +3,9 @@ PODS:
   - Fakery (2.0.0):
     - SwiftyJSON (~> 3.0)
   - HanekeSwift (0.10.1)
-  - Kakapo (1.0.0)
+  - Kakapo (2.1.0):
+    - Kakapo/Serialization (= 2.1.0)
+  - Kakapo/Serialization (2.1.0)
   - SnapKit (3.0.1)
   - SwiftyJSON (3.0.0)
 
@@ -37,10 +39,10 @@ SPEC CHECKSUMS:
   Alamofire: fef59f00388f267e52d9b432aa5d93dc97190f14
   Fakery: 8eeede253b9b373f8cdb517c799a721655b040a7
   HanekeSwift: 4113367892828e7700d24a384027de6ebc79aad1
-  Kakapo: 2aa6dc014ba5704cd9eb81d5a5481090e07713e3
+  Kakapo: 4f5617f27f3f504e7f3d43858bbf4b444bf1a605
   SnapKit: f818b8326d45b4e1c777d0ab27b5c0a3624bfdeb
   SwiftyJSON: f57b2b44bc166617372d1c70773591fe9f0f5fd4
 
 PODFILE CHECKSUM: 6facf4fb2df738e8c6bc613d3f386c66661a6e33
 
-COCOAPODS: 1.1.0.rc.2
+COCOAPODS: 1.2.0

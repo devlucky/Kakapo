@@ -3,6 +3,7 @@
 ### HEAD
 --------------
 
+- Add Serialization subspec
 - Fix handler was called even when the request was cancelled
 
 ### 2.1.0

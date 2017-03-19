@@ -71,6 +71,8 @@ use_frameworks!
 pod 'Kakapo'
 ```
 
+You can use the "Serialization" subspec to only use the object->JSON serialization features of Kakapo.  
+
 Using [Carthage](https://github.com/Carthage/Carthage):
 
 ```

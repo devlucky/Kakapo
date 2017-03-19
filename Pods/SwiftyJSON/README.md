@@ -17,6 +17,7 @@ SwiftyJSON makes it easy to deal with JSON data in Swift.
    - [Setter](#setter)
    - [Raw object](#raw-object)
    - [Literal convertibles](#literal-convertibles)
+   - [Merging](#merging)
 5. [Work with Alamofire](#work-with-alamofire)
 
 > For Legacy Swift support, take a look at the [swift2 branch](https://github.com/SwiftyJSON/SwiftyJSON/tree/swift2)
@@ -45,7 +46,7 @@ It's not good.
 Even if we use optional chaining, it would be messy:
 
 ```swift
-if let JSONObject = try JSONSerialization.jsonObject(with: data,, options: .allowFragments) as? [[String: Any]],
+if let JSONObject = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [[String: Any]],
     let username = (JSONObject[0]["user"] as? [String: Any])?["name"] as? String {
         // There's our username
 }
@@ -116,7 +117,7 @@ let package = Package(
     name: "YOUR_PROJECT_NAME",
     targets: [],
     dependencies: [
-        .Package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", versions: Version(1,0,0)..<Version(2, .max, .max)),
+        .Package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", versions: Version(1,0,0)..<Version(3, .max, .max)),
     ]
 )
 ```
@@ -442,12 +443,71 @@ let auth: JSON = [
 ]
 ```
 
+#### Merging
+
+It is possible to merge one JSON into another JSON. Merging a JSON into another JSON adds all non existing values to the original JSON which are only present in the `other` JSON.
+
+If both JSONs contain a value for the same key, _mostly_ this value gets overwritten in the original JSON, but there are two cases where it provides some special treatment:
+
+- In case of both values being a `JSON.Type.array` the values form the array found in the `other` JSON getting appended to the original JSON's array value. 
+- In case of both values being a `JSON.Type.dictionary` both JSON-values are getting merged the same way the encapsulating JSON is merged.
+
+In case, where two fields in a JSON have a different types, the value will get always overwritten.
+
+There are two different fashions for merging: `merge` modifies the original JSON, whereas `merged` works non-destructively on a copy.
+
+```swift
+let original: JSON = [
+    "first_name": "John",
+    "age": 20,
+    "skills": ["Coding", "Reading"],
+    "address": [
+        "street": "Front St",
+        "zip": "12345",
+    ]
+]
+
+let update: JSON = [
+    "last_name": "Doe",
+    "age": 21,
+    "skills": ["Writing"],
+    "address": [
+        "zip": "12342",
+        "city": "New York City"
+    ]
+]
+
+let updated = original.merge(with: update)
+// [
+//     "first_name": "John",
+//     "last_name": "Doe",
+//     "age": 21,
+//     "skills": ["Coding", "Reading", "Writing"],
+//     "address": [
+//         "street": "Front St",
+//         "zip": "12342",
+//         "city": "New York City"
+//     ]
+// ]
+```
+
+## String representation
+There are two options available:
+- use the default Swift one
+- use a custom one that will handle optionals well and represent `nil` as `"null"`:
+```swift
+let dict = ["1":2, "2":"two", "3": nil] as [String: Any?]
+let json = JSON(dict)
+let representation = json.rawString(options: [.castNilToNSNull: true])
+// representation is "{\"1\":2,\"2\":\"two\",\"3\":null}", which represents {"1":2,"2":"two","3":null}
+```
+
 ## Work with Alamofire
 
 SwiftyJSON nicely wraps the result of the Alamofire JSON response handler:
 
 ```swift
-Alamofire.request(.GET, url).validate().responseJSON { response in
+Alamofire.request(url, method: .get).validate().responseJSON { response in
     switch response.result {
     case .success(let value):
         let json = JSON(value)
