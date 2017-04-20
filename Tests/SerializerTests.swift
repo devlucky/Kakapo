@@ -68,6 +68,13 @@ class SerializeSpec: QuickSpec {
                     expect(serialized["customName"] as? String).to(equal("Alex"))
                 }
             }
+
+            context("when the serialized object is Data") {
+                it("is accepted even if is not valid json") {
+                    let serializable: Serializable = Optional.some(Data())
+                    expect(serializable.toData()).toNot(beNil())
+                }
+            }
         }
         
         describe("Array serialization") {

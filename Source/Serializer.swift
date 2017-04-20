@@ -20,18 +20,19 @@ public protocol Serializable {
  */
 public protocol CustomSerializable: Serializable {
     /**
-     Serialize by returning a valid object
+     Serialize by returning a valid object, the object must be convertible to JSON or raw `Data`
 
      - parameter keyTransformer: An Optional closure to transform the keys, for custom serializations the implementation must take care of transforming the keys. This closure, for example, is not nil when a `Serializable` object is wrapped in a `SerializationTransformer`, the wrapper object will expect `CustomSerializable` object to correctly handle the key transformation (see `SerializationTransformer`)
 
      - returns: You should return either another `Serializable` object (also `Array` or `Dictionary`) containing other Serializable objects or property list types that can be serialized into json (primitive types).
+        You may also return `Data` that won't be processed but instead used directly as a repsonse.
      */
     func customSerialized(transformingKeys keyTransformer: KeyTransformer?) -> Any?
 }
 
 public extension Serializable {
     /**
-     Serialize a `Serializable` object. The output, unless nil, is convertible to `Data` / JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
+     Serialize a `Serializable` object. The output, unless nil, is convertible to `Data` or JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
      
      - parameter keyTransformer: A closure that given a key transforms it into another key. Usually this optional closure is provided by `SerializationTransformer` when a `Serializable` object is wrapped into a transformer.
      
@@ -45,16 +46,22 @@ public extension Serializable {
     }
 
     /**
-     Serialize a `Serializable` object and convert the serialized object to `Data`. Unless it is nil the return value is representing a JSON. Usually you don't need to use this method directly since `Router` will automatically serialize objects when needed.
+     Serialize a `Serializable` object and convert the serialized object to `Data`.
+     Unless it is nil or the serialized object is `Data`, the return value is representing a JSON.
+     Usually you don't need to use this method directly
+     since `Router` will automatically serialize objects when needed.
      
      - returns: The serialized object as `Data`
      */
     func toData() -> Data? {
         guard let object = serialized() else { return nil }
-        
-        if !JSONSerialization.isValidJSONObject(object) {
+
+        if let data = object as? Data {
+            return data
+        } else if !JSONSerialization.isValidJSONObject(object) {
             return nil
         }
+
         return try? JSONSerialization.data(withJSONObject: object, options: .prettyPrinted)
     }
     
