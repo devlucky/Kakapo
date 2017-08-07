@@ -334,8 +334,8 @@ class StoreTests: QuickSpec {
             
             it("should be able to concurrently delete objects") {
                 let users = sut.create(User.self, number: 100)
-                DispatchQueue.concurrentPerform(iterations: 100) { (i) in
-                    try! sut.delete(users[i])
+                DispatchQueue.concurrentPerform(iterations: 100) { (index) in
+                    try! sut.delete(users[index])
                 }
                 expect(sut.findAll(User.self).count).to(equal(0))
             }
@@ -343,9 +343,9 @@ class StoreTests: QuickSpec {
             it("should be able to concurrently update and delete objects") {
                 let users = sut.create(User.self, number: 100)
                 
-                DispatchQueue.concurrentPerform(iterations: 100) { (i) in
-                    try! sut.update(users[i])
-                    try! sut.delete(users[i])
+                DispatchQueue.concurrentPerform(iterations: 100) { (index) in
+                    try! sut.update(users[index])
+                    try! sut.delete(users[index])
                 }
                 expect(sut.findAll(User.self)).to(beEmpty())
             }

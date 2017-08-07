@@ -49,5 +49,9 @@ variable_name:
     - HTTPHeaders
     - lhs
     - rhs    
+    - to
+    - obj
+    - get
+    - put
 
 reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit)
