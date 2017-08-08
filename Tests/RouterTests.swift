@@ -437,7 +437,7 @@ class RouterTests: QuickSpec {
                     return nil
                 }
                 
-                let _ = NSURLConnection(request: request, delegate: nil)
+                _ = NSURLConnection(request: request, delegate: nil)
                 
                 expect(info?.components).toEventually(equal(["id": "1"]))
                 expect(info?.queryParameters).toEventually(equal([]))
@@ -830,7 +830,7 @@ class RouterTests: QuickSpec {
                 
                 var info: URLInfo? = nil
                 var responseURL: URL? = nil
-                let _ = Router.register("http://www.host2.com")
+                _ = Router.register("http://www.host2.com")
                 
                 router.get("/users/:id") { request in
                     XCTFail("Shouldn't reach here")

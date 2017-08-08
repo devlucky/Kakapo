@@ -374,7 +374,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously writing from another queue into the store during a writing operation") {
                 let user = sut.insert { (id) -> User in
-                    let _ = queue.sync {
+                    _ = queue.sync {
                         sut.insert { (id) -> User in
                             return User(id: id, store: sut)
                         }
@@ -395,7 +395,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously writing from another queue into the store during a reading operation") {
                 let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
-                    let _ = queue.sync {
+                    _ = queue.sync {
                         sut.create(User.self)
                     }
                     return true
@@ -406,7 +406,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when reading the store during a read operation") {
                 let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
-                    let _ = sut.findAll(User.self)
+                    _ = sut.findAll(User.self)
                     return true
                 })
                 
@@ -415,7 +415,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously reading the store from another queue during a reading operation") {
                 let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
-                    let _ = queue.sync {
+                    _ = queue.sync {
                         sut.findAll(User.self)
                     }
                     return true
@@ -426,7 +426,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when reading the store during a write operation") {
                 let user = sut.insert { (id) -> User in
-                    let _ = sut.findAll(User.self)
+                    _ = sut.findAll(User.self)
                     return User(id: id, store: sut)
                 }
                 expect(user).toEventuallyNot(beNil())
@@ -434,7 +434,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when synchronously reading the store from another queue during a write operation") {
                 let user = sut.insert { (id) -> User in
-                    let _ = queue.sync {
+                    _ = queue.sync {
                         sut.findAll(User.self)
                     }
                     return User(id: id, store: sut)
