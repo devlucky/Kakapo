@@ -23,4 +23,7 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Source/**/*'
 
+  s.subspec 'Serialization' do |serialization|
+    serialization.source_files = 'Source/Serialization/**/*'
+  end
 end

@@ -11,16 +11,36 @@
 		8BE0FC801D16BD9A00FE706A /* JSONAPILinksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0FC7E1D16BD8300FE706A /* JSONAPILinksTests.swift */; };
 		8BE0FC811D16BD9B00FE706A /* JSONAPILinksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0FC7E1D16BD8300FE706A /* JSONAPILinksTests.swift */; };
 		8BE0FC821D16BD9C00FE706A /* JSONAPILinksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0FC7E1D16BD8300FE706A /* JSONAPILinksTests.swift */; };
-		8BE0FC841D172EC900FE706A /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0FC831D172EC900FE706A /* JSONAPILinks.swift */; };
-		8BE0FC851D172EC900FE706A /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0FC831D172EC900FE706A /* JSONAPILinks.swift */; };
-		8BE0FC861D172EC900FE706A /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0FC831D172EC900FE706A /* JSONAPILinks.swift */; };
-		8BE0FC871D172EC900FE706A /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0FC831D172EC900FE706A /* JSONAPILinks.swift */; };
 		AC9577F342F6730725CC9D72 /* Pods_Kakapo_tvOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C67882333142806D5CF9A918 /* Pods_Kakapo_tvOSTests.framework */; };
 		D5363674ABF8735A0A1368BD /* Pods_Kakapo_macOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABE4F11D5A141DB87CD81023 /* Pods_Kakapo_macOSTests.framework */; };
-		DE3950A51D216334008DCF43 /* SerializationTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3950A41D216334008DCF43 /* SerializationTransformer.swift */; };
-		DE3950A61D216334008DCF43 /* SerializationTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3950A41D216334008DCF43 /* SerializationTransformer.swift */; };
-		DE3950A71D216334008DCF43 /* SerializationTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3950A41D216334008DCF43 /* SerializationTransformer.swift */; };
-		DE3950A81D216334008DCF43 /* SerializationTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3950A41D216334008DCF43 /* SerializationTransformer.swift */; };
+		DE00389F1E7E914A00554CD9 /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0038991E7E914A00554CD9 /* JSONAPIError.swift */; };
+		DE0038A01E7E914A00554CD9 /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0038991E7E914A00554CD9 /* JSONAPIError.swift */; };
+		DE0038A11E7E914A00554CD9 /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0038991E7E914A00554CD9 /* JSONAPIError.swift */; };
+		DE0038A21E7E914A00554CD9 /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0038991E7E914A00554CD9 /* JSONAPIError.swift */; };
+		DE0038A31E7E914A00554CD9 /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389A1E7E914A00554CD9 /* JSONAPILinks.swift */; };
+		DE0038A41E7E914A00554CD9 /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389A1E7E914A00554CD9 /* JSONAPILinks.swift */; };
+		DE0038A51E7E914A00554CD9 /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389A1E7E914A00554CD9 /* JSONAPILinks.swift */; };
+		DE0038A61E7E914A00554CD9 /* JSONAPILinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389A1E7E914A00554CD9 /* JSONAPILinks.swift */; };
+		DE0038A71E7E914A00554CD9 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389B1E7E914A00554CD9 /* JSONAPISerializer.swift */; };
+		DE0038A81E7E914A00554CD9 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389B1E7E914A00554CD9 /* JSONAPISerializer.swift */; };
+		DE0038A91E7E914A00554CD9 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389B1E7E914A00554CD9 /* JSONAPISerializer.swift */; };
+		DE0038AA1E7E914A00554CD9 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389B1E7E914A00554CD9 /* JSONAPISerializer.swift */; };
+		DE0038AB1E7E914A00554CD9 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389C1E7E914A00554CD9 /* PropertyPolicy.swift */; };
+		DE0038AC1E7E914A00554CD9 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389C1E7E914A00554CD9 /* PropertyPolicy.swift */; };
+		DE0038AD1E7E914A00554CD9 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389C1E7E914A00554CD9 /* PropertyPolicy.swift */; };
+		DE0038AE1E7E914A00554CD9 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389C1E7E914A00554CD9 /* PropertyPolicy.swift */; };
+		DE0038AF1E7E914A00554CD9 /* SerializationTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389D1E7E914A00554CD9 /* SerializationTransformer.swift */; };
+		DE0038B01E7E914A00554CD9 /* SerializationTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389D1E7E914A00554CD9 /* SerializationTransformer.swift */; };
+		DE0038B11E7E914A00554CD9 /* SerializationTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389D1E7E914A00554CD9 /* SerializationTransformer.swift */; };
+		DE0038B21E7E914A00554CD9 /* SerializationTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389D1E7E914A00554CD9 /* SerializationTransformer.swift */; };
+		DE0038B31E7E914A00554CD9 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389E1E7E914A00554CD9 /* Serializer.swift */; };
+		DE0038B41E7E914A00554CD9 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389E1E7E914A00554CD9 /* Serializer.swift */; };
+		DE0038B51E7E914A00554CD9 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389E1E7E914A00554CD9 /* Serializer.swift */; };
+		DE0038B61E7E914A00554CD9 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE00389E1E7E914A00554CD9 /* Serializer.swift */; };
+		DE0038B91E7E93D400554CD9 /* ResponseFieldsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0038B81E7E93D400554CD9 /* ResponseFieldsProvider.swift */; };
+		DE0038BA1E7E93D400554CD9 /* ResponseFieldsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0038B81E7E93D400554CD9 /* ResponseFieldsProvider.swift */; };
+		DE0038BB1E7E93D400554CD9 /* ResponseFieldsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0038B81E7E93D400554CD9 /* ResponseFieldsProvider.swift */; };
+		DE0038BC1E7E93D400554CD9 /* ResponseFieldsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0038B81E7E93D400554CD9 /* ResponseFieldsProvider.swift */; };
 		DE3950AA1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3950A91D216C77008DCF43 /* SerializationTransformerTests.swift */; };
 		DE3950AB1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3950A91D216C77008DCF43 /* SerializationTransformerTests.swift */; };
 		DE3950AC1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3950A91D216C77008DCF43 /* SerializationTransformerTests.swift */; };
@@ -42,33 +62,21 @@
 		DE76E1411D0DC640009721A4 /* Kakapo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE76E1371D0DC640009721A4 /* Kakapo.framework */; };
 		DE76E15D1D0DC65B009721A4 /* Kakapo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE76E1531D0DC65B009721A4 /* Kakapo.framework */; };
 		DE76E1791D0DC672009721A4 /* Kakapo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE76E16F1D0DC671009721A4 /* Kakapo.framework */; };
-		DE76E1861D0DC754009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
 		DE76E1871D0DC754009721A4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* Store.swift */; };
 		DE76E1881D0DC754009721A4 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* Server.swift */; };
-		DE76E18A1D0DC754009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E18B1D0DC754009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
-		DE76E18C1D0DC754009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
 		DE76E18D1D0DC754009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
-		DE76E18E1D0DC755009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
 		DE76E18F1D0DC755009721A4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* Store.swift */; };
 		DE76E1901D0DC755009721A4 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* Server.swift */; };
-		DE76E1921D0DC755009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E1931D0DC755009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
-		DE76E1941D0DC755009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
 		DE76E1951D0DC755009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
-		DE76E1961D0DC755009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
 		DE76E1971D0DC755009721A4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* Store.swift */; };
 		DE76E1981D0DC755009721A4 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* Server.swift */; };
-		DE76E19A1D0DC755009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E19B1D0DC755009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
-		DE76E19C1D0DC755009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
 		DE76E19D1D0DC755009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
-		DE76E19E1D0DC756009721A4 /* JSONAPISerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */; };
 		DE76E19F1D0DC756009721A4 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1021D0DC395009721A4 /* Store.swift */; };
 		DE76E1A01D0DC756009721A4 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1031D0DC395009721A4 /* Server.swift */; };
-		DE76E1A21D0DC756009721A4 /* PropertyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */; };
 		DE76E1A31D0DC756009721A4 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1061D0DC395009721A4 /* Router.swift */; };
-		DE76E1A41D0DC756009721A4 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1071D0DC395009721A4 /* Serializer.swift */; };
 		DE76E1A51D0DC756009721A4 /* RouteMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1081D0DC395009721A4 /* RouteMatcher.swift */; };
 		DE76E1AD1D0DC77D009721A4 /* Kakapo.h in Headers */ = {isa = PBXBuildFile; fileRef = DE76E0FA1D0DC37E009721A4 /* Kakapo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE76E1AE1D0DC783009721A4 /* Kakapo.h in Headers */ = {isa = PBXBuildFile; fileRef = DE76E0FA1D0DC37E009721A4 /* Kakapo.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -91,10 +99,6 @@
 		DE76E1CA1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
 		DE76E1CB1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
 		DE76E1CC1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */; };
-		DE82027A1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
-		DE82027B1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
-		DE82027C1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
-		DE82027D1D20068A00552FEC /* JSONAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8202791D20068A00552FEC /* JSONAPIError.swift */; };
 		DE82027F1D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
 		DE8202801D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
 		DE8202811D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
@@ -128,11 +132,17 @@
 		1250C40FD2117CD20E6AE31F /* Pods_Kakapo_iOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Kakapo_iOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		822EBBB73B6B4117D229CDF1 /* Pods-Kakapo tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kakapo tvOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Kakapo tvOSTests/Pods-Kakapo tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		8BE0FC7E1D16BD8300FE706A /* JSONAPILinksTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPILinksTests.swift; sourceTree = "<group>"; };
-		8BE0FC831D172EC900FE706A /* JSONAPILinks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPILinks.swift; sourceTree = "<group>"; };
 		ABE4F11D5A141DB87CD81023 /* Pods_Kakapo_macOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Kakapo_macOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C67882333142806D5CF9A918 /* Pods_Kakapo_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Kakapo_tvOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9E9EAD776E83C0F5785A0DB /* Pods-Kakapo macOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kakapo macOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Kakapo macOSTests/Pods-Kakapo macOSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		DE3950A41D216334008DCF43 /* SerializationTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializationTransformer.swift; sourceTree = "<group>"; };
+		DE0038991E7E914A00554CD9 /* JSONAPIError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIError.swift; sourceTree = "<group>"; };
+		DE00389A1E7E914A00554CD9 /* JSONAPILinks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPILinks.swift; sourceTree = "<group>"; };
+		DE00389B1E7E914A00554CD9 /* JSONAPISerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPISerializer.swift; sourceTree = "<group>"; };
+		DE00389C1E7E914A00554CD9 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
+		DE00389D1E7E914A00554CD9 /* SerializationTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializationTransformer.swift; sourceTree = "<group>"; };
+		DE00389E1E7E914A00554CD9 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
+		DE0038B71E7E917000554CD9 /* Kakapo.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Kakapo.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DE0038B81E7E93D400554CD9 /* ResponseFieldsProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseFieldsProvider.swift; sourceTree = "<group>"; };
 		DE3950A91D216C77008DCF43 /* SerializationTransformerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializationTransformerTests.swift; sourceTree = "<group>"; };
 		DE49241F1D356A2000604142 /* NSMutableURLRequest+FixCopy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableURLRequest+FixCopy.h"; sourceTree = "<group>"; };
 		DE4924201D356A2000604142 /* NSMutableURLRequest+FixCopy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableURLRequest+FixCopy.m"; sourceTree = "<group>"; };
@@ -141,12 +151,9 @@
 		DE76E0F91D0DC37E009721A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE76E0FA1D0DC37E009721A4 /* Kakapo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Kakapo.h; sourceTree = "<group>"; };
 		DE76E0FE1D0DC38B009721A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPISerializer.swift; sourceTree = "<group>"; };
 		DE76E1021D0DC395009721A4 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		DE76E1031D0DC395009721A4 /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
-		DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyPolicy.swift; sourceTree = "<group>"; };
 		DE76E1061D0DC395009721A4 /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
-		DE76E1071D0DC395009721A4 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
 		DE76E1081D0DC395009721A4 /* RouteMatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteMatcher.swift; sourceTree = "<group>"; };
 		DE76E1291D0DC5FA009721A4 /* Kakapo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kakapo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE76E1371D0DC640009721A4 /* Kakapo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kakapo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -161,7 +168,6 @@
 		DE76E1B41D0DC857009721A4 /* RouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterTests.swift; sourceTree = "<group>"; };
 		DE76E1B51D0DC857009721A4 /* SerializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializerTests.swift; sourceTree = "<group>"; };
 		DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouteMatcherTests.swift; sourceTree = "<group>"; };
-		DE8202791D20068A00552FEC /* JSONAPIError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIError.swift; sourceTree = "<group>"; };
 		DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONAPIErrorTests.swift; sourceTree = "<group>"; };
 		DEBD3C741D16BC9A004E0A23 /* README.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = README.playground; sourceTree = "<group>"; };
 		DED6E5961D4E335100E798A5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -253,6 +259,20 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		DE0038981E7E914A00554CD9 /* Serialization */ = {
+			isa = PBXGroup;
+			children = (
+				DE0038991E7E914A00554CD9 /* JSONAPIError.swift */,
+				DE00389A1E7E914A00554CD9 /* JSONAPILinks.swift */,
+				DE00389B1E7E914A00554CD9 /* JSONAPISerializer.swift */,
+				DE00389C1E7E914A00554CD9 /* PropertyPolicy.swift */,
+				DE00389D1E7E914A00554CD9 /* SerializationTransformer.swift */,
+				DE00389E1E7E914A00554CD9 /* Serializer.swift */,
+				DE0038B81E7E93D400554CD9 /* ResponseFieldsProvider.swift */,
+			);
+			path = Serialization;
+			sourceTree = "<group>";
+		};
 		DE5652FD1D94885300F02188 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -267,6 +287,7 @@
 			children = (
 				DED6E5961D4E335100E798A5 /* README.md */,
 				DEBD3C741D16BC9A004E0A23 /* README.playground */,
+				DE0038B71E7E917000554CD9 /* Kakapo.podspec */,
 				DE76E1001D0DC395009721A4 /* Source */,
 				DE76E0F81D0DC37E009721A4 /* Framework */,
 				DE76E0FD1D0DC38B009721A4 /* Tests */,
@@ -320,16 +341,11 @@
 		DE76E1001D0DC395009721A4 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				DE8202791D20068A00552FEC /* JSONAPIError.swift */,
-				8BE0FC831D172EC900FE706A /* JSONAPILinks.swift */,
-				DE76E1011D0DC395009721A4 /* JSONAPISerializer.swift */,
+				DE0038981E7E914A00554CD9 /* Serialization */,
 				DE76E1021D0DC395009721A4 /* Store.swift */,
 				DE76E1031D0DC395009721A4 /* Server.swift */,
-				DE76E1051D0DC395009721A4 /* PropertyPolicy.swift */,
 				DE76E1061D0DC395009721A4 /* Router.swift */,
-				DE76E1071D0DC395009721A4 /* Serializer.swift */,
 				DE76E1081D0DC395009721A4 /* RouteMatcher.swift */,
-				DE3950A41D216334008DCF43 /* SerializationTransformer.swift */,
 				DE49241F1D356A2000604142 /* NSMutableURLRequest+FixCopy.h */,
 				DE4924201D356A2000604142 /* NSMutableURLRequest+FixCopy.m */,
 			);
@@ -827,17 +843,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE0038A81E7E914A00554CD9 /* JSONAPISerializer.swift in Sources */,
+				DE0038A41E7E914A00554CD9 /* JSONAPILinks.swift in Sources */,
 				DE76E1981D0DC755009721A4 /* Server.swift in Sources */,
-				DE76E19A1D0DC755009721A4 /* PropertyPolicy.swift in Sources */,
+				DE0038AC1E7E914A00554CD9 /* PropertyPolicy.swift in Sources */,
 				DE76E19D1D0DC755009721A4 /* RouteMatcher.swift in Sources */,
+				DE0038B41E7E914A00554CD9 /* Serializer.swift in Sources */,
 				DE76E1971D0DC755009721A4 /* Store.swift in Sources */,
-				8BE0FC851D172EC900FE706A /* JSONAPILinks.swift in Sources */,
-				DE76E19C1D0DC755009721A4 /* Serializer.swift in Sources */,
+				DE0038B01E7E914A00554CD9 /* SerializationTransformer.swift in Sources */,
+				DE0038BA1E7E93D400554CD9 /* ResponseFieldsProvider.swift in Sources */,
+				DE0038A01E7E914A00554CD9 /* JSONAPIError.swift in Sources */,
 				DE4924261D356A2000604142 /* NSMutableURLRequest+FixCopy.m in Sources */,
-				DE76E1961D0DC755009721A4 /* JSONAPISerializer.swift in Sources */,
 				DE76E19B1D0DC755009721A4 /* Router.swift in Sources */,
-				DE82027B1D20068A00552FEC /* JSONAPIError.swift in Sources */,
-				DE3950A61D216334008DCF43 /* SerializationTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -845,17 +862,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE0038A91E7E914A00554CD9 /* JSONAPISerializer.swift in Sources */,
+				DE0038A51E7E914A00554CD9 /* JSONAPILinks.swift in Sources */,
 				DE76E1901D0DC755009721A4 /* Server.swift in Sources */,
-				DE76E1921D0DC755009721A4 /* PropertyPolicy.swift in Sources */,
+				DE0038AD1E7E914A00554CD9 /* PropertyPolicy.swift in Sources */,
 				DE76E1951D0DC755009721A4 /* RouteMatcher.swift in Sources */,
+				DE0038B51E7E914A00554CD9 /* Serializer.swift in Sources */,
 				DE76E18F1D0DC755009721A4 /* Store.swift in Sources */,
-				8BE0FC861D172EC900FE706A /* JSONAPILinks.swift in Sources */,
-				DE76E1941D0DC755009721A4 /* Serializer.swift in Sources */,
+				DE0038B11E7E914A00554CD9 /* SerializationTransformer.swift in Sources */,
+				DE0038BB1E7E93D400554CD9 /* ResponseFieldsProvider.swift in Sources */,
+				DE0038A11E7E914A00554CD9 /* JSONAPIError.swift in Sources */,
 				DE4924271D356A2000604142 /* NSMutableURLRequest+FixCopy.m in Sources */,
-				DE76E18E1D0DC755009721A4 /* JSONAPISerializer.swift in Sources */,
 				DE76E1931D0DC755009721A4 /* Router.swift in Sources */,
-				DE82027C1D20068A00552FEC /* JSONAPIError.swift in Sources */,
-				DE3950A71D216334008DCF43 /* SerializationTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -881,17 +899,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE0038AA1E7E914A00554CD9 /* JSONAPISerializer.swift in Sources */,
+				DE0038A61E7E914A00554CD9 /* JSONAPILinks.swift in Sources */,
 				DE76E1881D0DC754009721A4 /* Server.swift in Sources */,
-				DE76E18A1D0DC754009721A4 /* PropertyPolicy.swift in Sources */,
+				DE0038AE1E7E914A00554CD9 /* PropertyPolicy.swift in Sources */,
 				DE76E18D1D0DC754009721A4 /* RouteMatcher.swift in Sources */,
+				DE0038B61E7E914A00554CD9 /* Serializer.swift in Sources */,
 				DE76E1871D0DC754009721A4 /* Store.swift in Sources */,
-				8BE0FC871D172EC900FE706A /* JSONAPILinks.swift in Sources */,
-				DE76E18C1D0DC754009721A4 /* Serializer.swift in Sources */,
+				DE0038B21E7E914A00554CD9 /* SerializationTransformer.swift in Sources */,
+				DE0038BC1E7E93D400554CD9 /* ResponseFieldsProvider.swift in Sources */,
+				DE0038A21E7E914A00554CD9 /* JSONAPIError.swift in Sources */,
 				DE4924281D356A2000604142 /* NSMutableURLRequest+FixCopy.m in Sources */,
-				DE76E1861D0DC754009721A4 /* JSONAPISerializer.swift in Sources */,
 				DE76E18B1D0DC754009721A4 /* Router.swift in Sources */,
-				DE82027D1D20068A00552FEC /* JSONAPIError.swift in Sources */,
-				DE3950A81D216334008DCF43 /* SerializationTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -917,17 +936,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE0038A71E7E914A00554CD9 /* JSONAPISerializer.swift in Sources */,
+				DE0038A31E7E914A00554CD9 /* JSONAPILinks.swift in Sources */,
 				DE76E1A01D0DC756009721A4 /* Server.swift in Sources */,
-				DE76E1A21D0DC756009721A4 /* PropertyPolicy.swift in Sources */,
+				DE0038AB1E7E914A00554CD9 /* PropertyPolicy.swift in Sources */,
 				DE76E1A51D0DC756009721A4 /* RouteMatcher.swift in Sources */,
+				DE0038B31E7E914A00554CD9 /* Serializer.swift in Sources */,
 				DE76E19F1D0DC756009721A4 /* Store.swift in Sources */,
-				8BE0FC841D172EC900FE706A /* JSONAPILinks.swift in Sources */,
-				DE76E1A41D0DC756009721A4 /* Serializer.swift in Sources */,
+				DE0038AF1E7E914A00554CD9 /* SerializationTransformer.swift in Sources */,
+				DE0038B91E7E93D400554CD9 /* ResponseFieldsProvider.swift in Sources */,
+				DE00389F1E7E914A00554CD9 /* JSONAPIError.swift in Sources */,
 				DE4924251D356A2000604142 /* NSMutableURLRequest+FixCopy.m in Sources */,
-				DE76E19E1D0DC756009721A4 /* JSONAPISerializer.swift in Sources */,
 				DE76E1A31D0DC756009721A4 /* Router.swift in Sources */,
-				DE82027A1D20068A00552FEC /* JSONAPIError.swift in Sources */,
-				DE3950A51D216334008DCF43 /* SerializationTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
