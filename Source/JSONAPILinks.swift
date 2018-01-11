@@ -110,14 +110,14 @@ public enum JSONAPILink: CustomSerializable {
  */
 public protocol JSONAPILinkedEntity {
     /// The related links, must use link-names as keys and links as values.
-    var links: [String : JSONAPILink]? { get }
+    var links: [String: JSONAPILink]? { get }
     /// The relationships links, an object containing relationships can specify top level links for every relationship type. The object must provide a Dictionary where keys are the relationships types and values are dictionaries with link-names as keys and link as values.
-    var relationshipsLinks: [String : [String : JSONAPILink]]? { get }
+    var relationshipsLinks: [String: [String: JSONAPILink]]? { get }
 }
 
 extension JSONAPILinkedEntity {
     /// Default Implementation returns nil
-    public var links: [String : JSONAPILink]? { return nil }
+    public var links: [String: JSONAPILink]? { return nil }
     /// Default Implementation returns nil
-    public var relationshipsLinks: [String : [String : JSONAPILink]]? { return nil }
+    public var relationshipsLinks: [String: [String: JSONAPILink]]? { return nil }
 }

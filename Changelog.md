@@ -3,6 +3,7 @@
 ### HEAD
 --------------
 
+- ***Swift 4.0 Support***
 - Fix handler was called even when the request was cancelled
 
 ### 2.1.0

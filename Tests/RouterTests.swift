@@ -7,7 +7,6 @@
 //
 
 import Foundation
-
 import Quick
 import Nimble
 
@@ -16,9 +15,9 @@ import Nimble
 struct CustomResponse: ResponseFieldsProvider {
     let statusCode: Int
     let body: Serializable
-    let headerFields: [String : String]?
+    let headerFields: [String: String]?
     
-    init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
+    init(statusCode: Int, body: Serializable, headerFields: [String: String]? = nil) {
         self.statusCode = statusCode
         self.body = body
         self.headerFields = headerFields
@@ -131,255 +130,6 @@ class RouterTests: QuickSpec {
                 server.startLoading() // this should not trigger the "/epic-fail/:id" router request (see XCTFail above)
             }
         }
-
-        describe("Registering urls") {
-            var router: Router!
-            
-            beforeEach {
-                router = Router.register("http://www.test.com")
-            }
-            
-            context("when the Router is initialized") {
-                it("should not have latency") {
-                    expect(router.latency) == 0
-                }
-            }
-            
-            it("should call the handler when requesting a registered url") {
-                var info: URLInfo? = nil
-                var responseURL: URL? = nil
-                
-                router.get("/users/:id") { request in
-                    info = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (_, response, _) in
-                    responseURL = response?.url
-                }.resume()
-                
-                expect(info?.components).toEventually(equal(["id": "1"]))
-                expect(info?.queryParameters).toEventually(equal([]))
-                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
-            }
-            
-            it("should call the handler when requesting multiple registered urls") {
-                var usersInfo: URLInfo? = nil
-                var usersResponseURL: URL? = nil
-                var usersCommentsInfo: URLInfo? = nil
-                var usersCommentsResponseURL: URL? = nil
-                
-                router.get("/comments/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    usersInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                router.get("/users/:id") { request in
-                    usersInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                router.get("/commentaries/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    usersInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                router.get("/users/:id/comments/:comment_id") { request in
-                    usersCommentsInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                router.get("/users/:id/comments/:comment_id/whatever") { request in
-                    XCTFail("Shouldn't reach here")
-                    usersCommentsInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (_, response, _) in
-                    usersResponseURL = response?.url
-                }.resume()
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1/comments/2?page=2&author=hector")!) { (_, response, _) in
-                    usersCommentsResponseURL = response?.url
-                }.resume()
-                
-                expect(usersInfo?.components).toEventually(equal(["id": "1"]))
-                expect(usersInfo?.queryParameters).toEventually(equal([]))
-                expect(usersResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
-                expect(usersCommentsInfo?.components).toEventually(equal(["id": "1", "comment_id": "2"]))
-                expect(usersCommentsInfo?.queryParameters).toEventually(equal([URLQueryItem(name: "page", value: "2"), URLQueryItem(name: "author", value: "hector")]))
-                expect(usersCommentsResponseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2?page=2&author=hector"))
-            }
-            
-            it("should call handlers with same path but different http methods") {
-                var calledPost = false
-                var calledPut = false
-                var calledDel = false
-                var calledPatch = false
-                
-                router.post("/users/:user_id") { (_) -> Serializable? in
-                    calledPost = true
-                    return nil
-                }
-                
-                router.put("/users/:user_id") { (_) -> Serializable? in
-                    calledPut = true
-                    return nil
-                }
-                
-                router.del("/users/:user_id") { (_) -> Serializable? in
-                    calledDel = true
-                    return nil
-                }
-
-                router.patch("/users/:user_id") { (_) -> Serializable? in
-                    calledPatch = true
-                    return nil
-                }
-
-                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
-                request.httpMethod = "POST"
-                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
-                
-                expect(calledPost).toEventually(beTrue())
-                
-                request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
-                request.httpMethod = "PUT"
-                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
-                
-                expect(calledPut).toEventually(beTrue())
-                
-                request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
-                request.httpMethod = "DELETE"
-                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
-                
-                expect(calledDel).toEventually(beTrue())
-
-                request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
-                request.httpMethod = "PATCH"
-                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
-
-                expect(calledPatch).toEventually(beTrue())
-            }
-
-            it("should replace handlers with same path and http methods") {
-                var calledFirstPost = false
-                var calledSecondPost = false
-                
-                router.post("/users/:user_id") { (_) -> Serializable? in
-                    calledFirstPost = true
-                    return nil
-                }
-                
-                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
-                request.httpMethod = "POST"
-                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
-                
-                expect(calledFirstPost).toEventually(beTrue())
-                
-                router.post("/users/:user_id") { (_) -> Serializable? in
-                    calledSecondPost = true
-                    return nil
-                }
-                
-                URLSession.shared.dataTask(with: request) { (_, _, _) in }.resume()
-                
-                expect(calledSecondPost).toEventually(beTrue())
-            }
-            
-            context("when the Router has latency") {
-                it("should delay the mocked response") {
-                    var responseData: Data? = nil
-                    router.latency = 1.1
-                    router.get("/users/:id") { _ in
-                        return ["test": "value"]
-                    }
-                    
-                    URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (data, _, _) in
-                        responseData = data
-                        }.resume()
-                    
-                    let startTime = CFAbsoluteTimeGetCurrent()
-                    expect(responseData).toNotEventually(beNil(), timeout: 1.5)
-                    let endTime = CFAbsoluteTimeGetCurrent()
-                    expect(endTime - startTime) >= 1.1
-                }
-                
-                it("should not affect the latency of other routers") {
-                    router.latency = 2.0
-                    
-                    var responseData: Data? = nil
-                    let router2 = Router.register("http://www.test2.com")
-                    router2.get("/users/:id") { _ in
-                        return ["test": "value"]
-                    }
-                    
-                    URLSession.shared.dataTask(with: URL(string: "http://www.test2.com/users/1")!) { (data, _, _) in
-                        responseData = data
-                        }.resume()
-                    
-                    let startTime = CFAbsoluteTimeGetCurrent()
-                    expect(responseData).toNotEventually(beNil())
-                    let endTime = CFAbsoluteTimeGetCurrent()
-                    expect(endTime - startTime) <= 1.0
-                }
-            }
-        }
-        
-        describe("Non registered urls") {
-            var router: Router!
-            
-            beforeEach {
-                router = Router.register("http://www.test.com")
-            }
-            
-            it("should not call the handler when requesting a non registered url") {
-                var info: URLInfo? = nil
-                var responseURL: URL? = URL(string: "")
-                var responseError: Error? = NSError(domain: "", code: 1, userInfo: nil)
-                
-                router.get("/users/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    info = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/userssssss/1")!) { (_, response, error) in
-                    responseURL = response?.url
-                    responseError = error
-                    }.resume()
-                
-                expect(info?.components).toEventually(beNil())
-                expect(info?.queryParameters).toEventually(beNil())
-                expect(responseURL?.host).toEventually(equal("www.test.com"))
-                expect(responseError).toEventually(beNil())
-            }
-            
-            it("should not call the handler when requesting a registered url but using a different HTTPMethod") {
-                var info: URLInfo? = nil
-                var responseURL: URL? = URL(string: "")
-                var responseError: Error? = NSError(domain: "", code: 1, userInfo: nil)
-                
-                router.del("/users/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    info = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                var request = URLRequest(url: URL(string: "http://www.test.com/users/1")!)
-                request.httpMethod = "PUT"
-                URLSession.shared.dataTask(with: request) { (_, response, error) in
-                    responseURL = response?.url
-                    responseError = error
-                    }.resume()
-                
-                expect(info).toEventually(beNil())
-                expect(responseURL?.host).toEventually(equal("www.test.com"))
-                expect(responseError).toEventually(beNil())
-            }
-        }
         
         describe("Request body") {
             var router: Router!
@@ -438,7 +188,7 @@ class RouterTests: QuickSpec {
                 }
                 
                 _ = NSURLConnection(request: request, delegate: nil)
-                
+
                 expect(info?.components).toEventually(equal(["id": "1"]))
                 expect(info?.queryParameters).toEventually(equal([]))
                 expect(bodyData).toNotEventually(beNil())
@@ -513,11 +263,11 @@ class RouterTests: QuickSpec {
                 }
                 
                 it("should return the default header fields") {
-                    var allHeaders: [String : String]? = nil
+                    var allHeaders: [String: String]? = nil
                     
                     URLSession.shared.dataTask(with: url) { (_, response, _) in
                         let response = response as! HTTPURLResponse
-                        allHeaders = response.allHeaderFields as? [String : String]
+                        allHeaders = response.allHeaderFields as? [String: String]
                         }.resume()
                     
                     expect(allHeaders).toEventually(equal(["Content-Type": "application/json"]))
@@ -582,7 +332,7 @@ class RouterTests: QuickSpec {
             }
             
             it("should return the specified response headers inside a response object with code when requesting a registered url") {
-                var allHeaders: [String : String]? = nil
+                var allHeaders: [String: String]? = nil
                 
                 router.get("/users/:id") { _ in
                     let body = ["id": "foo", "type": "User"]
@@ -592,7 +342,7 @@ class RouterTests: QuickSpec {
                 
                 URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (_, response, _) in
                     let response = response as! HTTPURLResponse
-                    allHeaders = response.allHeaderFields as? [String : String]
+                    allHeaders = response.allHeaderFields as? [String: String]
                     }.resume()
 
                 expect(allHeaders?["access_token"]).toEventually(equal("094850348502"))
@@ -601,7 +351,7 @@ class RouterTests: QuickSpec {
             }
             
             it("should gets the response fields from custom response object adopting the ResponseFieldsProvider protocol") {
-                var allHeaders: [String : String]? = nil
+                var allHeaders: [String: String]? = nil
                 var responseDictionary: [String: AnyObject]?
                 var statusCode: Int? = nil
                 
@@ -611,7 +361,7 @@ class RouterTests: QuickSpec {
                 
                 URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (data, response, _) in
                     let response = response as! HTTPURLResponse
-                    allHeaders = response.allHeaderFields as? [String : String]
+                    allHeaders = response.allHeaderFields as? [String: String]
                     responseDictionary = try! JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? [String: AnyObject]
                     statusCode = response.statusCode
                     }.resume()
@@ -656,277 +406,6 @@ class RouterTests: QuickSpec {
                 }.resume()
                 
                 expect(called).toEventually(beTrue())
-            }
-        }
-        
-        describe("Multiple Routers") {
-            var router: Router!
-            
-            it("Should handle multiple Routers that register different URLs") {
-                router = Router.register("http://www.test.com")
-                
-                var info: URLInfo? = nil
-                var responseURL: URL? = nil
-                
-                var secondInfo: URLInfo? = nil
-                var secondResponseURL: URL? = nil
-                let secondRouter = Router.register("www.host2.com")
-                
-                router.get("/users/:id") { request in
-                    info = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                secondRouter.get("/messages/:user") { request in
-                    secondInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (_, response, _) in
-                    responseURL = response?.url
-                    }.resume()
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.host2.com/messages/24")!) { (_, response, _) in
-                    secondResponseURL = response?.url
-                    }.resume()
-                
-                expect(info?.components).toEventually(equal(["id": "1"]))
-                expect(info?.queryParameters).toEventually(equal([]))
-                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1"))
-                
-                expect(secondInfo?.components).toEventually(equal(["user": "24"]))
-                expect(secondInfo?.queryParameters).toEventually(equal([]))
-                expect(secondResponseURL?.absoluteString).toEventually(equal("http://www.host2.com/messages/24"))
-            }
-            
-            it("Should manage which Router has to be selected when registering routes with similar baseURL") {
-                var responseURL: URL? = nil
-                var components: [String : String]? = nil
-                router = Router.register("http://www.test.com")
-                let secondRouter = Router.register("http://www.test.com/v1")
-                let thirdRouter = Router.register("http://www.test.com/v1/foo/bar")
-                var isReached: Bool?
-                
-                router.get("/users/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    components = request.components
-                    return nil
-                }
-                
-                secondRouter.get("/users/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    components = request.components
-                    return nil
-                }
-                
-                thirdRouter.get("/users/:id") { request in
-                    isReached = true
-                    components = request.components
-                    return nil
-                }
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/v1/foo/bar/users/1")!) { (_, response, _) in
-                    responseURL = response?.url
-                    }.resume()
-                
-                expect(isReached).toEventually(beTrue())
-                expect(components).toEventually(equal(["id": "1"]))
-                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/v1/foo/bar/users/1"))
-            }
-            
-            it("Should manage which Router has to be selected when registering routes with same baseURL") {
-                router = Router.register("http://www.test.com")
-                let secondRouter = Router.register("http://www.test.com")
-                let thirdRouter = Router.register("http://www.test.com")
-                var isReached: Bool?
-                var responseURL: URL? = nil
-                var components: [String : String]? = nil
-                
-                router.get("/users/:user_id/comments/:comment_id") { request in
-                    isReached = true
-                    components = request.components
-                    return nil
-                }
-                
-                secondRouter.get("/users/:id") { request in
-                    components = request.components
-                    return nil
-                }
-                
-                thirdRouter.get("/users/:id/comments") { request in
-                    components = request.components
-                    return nil
-                }
-                
-                let url = URL(string: "http://www.test.com/users/1/comments/2")!
-                URLSession.shared.dataTask(with: url) { (_, response, _) in
-                    responseURL = response?.url
-                    }.resume()
-                
-                expect(isReached).toEventually(beTrue())
-                expect(components).toEventually(equal(["user_id": "1", "comment_id": "2"]))
-                expect(responseURL?.absoluteString).toEventually(equal("http://www.test.com/users/1/comments/2"))
-            }
-            
-            it("Should properly handle multiple registered and unregistered Routers that register different URLs") {
-                router = Router.register("http://www.test.com")
-                
-                var info: URLInfo? = nil
-                var responseURL: URL? = nil
-                
-                var secondInfo: URLInfo? = nil
-                var secondResponseURL: URL? = nil
-                let secondRouter = Router.register("www.host2.com")
-                
-                var thirdInfo: URLInfo? = nil
-                var thirdResponseURL: URL? = nil
-                let thirdRouter = Router.register("www.another.com")
-                
-                router.get("/users/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    info = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                secondRouter.get("/messages/:user") { request in
-                    secondInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                thirdRouter.get("/sessions/:global_id") { request in
-                    XCTFail("Shouldn't reach here")
-                    thirdInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                Router.unregister("http://www.test.com")
-                Router.unregister("www.another.com")
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (_, response, _) in
-                    responseURL = response?.url
-                    }.resume()
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.host2.com/messages/24")!) { (_, response, _) in
-                    secondResponseURL = response?.url
-                    }.resume()
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.another.com/sessions/55")!) { (_, response, _) in
-                    thirdResponseURL = response?.url
-                    }.resume()
-                
-                expect(info).toEventually(beNil())
-                expect(responseURL?.host).toEventually(equal("www.test.com"))
-                
-                expect(secondInfo?.components).toEventually(equal(["user": "24"]))
-                expect(secondInfo?.queryParameters).toEventually(equal([]))
-                expect(secondResponseURL?.absoluteString).toEventually(equal("http://www.host2.com/messages/24"))
-                
-                expect(thirdInfo).toEventually(beNil())
-                expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
-            }
-            
-            it("Should fail when not properly registering Routers") {
-                router = Router.register("http://www.test.com")
-                
-                var info: URLInfo? = nil
-                var responseURL: URL? = nil
-                _ = Router.register("http://www.host2.com")
-                
-                router.get("/users/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    info = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.host2.com/users/1")!) { (_, response, _) in
-                    responseURL = response?.url
-                    }.resume()
-                
-                expect(info).toEventually(beNil())
-                expect(responseURL?.host).toEventually(equal("www.host2.com"))
-            }
-            
-            it("Should not respond any request on any Router when disabling the server") {
-                router = Router.register("http://www.test.com")
-                
-                var info: URLInfo? = nil
-                var responseURL: URL? = nil
-                
-                var secondInfo: URLInfo? = nil
-                var secondResponseURL: URL? = nil
-                let secondRouter = Router.register("www.host2.com")
-                
-                var thirdInfo: URLInfo? = nil
-                var thirdResponseURL: URL? = nil
-                let thirdRouter = Router.register("www.another.com")
-                
-                router.get("/users/:id") { request in
-                    XCTFail("Shouldn't reach here")
-                    info = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                secondRouter.get("/messages/:user") { request in
-                    XCTFail("Shouldn't reach here")
-                    secondInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                thirdRouter.get("/sessions/:global_id") { request in
-                    XCTFail("Shouldn't reach here")
-                    thirdInfo = (components: request.components, queryParameters: request.queryParameters)
-                    return nil
-                }
-                
-                Router.disableAll()
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/1")!) { (_, response, _) in
-                    responseURL = response?.url
-                    }.resume()
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.host2.com/messages/24")!) { (_, response, _) in
-                    secondResponseURL = response?.url
-                    }.resume()
-                
-                URLSession.shared.dataTask(with: URL(string: "http://www.another.com/sessions/55")!) { (_, response, _) in
-                    thirdResponseURL = response?.url
-                    }.resume()
-                
-                expect(info).toEventually(beNil())
-                expect(responseURL?.host).toEventually(equal("www.test.com"))
-                
-                expect(secondInfo).toEventually(beNil())
-                expect(secondResponseURL?.host).toEventually(equal("www.host2.com"))
-                
-                expect(thirdInfo).toEventually(beNil())
-                expect(thirdResponseURL?.host).toEventually(equal("www.another.com"))
-            }
-            
-            it("should not leak any router when router gets disabled or unregistered") {
-                weak var router1: Router? = Router.register("www.host1.com")
-                weak var router2: Router? = Router.register("www.host2.com")
-                weak var router3: Router? = Router.register("www.host3.com")
-                weak var router4: Router? = Router.register("www.host4.com")
-                
-                expect(router1).toNot(beNil())
-                expect(router2).toNot(beNil())
-                expect(router3).toNot(beNil())
-                expect(router4).toNot(beNil())
-                
-                Router.unregister("www.host2.com")
-                Router.unregister("www.host4.com")
-                
-                expect(router1).toNot(beNil())
-                expect(router2).to(beNil())
-                expect(router3).toNot(beNil())
-                expect(router4).to(beNil())
-                
-                Router.disableAll()
-                
-                expect(router1).to(beNil())
-                expect(router2).to(beNil())
-                expect(router3).to(beNil())
-                expect(router4).to(beNil())
             }
         }
     }

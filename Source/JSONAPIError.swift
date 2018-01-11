@@ -85,7 +85,7 @@ public struct JSONAPIError: ResponseFieldsProvider {
     }
     
     /// The headerFields that will be returned by the HTTP response.
-    public let headerFields: [String : String]?
+    public let headerFields: [String: String]?
 
     /**
      Initialize a `JSONAPIError` and build it with `JSONAPIError.Builder`

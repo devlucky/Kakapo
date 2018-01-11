@@ -26,7 +26,7 @@ struct LowercaseFirstCharacterTransformer<Wrapped: Serializable>: SerializationT
     let wrapped: Wrapped
     
     func transform(key: String) -> String {
-        let characters = key.characters
+        let characters = key
         let first = String(characters.prefix(1)).lowercased()
         let other = String(characters.dropFirst())
         return first + other
@@ -35,15 +35,15 @@ struct LowercaseFirstCharacterTransformer<Wrapped: Serializable>: SerializationT
 
 class SerializationTransformerSpec: QuickSpec {
     
-    private struct Dog: JSONAPIEntity {
+    private struct Labrador: JSONAPIEntity {
         let id: String
-        let dogName: String
+        let name: String
     }
     
     private struct JUser: JSONAPIEntity {
         let id: String
         let userName: String
-        let doggyDog: Dog
+        let labrador: Labrador
     }
     
     struct User: Serializable {
@@ -171,8 +171,8 @@ class SerializationTransformerSpec: QuickSpec {
             
             context("JSON API") {
                 it("should transform the keys") {
-                    let dog = Dog(id: "22", dogName: "Joan")
-                    let user = JUser(id: "11", userName: "Alex", doggyDog: dog)
+                    let labrador = Labrador(id: "22", name: "Joan")
+                    let user = JUser(id: "11", userName: "Alex", labrador: labrador)
                     let serialized = SnakecaseTransformer(JSONAPISerializer(user)).serialized() as! [String: AnyObject]
                     let json = JSON(serialized)
                     
@@ -186,10 +186,10 @@ class SerializationTransformerSpec: QuickSpec {
                     do {
                         let relationships = data["relationships"]?.dictionaryValue
                         
-                        let dog = relationships?["doggy_dog"]?.dictionaryValue
+                        let dog = relationships?["labrador"]?.dictionaryValue
                         let dogData = dog?["data"]?.dictionaryValue
                         expect(dogData?["id"]?.string).to(equal("22"))
-                        expect(dogData?["type"]?.string).to(equal(Dog.type))
+                        expect(dogData?["type"]?.string).to(equal(Labrador.type))
                     }
                     
                     do {
@@ -198,7 +198,7 @@ class SerializationTransformerSpec: QuickSpec {
                         expect(dog?["id"]?.string).to(equal("22"))
 
                         let attributes = dog?["attributes"]?.dictionaryValue
-                        expect(attributes?["dog_name"]?.string).to(equal("Joan"))
+                        expect(attributes?["name"]?.string).to(equal("Joan"))
                     }
                 }
             }

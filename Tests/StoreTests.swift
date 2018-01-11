@@ -18,16 +18,16 @@ struct User: Storable, Serializable {
     let id: String
     let firstName: String
     let lastName: String
-    let age: Int
+    let lifetime: Int
     
     init(id: String, store: Store) {
-        self.init(firstName: "tmp", lastName: "tmp", age: random(), id: id)
+        self.init(firstName: "tmp", lastName: "tmp", lifetime: random(), id: id)
     }
     
-    init(firstName: String, lastName: String, age: Int, id: String) {
+    init(firstName: String, lastName: String, lifetime: Int, id: String) {
         self.firstName = firstName
         self.lastName = lastName
-        self.age = age
+        self.lifetime = lifetime
         self.id = id
     }
 }
@@ -106,7 +106,7 @@ class StoreTests: QuickSpec {
             it("should insert a large number of elements") {
                 DispatchQueue.concurrentPerform(iterations: 1000) { (_) in
                     sut.insert { (id) -> (User) in
-                        return User(firstName: "Name " + id, lastName: "Last Name " + id, age: 10, id: id)
+                        return User(firstName: "Name " + id, lastName: "Last Name " + id, lifetime: 10, id: id)
                     }
                 }
 
@@ -117,7 +117,7 @@ class StoreTests: QuickSpec {
                 expect(user?.firstName).to(contain("Name 1"))
                 expect(user?.lastName).to(contain("Last Name 1"))
                 expect(user?.id).to(equal("1"))
-                expect(user?.age).to(equal(10))
+                expect(user?.lifetime).to(equal(10))
                 expect(userObjects.count) == 1000
             }
         }
@@ -146,7 +146,7 @@ class StoreTests: QuickSpec {
             
             it("shoud return the expected object after inserting it") {
                 sut.insert { (id) -> User in
-                    return User(firstName: "Hector", lastName: "Zarco", age: 25, id: id)
+                    return User(firstName: "Hector", lastName: "Zarco", lifetime: 25, id: id)
                 }
                 
                 let user = sut.find(User.self, id: "0")
@@ -158,12 +158,12 @@ class StoreTests: QuickSpec {
             #if arch(x86_64) && _runtime(_ObjC)
             it("should fail a precondition when inserting invalid id") {
                 sut.insert { (id) -> User in
-                    return User(firstName: "Joan", lastName: "Romano", age: 25, id: id)
+                    return User(firstName: "Joan", lastName: "Romano", lifetime: 25, id: id)
                 }
 
                 let preconditionTrigger: () -> Void = {
                     sut.insert { (id) -> User in
-                        return User(firstName: "Joan", lastName: "Romano", age: 25, id: String(Int(id)! - 1))
+                        return User(firstName: "Joan", lastName: "Romano", lifetime: 25, id: String(Int(id)! - 1))
                     }
                 }
                 
@@ -173,7 +173,7 @@ class StoreTests: QuickSpec {
 
             it("should return the expected filtered element with valid id") {
                 sut.insert { (id) -> User in
-                    User(firstName: "Hector", lastName: "Zarco", age: 25, id: id)
+                    User(firstName: "Hector", lastName: "Zarco", lifetime: 25, id: id)
                 }
                 
                 let userArray = sut.filter(User.self) { (item) -> Bool in
@@ -189,7 +189,7 @@ class StoreTests: QuickSpec {
             it("should return no objects for some inexisting filtering") {
                 sut.create(User.self, number: 2)
                 sut.insert { (id) -> User in
-                    return User(firstName: "Hector", lastName: "Zarco", age: 25, id: id)
+                    return User(firstName: "Hector", lastName: "Zarco", lifetime: 25, id: id)
                 }
                 
                 let userArray = sut.filter(User.self, isIncluded: { (item) -> Bool in
@@ -203,18 +203,18 @@ class StoreTests: QuickSpec {
         describe("Update") {
             it("should update a previously inserted object") {
                 sut.create(User.self, number: 3)
-                let elementToUpdate = User(firstName: "Joan", lastName: "Romano", age: 28, id: "2")
+                let elementToUpdate = User(firstName: "Joan", lastName: "Romano", lifetime: 28, id: "2")
                 try! sut.update(elementToUpdate)
                 let updatedUserInStore = sut.find(User.self, id: "2")
                 
                 expect(updatedUserInStore?.firstName).to(equal("Joan"))
                 expect(updatedUserInStore?.lastName).to(equal("Romano"))
-                expect(updatedUserInStore?.age).to(equal(28))
+                expect(updatedUserInStore?.lifetime).to(equal(28))
             }
             
             it("should not update an object that was never inserted") {
                 sut.create(User.self, number: 2)
-                let elementToUpdate = User(firstName: "Joan", lastName: "Romano", age: 28, id: "45")
+                let elementToUpdate = User(firstName: "Joan", lastName: "Romano", lifetime: 28, id: "45")
                 expect { try sut.update(elementToUpdate) }.to(throwError(errorType: StoreError.self))
                 let updatedUserInStore = sut.find(User.self, id: "45")
                 expect(updatedUserInStore).to(beNil())
@@ -262,10 +262,10 @@ class StoreTests: QuickSpec {
                 var theId: String!
                 sut.insert { (id) -> User in
                     theId = id
-                    return User(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                    return User(firstName: "Joan", lastName: "Romano", lifetime: 28, id: id)
                 }
                 
-                let elementToDelete = User(firstName: "Joan", lastName: "Romano", age: 28, id: theId)
+                let elementToDelete = User(firstName: "Joan", lastName: "Romano", lifetime: 28, id: theId)
                 try! sut.delete(elementToDelete)
                 let usersArray = sut.findAll(User.self)
                 
@@ -306,13 +306,13 @@ class StoreTests: QuickSpec {
                 var theId: String!
                 sut.insert { (id) -> User in
                     theId = id
-                    return User(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                    return User(firstName: "Joan", lastName: "Romano", lifetime: 28, id: id)
                 }
                 
                 sut.create(User.self, number: 44)
                 
                 anotherStore.insert { (id) -> User in
-                    return User(firstName: "Joan", lastName: "Romano", age: 28, id: id)
+                    return User(firstName: "Joan", lastName: "Romano", lifetime: 28, id: id)
                 }
                 
                 let elementToDelete = anotherStore.find(User.self, id: theId)!
@@ -480,7 +480,7 @@ class StoreTests: QuickSpec {
             
             it("should not deadlock when updating into store during a reading operation") {
                 let result = sut.filter(User.self, isIncluded: { (_) -> Bool in
-                    try! sut.update(User(firstName: "Alex", lastName: "Manzella", age: 30, id: "0"))
+                    try! sut.update(User(firstName: "Alex", lastName: "Manzella", lifetime: 30, id: "0"))
                     return true
                 })
                 
@@ -489,40 +489,7 @@ class StoreTests: QuickSpec {
                 expect(result).toEventuallyNot(beNil())
                 expect(user.firstName).toEventually(equal("Alex"))
                 expect(user.lastName).toEventually(equal("Manzella"))
-                expect(user.age).toEventually(equal(30))
-            }
-        }
-    }
-}
-
-class StorePerformaceTests: XCTestCase {
-    
-    func testMultipleSingleCreationPerformance() {
-        let sut = Store()
-        measure {
-            DispatchQueue.concurrentPerform(iterations: 1000) { _ in
-                sut.create(User.self)
-            }
-        }
-    }
-    
-    func testMultpleInsertionsPerformance() {
-        let sut = Store()
-        measure {
-            DispatchQueue.concurrentPerform(iterations: 1000) { _ in
-                sut.insert { (id) -> User in
-                    return User(id: id, store: sut)
-                }
-            }
-        }
-    }
-    
-    func testMultipleDeletionsPerformance() {
-        let sut = Store()
-        sut.create(User.self, number: 2000)
-        measure {
-            for entity in sut.findAll(User.self) {
-                try! sut.delete(entity)
+                expect(user.lifetime).toEventually(equal(30))
             }
         }
     }

@@ -1,6 +1,0 @@
-framework module Quick {
-  umbrella header "Quick-OSX-umbrella.h"
-
-  export *
-  module * { export * }
-}

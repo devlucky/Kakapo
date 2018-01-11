@@ -98,6 +98,15 @@
 		DE82027F1D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
 		DE8202801D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
 		DE8202811D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */; };
+		ED5453CE2007AA0B0033D0E4 /* StorePerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453CD2007AA0B0033D0E4 /* StorePerformanceTests.swift */; };
+		ED5453CF2007AA0B0033D0E4 /* StorePerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453CD2007AA0B0033D0E4 /* StorePerformanceTests.swift */; };
+		ED5453D02007AA0B0033D0E4 /* StorePerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453CD2007AA0B0033D0E4 /* StorePerformanceTests.swift */; };
+		ED5453D22007AA6D0033D0E4 /* RouterMultipleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453D12007AA6D0033D0E4 /* RouterMultipleTests.swift */; };
+		ED5453D32007AA6D0033D0E4 /* RouterMultipleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453D12007AA6D0033D0E4 /* RouterMultipleTests.swift */; };
+		ED5453D42007AA6D0033D0E4 /* RouterMultipleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453D12007AA6D0033D0E4 /* RouterMultipleTests.swift */; };
+		ED5453D62007AAD20033D0E4 /* RouterURLRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453D52007AAD20033D0E4 /* RouterURLRegistrationTests.swift */; };
+		ED5453D72007AAD20033D0E4 /* RouterURLRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453D52007AAD20033D0E4 /* RouterURLRegistrationTests.swift */; };
+		ED5453D82007AAD20033D0E4 /* RouterURLRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5453D52007AAD20033D0E4 /* RouterURLRegistrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +178,9 @@
 		E357918ACA29146B64834E63 /* Pods-Kakapo tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kakapo tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Kakapo tvOSTests/Pods-Kakapo tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		EC34C9368B0957EEB74A515E /* Pods-Kakapo iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kakapo iOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Kakapo iOSTests/Pods-Kakapo iOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		EC9701EC992A6D8D7A349FE0 /* Pods-Kakapo macOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kakapo macOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Kakapo macOSTests/Pods-Kakapo macOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		ED5453CD2007AA0B0033D0E4 /* StorePerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorePerformanceTests.swift; sourceTree = "<group>"; };
+		ED5453D12007AA6D0033D0E4 /* RouterMultipleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterMultipleTests.swift; sourceTree = "<group>"; };
+		ED5453D52007AAD20033D0E4 /* RouterURLRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterURLRegistrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -303,16 +315,19 @@
 			isa = PBXGroup;
 			children = (
 				DE5652FD1D94885300F02188 /* Helpers */,
+				DE76E0FE1D0DC38B009721A4 /* Info.plist */,
+				DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */,
 				8BE0FC7E1D16BD8300FE706A /* JSONAPILinksTests.swift */,
 				DE76E1B11D0DC857009721A4 /* JSONAPITests.swift */,
-				DE82027E1D200C9000552FEC /* JSONAPIErrorTests.swift */,
-				DE76E1B21D0DC857009721A4 /* StoreTests.swift */,
 				DE76E1B31D0DC857009721A4 /* PropertyPolicyTests.swift */,
-				DE76E1B41D0DC857009721A4 /* RouterTests.swift */,
-				DE76E1B51D0DC857009721A4 /* SerializerTests.swift */,
-				DE3950A91D216C77008DCF43 /* SerializationTransformerTests.swift */,
 				DE76E1B61D0DC857009721A4 /* RouteMatcherTests.swift */,
-				DE76E0FE1D0DC38B009721A4 /* Info.plist */,
+				DE76E1B41D0DC857009721A4 /* RouterTests.swift */,
+				ED5453D52007AAD20033D0E4 /* RouterURLRegistrationTests.swift */,
+				ED5453D12007AA6D0033D0E4 /* RouterMultipleTests.swift */,
+				DE3950A91D216C77008DCF43 /* SerializationTransformerTests.swift */,
+				DE76E1B51D0DC857009721A4 /* SerializerTests.swift */,
+				ED5453CD2007AA0B0033D0E4 /* StorePerformanceTests.swift */,
+				DE76E1B21D0DC857009721A4 /* StoreTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -635,9 +650,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Kakapo iOSTests/Pods-Kakapo iOSTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Nimble-iOS/Nimble.framework",
+				"${BUILT_PRODUCTS_DIR}/Quick-iOS/Quick.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON-iOS/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quick.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -650,13 +672,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Kakapo tvOSTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		610A1C63F9AA3718D5628C2A /* [CP] Copy Pods Resources */ = {
@@ -695,13 +720,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Kakapo macOSTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		BA01DF49690F4BD115CC9636 /* [CP] Check Pods Manifest.lock */ = {
@@ -710,13 +738,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Kakapo iOSTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C3B393FC19AFC944C37FB4DA /* [CP] Embed Pods Frameworks */ = {
@@ -725,9 +756,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Kakapo macOSTests/Pods-Kakapo macOSTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Nimble-macOS/Nimble.framework",
+				"${BUILT_PRODUCTS_DIR}/Quick-macOS/Quick.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON-macOS/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quick.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -740,9 +778,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Kakapo tvOSTests/Pods-Kakapo tvOSTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Nimble-tvOS/Nimble.framework",
+				"${BUILT_PRODUCTS_DIR}/Quick-tvOS/Quick.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON-tvOS/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quick.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -865,12 +910,15 @@
 			files = (
 				DE76E1BC1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC811D16BD9B00FE706A /* JSONAPILinksTests.swift in Sources */,
+				ED5453D32007AA6D0033D0E4 /* RouterMultipleTests.swift in Sources */,
 				DE76E1CB1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1BF1D0DC857009721A4 /* StoreTests.swift in Sources */,
 				DE76E1C81D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE5653041D9488BA00F02188 /* RouterTestServer.swift in Sources */,
 				DE76E1C51D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE8202801D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
+				ED5453CF2007AA0B0033D0E4 /* StorePerformanceTests.swift in Sources */,
+				ED5453D72007AAD20033D0E4 /* RouterURLRegistrationTests.swift in Sources */,
 				DE76E1C21D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 				DE3950AB1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */,
 				DE5653001D94888D00F02188 /* FakeURLProtocolClient.swift in Sources */,
@@ -901,12 +949,15 @@
 			files = (
 				DE76E1BD1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC821D16BD9C00FE706A /* JSONAPILinksTests.swift in Sources */,
+				ED5453D42007AA6D0033D0E4 /* RouterMultipleTests.swift in Sources */,
 				DE76E1CC1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1C01D0DC857009721A4 /* StoreTests.swift in Sources */,
 				DE76E1C91D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE5653051D9488BA00F02188 /* RouterTestServer.swift in Sources */,
 				DE76E1C61D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE8202811D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
+				ED5453D02007AA0B0033D0E4 /* StorePerformanceTests.swift in Sources */,
+				ED5453D82007AAD20033D0E4 /* RouterURLRegistrationTests.swift in Sources */,
 				DE76E1C31D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 				DE3950AC1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */,
 				DE5653011D94888D00F02188 /* FakeURLProtocolClient.swift in Sources */,
@@ -937,12 +988,15 @@
 			files = (
 				DE76E1BB1D0DC857009721A4 /* JSONAPITests.swift in Sources */,
 				8BE0FC801D16BD9A00FE706A /* JSONAPILinksTests.swift in Sources */,
+				ED5453D22007AA6D0033D0E4 /* RouterMultipleTests.swift in Sources */,
 				DE76E1CA1D0DC857009721A4 /* RouteMatcherTests.swift in Sources */,
 				DE76E1BE1D0DC857009721A4 /* StoreTests.swift in Sources */,
 				DE76E1C71D0DC857009721A4 /* SerializerTests.swift in Sources */,
 				DE5653031D9488BA00F02188 /* RouterTestServer.swift in Sources */,
 				DE76E1C41D0DC857009721A4 /* RouterTests.swift in Sources */,
 				DE82027F1D200C9000552FEC /* JSONAPIErrorTests.swift in Sources */,
+				ED5453CE2007AA0B0033D0E4 /* StorePerformanceTests.swift in Sources */,
+				ED5453D62007AAD20033D0E4 /* RouterURLRegistrationTests.swift in Sources */,
 				DE76E1C11D0DC857009721A4 /* PropertyPolicyTests.swift in Sources */,
 				DE3950AA1D216C77008DCF43 /* SerializationTransformerTests.swift in Sources */,
 				DE5652FF1D94888D00F02188 /* FakeURLProtocolClient.swift in Sources */,
@@ -1014,6 +1068,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1055,6 +1110,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1079,7 +1135,6 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1105,7 +1160,6 @@
 				PRODUCT_NAME = Kakapo;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1131,7 +1185,6 @@
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1156,7 +1209,6 @@
 				PRODUCT_NAME = Kakapo;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1174,7 +1226,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 3.0;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Debug;
@@ -1189,7 +1240,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 3.0;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Release;
@@ -1215,7 +1265,6 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1241,7 +1290,6 @@
 				PRODUCT_NAME = Kakapo;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1260,7 +1308,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-macOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -1277,7 +1324,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-macOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -1299,7 +1345,6 @@
 				PRODUCT_NAME = Kakapo;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1322,7 +1367,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-iOS";
 				PRODUCT_NAME = Kakapo;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1338,7 +1382,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -1352,7 +1395,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.devlucky.Kakapo-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

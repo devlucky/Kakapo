@@ -21,7 +21,7 @@ public typealias RouteHandler = (Request) -> Serializable?
  */
 public struct Request {
     /// The decomposed URLInfo components
-    public let components: [String : String]
+    public let components: [String: String]
     
     /// The decomposed URLInfo query parameters
     public let queryParameters: [URLQueryItem]
@@ -46,7 +46,7 @@ public protocol ResponseFieldsProvider: CustomSerializable {
     var body: Serializable { get }
 
     /// An optional dictionary holding the response header fields
-    var headerFields: [String : String]? { get }
+    var headerFields: [String: String]? { get }
 }
 
 extension ResponseFieldsProvider {
@@ -70,7 +70,7 @@ public struct Response: ResponseFieldsProvider {
     public let body: Serializable
     
     /// An optional dictionary holding the response header fields
-    public let headerFields: [String : String]?
+    public let headerFields: [String: String]?
     
     /**
      Initialize `Response` object that wraps another `Serializable` object for the serialization but, implementing `ResponseFieldsProvider` can affect some parameters of the HTTP response
@@ -81,7 +81,7 @@ public struct Response: ResponseFieldsProvider {
      
      - returns: A wrapper `Serializable` object that affect http requests.
      */
-    public init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
+    public init(statusCode: Int, body: Serializable, headerFields: [String: String]? = nil) {
         self.statusCode = statusCode
         self.body = body
         self.headerFields = headerFields
@@ -121,7 +121,7 @@ public final class Router {
         case patch = "PATCH"
     }
     
-    private var routes: [Route : RouteHandler] = [:]
+    private var routes: [Route: RouteHandler] = [:]
 
     /// The `baseURL` of the Router
     public let baseURL: String
@@ -196,7 +196,7 @@ public final class Router {
                   let client = server.client else { return }
         
         var statusCode = 200
-        var headerFields: [String : String]? = ["Content-Type": "application/json"]
+        var headerFields: [String: String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
         
         for (key, handler) in routes where key.method.rawValue == server.request.httpMethod {

@@ -96,7 +96,7 @@ private extension String {
     /// Converts a camelCase string into a snake_case one.
     func snakecaseString() -> String {
         var string = String()
-        let charactersView = self.characters
+        let charactersView = self
         let startIndex = charactersView.startIndex
         let endIndex = charactersView.count - 1
         

@@ -24,20 +24,20 @@ class JSONAPISpec: QuickSpec {
         let id: String
     }
     
-    struct Dog: JSONAPIEntity {
+    struct Labrador: JSONAPIEntity {
         let id: String
         let name: String
-        let cat: Cat?
+        let persian: Persian?
     }
     
     struct DogSitter: JSONAPIEntity {
         let id: String
         let name: String
-        let dogs: [Dog]?
+        let dogs: [Labrador]?
         let optional: Int?
     }
     
-    struct Cat: JSONAPIEntity {
+    struct Persian: JSONAPIEntity {
         let id: String
         let name: String
     }
@@ -45,8 +45,8 @@ class JSONAPISpec: QuickSpec {
     struct User: JSONAPIEntity {
         let id: String
         let name: String
-        let dog: Dog
-        let cats: [Cat]
+        let labrador: Labrador
+        let cats: [Persian]
     }
     
     struct Post: JSONAPIEntity {
@@ -65,9 +65,9 @@ class JSONAPISpec: QuickSpec {
     
     override func spec() {
 
-        let cats = [Cat(id: "33", name: "Stancho"), Cat(id: "44", name: "Hez")]
-        let dog = Dog(id: "22", name: "Joan", cat: cats[0])
-        let user = User(id: "11", name: "Alex", dog: dog, cats: cats)
+        let persians = [Persian(id: "33", name: "Stancho"), Persian(id: "44", name: "Hez")]
+        let labrador = Labrador(id: "22", name: "Joan", persian: persians[0])
+        let user = User(id: "11", name: "Alex", labrador: labrador, cats: persians)
         
         func json(_ object: Serializable) -> JSON {
             return JSON(object.serialized()!)
@@ -157,7 +157,7 @@ class JSONAPISpec: QuickSpec {
             }
             
             it("should only serialize actual attributes into attributes") {
-                let lonelyMax = User(id: "11", name: "Max", dog: dog, cats: [])
+                let lonelyMax = User(id: "11", name: "Max", labrador: labrador, cats: [])
                 let object = json(lonelyMax)
                 let attributes = object["attributes"].dictionaryValue
                 expect(attributes.count).to(equal(1)) // only name should be here, no id, no cats
@@ -176,10 +176,10 @@ class JSONAPISpec: QuickSpec {
         describe("JSON API Entity relationship serialization") {
             it("should serialize the relationships when they are single JSONAPIEntities") {
                 let object = json(user)
-                let dog = object["relationships"]["dog"]["data"]
+                let dog = object["relationships"]["labrador"]["data"]
                 expect(dog.dictionary).toNot(beNil())
                 expect(dog["id"].stringValue).to(equal("22"))
-                expect(dog["type"].stringValue).to(equal("dog"))
+                expect(dog["type"].stringValue).to(equal("labrador"))
             }
             
             it("should serialize the relationships when they are arrays of JSONAPIEntities") {
@@ -187,27 +187,27 @@ class JSONAPISpec: QuickSpec {
                 let cats = object["relationships"]["cats"]["data"].array!
                 expect(cats.count).to(equal(2))
                 expect(cats[0]["id"].stringValue).to(equal("33"))
-                expect(cats[0]["type"].stringValue).to(equal("cat"))
+                expect(cats[0]["type"].stringValue).to(equal("persian"))
                 expect(cats[1]["id"].stringValue).to(equal("44"))
-                expect(cats[1]["type"].stringValue).to(equal("cat"))
+                expect(cats[1]["type"].stringValue).to(equal("persian"))
             }
             
             it("should not serialize relationships of relationships") {
                 let object = json(user)
-                let dogData = object["relationships"]["dog"]["data"].dictionary
+                let dogData = object["relationships"]["labrador"]["data"].dictionary
                 expect(dogData).toNot(beNil())
                 expect(dogData?["relationships"]).to(beNil())
             }
             
             it("should not serialize attributes of relationships") {
                 let object = json(user)
-                let dogData = object["relationships"]["dog"]["data"].dictionary
+                let dogData = object["relationships"]["labrador"]["data"].dictionary
                 expect(dogData).toNot(beNil())
                 expect(dogData?["attributes"]).to(beNil())
             }
             
             it("should not serialize nil relationships") {
-                let object = json(Dog(id: "22", name: "Joan", cat: nil))
+                let object = json(Labrador(id: "22", name: "Joan", persian: nil))
                 let relationships = object["relationships"].dictionaryValue
                 expect(relationships["cat"]).to(beNil())
                 let attributes = object["attributes"].dictionaryValue
@@ -215,7 +215,7 @@ class JSONAPISpec: QuickSpec {
             }
             
             it("should serialize the relationships even when an array is empty") {
-                let lonelyMax = User(id: "11", name: "Max", dog: dog, cats: [])
+                let lonelyMax = User(id: "11", name: "Max", labrador: labrador, cats: [])
                 let object = json(lonelyMax)
                 let cats = object["relationships"]["cats"].dictionary!
                 expect(cats.count).to(equal(1))
@@ -226,21 +226,21 @@ class JSONAPISpec: QuickSpec {
             
             context("Optional relationships") {
                 it("should handle a JSONAPIEntity") {
-                    let object = json(Dog(id: "123", name: "A", cat: Cat(id: "23", name: "B")))
+                    let object = json(Labrador(id: "123", name: "A", persian: Persian(id: "23", name: "B")))
                     let relationships = object["relationships"].dictionaryValue
                     expect(relationships).toNot(beNil())
-                    expect(relationships["cat"]?["data"]["id"].string).to(equal("23"))
+                    expect(relationships["persian"]?["data"]["id"].string).to(equal("23"))
                 }
                 
                 it("should handle an array of JSONAPIEntity") {
-                    let object = json(DogSitter(id: "123", name: "A", dogs: [dog], optional: nil))
+                    let object = json(DogSitter(id: "123", name: "A", dogs: [labrador], optional: nil))
                     let relationships = object["relationships"].dictionaryValue
                     expect(relationships).toNot(beNil())
                     expect(relationships["dogs"]?["data"][0]["id"].string).to(equal("22"))
                 }
                 
                 it("should not be included when is not a JSONAPIEntity or Array of JSONAPIEntity") {
-                    let object = json(DogSitter(id: "123", name: "A", dogs: [dog], optional: 1))
+                    let object = json(DogSitter(id: "123", name: "A", dogs: [labrador], optional: 1))
                     let relationships = object["relationships"].dictionaryValue
                     expect(relationships).toNot(beNil())
                     expect(relationships["optional"]).to(beNil())
@@ -311,14 +311,14 @@ class JSONAPISpec: QuickSpec {
             }
             
             it("should not include if the entities don't have relationships") {
-                let object = json(JSONAPISerializer(cats.first!))
+                let object = json(JSONAPISerializer(persians.first!))
                 let included = object["included"].array
                 
                 expect(included).to(beNil())
             }
             
             it("should not include if an array of entities don't have relationships") {
-                let object = json(JSONAPISerializer(cats))
+                let object = json(JSONAPISerializer(persians))
                 let included = object["included"].array
                 
                 expect(included).to(beNil())
@@ -332,8 +332,8 @@ class JSONAPISpec: QuickSpec {
             }
             
             it("should include relationships of an array of JSONAPI entities") {
-                let anotherDog = Dog(id: "555", name: "Joan", cat: nil)
-                let anotherUser = User(id: "111111", name: "Alex", dog: anotherDog, cats: [])
+                let anotherDog = Labrador(id: "555", name: "Joan", persian: nil)
+                let anotherUser = User(id: "111111", name: "Alex", labrador: anotherDog, cats: [])
                 let object = json(JSONAPISerializer([user, anotherUser]))
                 let included = object["included"].arrayValue
                 
@@ -341,9 +341,9 @@ class JSONAPISpec: QuickSpec {
             }
             
             it("should include relationships of relationships when requested") {
-                let cats = [Cat(id: "33", name: "Stancho"), Cat(id: "44", name: "Hez")]
-                let dog = Dog(id: "22", name: "Joan", cat: Cat(id: "55", name: "Max"))
-                let user = User(id: "11", name: "Alex", dog: dog, cats: cats)
+                let persians = [Persian(id: "33", name: "Stancho"), Persian(id: "44", name: "Hez")]
+                let labrador = Labrador(id: "22", name: "Joan", persian: Persian(id: "55", name: "Max"))
+                let user = User(id: "11", name: "Alex", labrador: labrador, cats: persians)
 
                 let object = json(JSONAPISerializer(user, includingChildren: true))
                 let included = object["included"].arrayValue
@@ -356,7 +356,7 @@ class JSONAPISpec: QuickSpec {
                 let dog = included["22"]
                 
                 expect(dog).toNot(beNil())
-                expect(dog?["type"].stringValue).to(equal("dog"))
+                expect(dog?["type"].stringValue).to(equal("labrador"))
             }
             
             it("should include type and id of array of relationships") {
@@ -367,9 +367,9 @@ class JSONAPISpec: QuickSpec {
                 let cat2 = included["44"]
                 
                 expect(cat).toNot(beNil())
-                expect(cat?["type"].stringValue).to(equal("cat"))
+                expect(cat?["type"].stringValue).to(equal("persian"))
                 expect(cat2).toNot(beNil())
-                expect(cat2?["type"].stringValue).to(equal("cat"))
+                expect(cat2?["type"].stringValue).to(equal("persian"))
             }
             
             it("should include relationships attributes") {
@@ -379,7 +379,7 @@ class JSONAPISpec: QuickSpec {
                 let dog = included["22"]
                 
                 expect(dog).toNot(beNil())
-                expect(dog?["type"].stringValue).to(equal("dog"))
+                expect(dog?["type"].stringValue).to(equal("labrador"))
 
                 let attributes = dog?["attributes"].dictionaryValue
                 
@@ -390,17 +390,17 @@ class JSONAPISpec: QuickSpec {
                 let object = json(JSONAPISerializer(user))
                 let included = includedRelationshipsById(object)
                 
-                let cat = included["33"]
-                let cat2 = included["44"]
+                let persian = included["33"]
+                let persian2 = included["44"]
                 
-                ["Stancho": cat, "Hez": cat2].forEach { (name, cat) in
-                    let attributes = cat?["attributes"].dictionaryValue
+                ["Stancho": persian, "Hez": persian2].forEach { (name, persian) in
+                    let attributes = persian?["attributes"].dictionaryValue
                     expect(attributes?["name"]?.stringValue).to(equal(name))
                 }
             }
             
             it("should not include duplicated relationships") {
-                let user = User(id: "111111", name: "Alex", dog: dog, cats: [dog.cat!, dog.cat!])
+                let user = User(id: "111111", name: "Alex", labrador: labrador, cats: [labrador.persian!, labrador.persian!])
                 let object = json(JSONAPISerializer(user))
                 let included = object["included"].arrayValue
                 expect(included.count).to(equal(2))
@@ -434,7 +434,7 @@ class JSONAPISpec: QuickSpec {
                     let dog = included["22"]
                     
                     expect(dog).toNot(beNil())
-                    expect(dog?["type"].stringValue).to(equal("dog"))
+                    expect(dog?["type"].stringValue).to(equal("labrador"))
                 }
                 
                 it("should be empty if PropertyPolicy is not a JSONAPIEntity") {

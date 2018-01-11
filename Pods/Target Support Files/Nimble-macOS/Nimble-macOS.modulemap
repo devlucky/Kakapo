@@ -1,0 +1,6 @@
+framework module Nimble {
+  umbrella header "Nimble-macOS-umbrella.h"
+
+  export *
+  module * { export * }
+}
