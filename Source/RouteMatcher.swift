@@ -63,12 +63,12 @@ func matchRoute(_ baseURL: String, path: String, requestURL: URL) -> URLInfo? {
         if routeComponent == requestComponent {
             continue // not a wildcard, no need to insert it in components
         } else {
-            guard let firstChar = routeComponent.characters.first, firstChar == ":" else {
+            guard let firstChar = routeComponent.first, firstChar == ":" else {
                 return nil // not equal nor a wildcard
             }
         }
         
-        let relevantKeyIndex = routeComponent.characters.index(after: routeComponent.characters.startIndex) // second position
+        let relevantKeyIndex = routeComponent.index(after: routeComponent.startIndex) // second position
         let key = routeComponent.substring(from: relevantKeyIndex) // :key -> key
         components[key] = requestComponent
     }
@@ -82,7 +82,7 @@ func matchRoute(_ baseURL: String, path: String, requestURL: URL) -> URLInfo? {
 private extension String {
     
     func split(_ separator: Character) -> [String] {
-        return characters.split(separator: separator).map { String($0) }
+        return split(separator: separator).map { String($0) }
     }
     
     enum SplitMode {
@@ -96,7 +96,7 @@ private extension String {
      - **to**: return the substring preceding the given string (e.g. `kakapo.com/users?a=b`, `?` -> `kakapo.com/users`)
      */
     func substring(_ mode: SplitMode, string: String) -> String? {
-        guard !string.characters.isEmpty else {
+        guard !string.isEmpty else {
             return self
         }
         

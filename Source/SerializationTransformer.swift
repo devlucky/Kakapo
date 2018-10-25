@@ -96,11 +96,10 @@ private extension String {
     /// Converts a camelCase string into a snake_case one.
     func snakecaseString() -> String {
         var string = String()
-        let charactersView = self.characters
-        let startIndex = charactersView.startIndex
-        let endIndex = charactersView.count - 1
+        let startIndex = self.startIndex
+        let endIndex = count - 1
         
-        for (idx, c) in charactersView.reversed().enumerated() {
+        for (idx, c) in reversed().enumerated() {
             let char = String(c)
             let lowerCased = char.lowercased()
             let isUppercase = char != lowerCased
